@@ -24,7 +24,7 @@ api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 def _get_secret_key() -> str:
     # TR: Env'den secret key; yoksa hata ver
-    key = os.getenv("JWT_SECRET", None)
+    key = settings.jwt_secret or os.getenv("JWT_SECRET", None)
     if not key:
         raise RuntimeError("JWT_SECRET not configured")
     return key

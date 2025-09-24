@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     # Core
     app_name: str = Field(default="ArchBuilder Cloud Server")
     log_level: str = Field(default="INFO")
+    auth_dev_mode: bool = Field(default=False)
+    jwt_secret: str | None = Field(default=None)
 
     # RAGFlow integration
     ragflow_base_url: HttpUrl | str = Field(default="http://localhost")

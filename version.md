@@ -25,3 +25,5 @@
 - Python 3.12 pinned; context snapshot; prompt library organized
 ## auto  completed P04-P06 step1 2025-09-24 17:12:41
 - FastAPI app + /health; logging+exceptions; auth foundations
+## auto  P04-P06 finalized 2025-09-24 17:13:37
+- Rehydrate fix; JWT cfg; registry health schema

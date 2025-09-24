@@ -20,7 +20,7 @@ $schemJson = Get-Content $schem -Raw
 $content = @()
 $content += "# Current Context"
 $content += ""
-$content += "Tarih: $date"
+$content += ("Tarih: {0}" -f $date)
 $content += ""
 $content += "## Registry Snapshots"
 $content += "### identifiers.json"
@@ -38,7 +38,8 @@ $content += "```json"
 $content += $schemJson
 $content += "```"
 
-Set-Content -Path $ctxFile -Value ($content -join "`n") -Encoding UTF8
-Write-Host "[rehydrate-context] Wrote $ctxFile"
+$joined = [string]::Join([Environment]::NewLine, $content)
+Set-Content -Path $ctxFile -Value $joined -Encoding UTF8
+Write-Host ("[rehydrate-context] Wrote {0}" -f $ctxFile)
 exit 0
 

@@ -1,6 +1,15 @@
 {
   "schemas": [
     {
+      "name": "HealthResponse",
+      "type": "object",
+      "properties": {
+        "status": {"type": "string"},
+        "name": {"type": "string"}
+      },
+      "required": ["status", "name"]
+    },
+    {
       "name": "RAGQueryRequest",
       "type": "object",
       "properties": {

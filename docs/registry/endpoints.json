@@ -1,6 +1,13 @@
 {
   "endpoints": [
     {
+      "method": "GET",
+      "path": "/health",
+      "auth": "none",
+      "request_schema_ref": null,
+      "response_schema_ref": "HealthResponse"
+    },
+    {
       "method": "POST",
       "path": "/v1/rag/query",
       "auth": "api_key|jwt",

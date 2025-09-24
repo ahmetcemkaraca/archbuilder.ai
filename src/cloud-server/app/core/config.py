@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from pydantic import BaseSettings, Field, HttpUrl
+from pydantic import Field, HttpUrl
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -20,10 +21,7 @@ class Settings(BaseSettings):
     ragflow_api_version: str = Field(default="v1")
     ragflow_timeout_seconds: int = Field(default=30)
 
-    class Config:
-        env_file = ".env"
-        env_prefix = ""
-        case_sensitive = False
+    model_config = SettingsConfigDict(env_file=".env", env_prefix="", case_sensitive=False)
 
 
 settings = Settings()

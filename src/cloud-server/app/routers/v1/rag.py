@@ -27,6 +27,7 @@ class RAGQueryRequest(BaseModel):
 class RAGQueryResponse(BaseModel):
     success: bool
     data: Dict[str, Any]
+    error: Dict[str, Any] | None = None
 
 
 def get_service() -> RAGService:
@@ -56,6 +57,6 @@ async def query_knowledge_base(
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=502, detail=f"RAGFlow upstream error: {exc}") from exc
 
-    return RAGQueryResponse(success=True, data=res)
+    return RAGQueryResponse(success=True, data=res, error=None)
 
 

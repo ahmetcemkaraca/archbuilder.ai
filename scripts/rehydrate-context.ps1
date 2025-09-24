@@ -40,6 +40,6 @@ $content += "```"
 
 $joined = [string]::Join([Environment]::NewLine, $content)
 Set-Content -Path $ctxFile -Value $joined -Encoding UTF8
-Write-Host ("[rehydrate-context] Wrote {0}" -f $ctxFile)
+Write-Host "[rehydrate-context] Wrote $ctxFile"
 exit 0
 

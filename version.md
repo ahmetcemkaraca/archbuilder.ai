@@ -27,3 +27,5 @@
 - FastAPI app + /health; logging+exceptions; auth foundations
 ## auto  P04-P06 finalized 2025-09-24 17:13:37
 - Rehydrate fix; JWT cfg; registry health schema
+## auto  rehydrate fixed 2025-09-24 17:14:43
+- context snapshot ok

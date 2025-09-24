@@ -10,6 +10,59 @@
       "required": ["status", "name"]
     },
     {
+      "name": "AuthLoginRequest",
+      "type": "object",
+      "properties": {
+        "email": {"type": "string"},
+        "password": {"type": "string"}
+      },
+      "required": ["email", "password"]
+    },
+    {
+      "name": "RefreshRequest",
+      "type": "object",
+      "properties": {
+        "token": {"type": "string"}
+      },
+      "required": ["token"]
+    },
+    {
+      "name": "AuthTokenResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {"type": "object"}
+      },
+      "required": ["success", "data"]
+    },
+    {
+      "name": "APIKeyResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {"type": "object"}
+      },
+      "required": ["success", "data"]
+    },
+    {
+      "name": "UploadInitResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {"type": "object"}
+      },
+      "required": ["success", "data"]
+    },
+    {
+      "name": "StandardResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {"type": "object"}
+      },
+      "required": ["success", "data"]
+    },
+    {
       "name": "RAGQueryRequest",
       "type": "object",
       "properties": {

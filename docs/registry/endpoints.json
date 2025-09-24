@@ -9,6 +9,48 @@
     },
     {
       "method": "POST",
+      "path": "/v1/auth/login",
+      "auth": "none",
+      "request_schema_ref": "AuthLoginRequest",
+      "response_schema_ref": "AuthTokenResponse"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/auth/refresh",
+      "auth": "none",
+      "request_schema_ref": "RefreshRequest",
+      "response_schema_ref": "AuthTokenResponse"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/auth/api-key",
+      "auth": "none",
+      "request_schema_ref": null,
+      "response_schema_ref": "APIKeyResponse"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/storage/upload/init",
+      "auth": "api_key",
+      "request_schema_ref": null,
+      "response_schema_ref": "UploadInitResponse"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/storage/upload/chunk",
+      "auth": "api_key",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/storage/upload/complete",
+      "auth": "api_key",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse"
+    },
+    {
+      "method": "POST",
       "path": "/v1/rag/query",
       "auth": "api_key|jwt",
       "request_schema_ref": "RAGQueryRequest",

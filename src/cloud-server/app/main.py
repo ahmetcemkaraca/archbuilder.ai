@@ -12,6 +12,8 @@ from app.core.security_headers import SecurityHeadersMiddleware
 from app.core.rate_limit import limiter
 from slowapi.middleware import SlowAPIMiddleware
 from app.routers.v1.rag import router as rag_router
+from app.routers.v1.auth import router as auth_router
+from app.routers.v1.storage import router as storage_router
 
 
 def create_app() -> FastAPI:
@@ -29,6 +31,8 @@ def create_app() -> FastAPI:
 
     # API routers
     app.include_router(rag_router)
+    app.include_router(auth_router)
+    app.include_router(storage_router)
     install_exception_handlers(app)
     return app
 

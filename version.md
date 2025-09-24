@@ -36,3 +36,5 @@
 ## auto  snapshot ok 2025-09-24 17:15:58
 ## auto  completed P07-P09 2025-09-24 17:20:56
 - RBAC, rate limit, security headers, DB+Alembic + tables/migrations
+## auto  completed P06-T2/T3 and P10 2025-09-24 17:27:50
+- Auth endpoints; storage + chunked upload

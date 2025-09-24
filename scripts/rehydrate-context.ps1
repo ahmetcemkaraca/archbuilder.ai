@@ -1,5 +1,5 @@
 Param(
-  [string]$RepoRoot = (Resolve-Path "..").Path
+  [string]$RepoRoot = (Resolve-Path ".").Path
 )
 
 $ctxFile = Join-Path $RepoRoot ".mds/context/current-context.md"

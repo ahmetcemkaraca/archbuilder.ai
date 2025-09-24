@@ -31,3 +31,5 @@
 - context snapshot ok
 ## auto  rehydrate markers adjusted 2025-09-24 17:15:23
 - context snapshot ok
+## auto  rehydrate root fixed 2025-09-24 17:15:49
+- context snapshot ok

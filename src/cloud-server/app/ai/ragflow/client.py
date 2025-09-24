@@ -48,6 +48,13 @@ class RAGFlowClient:
             headers["Authorization"] = f"Bearer {self._api_key}"
         return headers
 
+    def with_correlation(self, correlation_id: Optional[str]) -> Dict[str, str]:
+        """TR: Çağrı bazında correlation ID header ekle."""
+        headers = {}
+        if correlation_id:
+            headers["X-Correlation-ID"] = correlation_id
+        return headers
+
     @property
     def _api(self) -> httpx.AsyncClient:
         if self._client is None:
@@ -60,16 +67,16 @@ class RAGFlowClient:
         return self._client
 
     # ----------------------------- Core endpoints ----------------------------
-    async def create_dataset(self, name: str) -> Dict[str, Any]:
+    async def create_dataset(self, name: str, correlation_id: Optional[str] = None) -> Dict[str, Any]:
         """POST /api/{version}/datasets"""
         url = f"/api/{self._version}/datasets"
-        resp = await self._api.post(url, json={"name": name})
+        resp = await self._api.post(url, json={"name": name}, headers=self.with_correlation(correlation_id))
         resp.raise_for_status()
         return resp.json()
 
     async def upload_documents(
         self, dataset_id: str, files: List[bytes], filenames: List[str]
-    ) -> Dict[str, Any]:
+    , correlation_id: Optional[str] = None) -> Dict[str, Any]:
         """POST /api/{version}/datasets/{dataset_id}/documents multipart upload.
 
         Notlar (TR): Çoklu dosya desteği sağlanır; RAGFlow `file` alan adını
@@ -79,7 +86,7 @@ class RAGFlowClient:
         url = f"/api/{self._version}/datasets/{dataset_id}/documents"
         files_payload = [("file", (filenames[i], files[i])) for i in range(len(files))]
         # httpx `files` kullandığımız için Content-Type otomatik ayarlanır
-        resp = await self._api.post(url, files=files_payload)
+        resp = await self._api.post(url, files=files_payload, headers=self.with_correlation(correlation_id))
         resp.raise_for_status()
         return resp.json()
 
@@ -88,13 +95,21 @@ class RAGFlowClient:
         dataset_id: str,
         document_ids: Optional[List[str]] = None,
         options: Optional[Dict[str, Any]] = None,
+        correlation_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """POST /api/{version}/datasets/{dataset_id}/chunks -> parse/index"""
         url = f"/api/{self._version}/datasets/{dataset_id}/chunks"
         payload: Dict[str, Any] = options.copy() if options else {}
         if document_ids is not None:
             payload["document_ids"] = document_ids
-        resp = await self._api.post(url, json=payload)
+        # Basit retry/backoff: 429/503 durumlarında iki kez daha dene
+        attempts = 0
+        while True:
+            resp = await self._api.post(url, json=payload, headers=self.with_correlation(correlation_id))
+            if resp.status_code not in (429, 503) or attempts >= 2:
+                break
+            await asyncio.sleep(0.5 * (attempts + 1))
+            attempts += 1
         resp.raise_for_status()
         return resp.json()
 
@@ -106,6 +121,7 @@ class RAGFlowClient:
         top_k: Optional[int] = None,
         vector_similarity_weight: Optional[float] = None,
         extra: Optional[Dict[str, Any]] = None,
+        correlation_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """POST /api/v1/retrieval
 
@@ -125,19 +141,19 @@ class RAGFlowClient:
         if extra:
             payload.update(extra)
 
-        resp = await self._api.post(url, json=payload)
+        resp = await self._api.post(url, json=payload, headers=self.with_correlation(correlation_id))
         resp.raise_for_status()
         return resp.json()
 
     # ------------------------------ Utilities --------------------------------
-    async def ensure_dataset(self, preferred_name: str) -> str:
+    async def ensure_dataset(self, preferred_name: str, correlation_id: Optional[str] = None) -> str:
         """Create dataset if not exists (best-effort).
 
         Notlar (TR): RAGFlow doğrudan "get by name" sağlamadığından, oluşturulan
         ID'yi döneriz. Var olanı yönetmek üst süreçlerin sorumluluğundadır.
         """
 
-        res = await self.create_dataset(preferred_name)
+        res = await self.create_dataset(preferred_name, correlation_id=correlation_id)
         return res["data"]["id"]
 
     async def aclose(self) -> None:

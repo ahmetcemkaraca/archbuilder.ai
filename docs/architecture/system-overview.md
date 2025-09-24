@@ -105,7 +105,7 @@ AI Services Layer
 │   └── Fallback Logic
 ├── Provider Abstraction Layer
 │   ├── Vertex AI Adapter
-│   ├── GitHub Models Adapter
+│   ├── OpenAI/Azure OpenAI Adapter
 │   ├── Prompt Engineering
 │   └── Response Validation
 ├── Processing Pipeline
@@ -390,7 +390,7 @@ databases:
 
 ai_integration:
   vertex_ai: "Google Cloud Vertex AI"
-  github_models: "Azure OpenAI Service"
+  openai: "OpenAI/Azure OpenAI Service"
   embeddings: "TF-IDF, Sentence-BERT"
 
 background_tasks:
@@ -583,9 +583,9 @@ ai_providers:
   vertex_ai:
     authentication: "Service Account Keys"
     rate_limiting: "model-specific limits"
-    fallback: "GitHub Models"
+    fallback: "OpenAI/Azure OpenAI"
     
-  github_models:
+  openai:
     authentication: "API Keys"
     rate_limiting: "tiered limits"
     fallback: "rule-based generation"

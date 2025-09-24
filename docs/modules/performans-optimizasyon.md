@@ -11,10 +11,11 @@ ArchBuilder.AI performans optimizasyon sistemi, cloud server'ın optimal perform
 
 ## Performans Hedefleri
 
-Sistem aşağıdaki performans hedeflerini karşılayacak şekilde tasarlanmıştır:
+Sistem aşağıdaki performans hedeflerini karşılayacak şekilde tasarlanmıştır (system-overview ile hizalı):
 
-- **Basit sorgular**: <2 saniye
-- **AI işlemleri**: <30 saniye
+- **API yanıt süresi**: p50 <200ms, p95 <500ms, p99 <1000ms
+- **AI işlemleri (basit layout)**: <30 saniye
+- **AI işlemleri (karmaşık proje)**: <5 dakika
 - **Doküman OCR**: <2 dakika  
 - **Bellek kullanımı**: <500MB
 - **CPU kullanımı**: <80%

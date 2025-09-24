@@ -1,0 +1,31 @@
+<Window x:Class="ArchBuilder.Desktop.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ArchBuilder Desktop" Height="420" Width="720">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Status:" Margin="0,0,8,0"/>
+            <TextBlock Text="{Binding Status}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Content="Check Health" Click="OnCheckHealth"/>
+            <Button Content="Settings" Click="OnOpenSettings"/>
+            <Button Content="Login" Click="OnLogin"/>
+            <Button Content="Logout" Click="OnLogout"/>
+            <Button Content="Projects" Click="OnOpenProjects"/>
+            <Button Content="Upload File" Click="OnOpenUpload"/>
+            <Button Content="AI Command" Click="OnOpenAI"/>
+        </StackPanel>
+
+        <ProgressBar Grid.Row="2" Height="8" IsIndeterminate="True" Visibility="{Binding Busy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+    </Grid>
+</Window>
+
+

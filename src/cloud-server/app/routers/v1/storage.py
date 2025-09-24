@@ -14,7 +14,10 @@ from app.services.preprocess.pdf_preprocess import preprocess_pdf
 from app.services.preprocess.cad_preprocess import preprocess_cad
 
 
-router = APIRouter(prefix="/v1/storage", tags=["storage"], dependencies=[require_api_key])
+from fastapi import Depends
+
+
+router = APIRouter(prefix="/v1/storage", tags=["storage"], dependencies=[Depends(require_api_key)])
 storage = StorageService()
 scanner = VirusScanner()
 

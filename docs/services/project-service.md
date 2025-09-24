@@ -1005,3 +1005,23 @@ WORKFLOW_CONFIG = {
 ---
 
 **Bu dokümantasyon ProjectService'in tüm proje yönetimi ve workflow orchestration yeteneklerini kapsamaktadır. Detaylı step implementation'ları ve service coordination patterns için kaynak kod incelenebilir.**
+
+# Phase 9 Smoke Test (Revit Add-in)
+
+Aşağıdaki adımlar Phase 9 özelliğini elle doğrulamak içindir.
+
+- Önkoşullar: Revit 2026+, eklenti kurulmuş ve şerit üzerinde "AutoPlan AI" paneli görünür.
+- Adımlar:
+  1) Boş bir proje açın veya mevcut projeyi yükleyin.
+  2) Şerit: AutoPlan AI → "Phase 9" düğmesine tıklayın.
+  3) Uyarı gelirse Revit sürüm mesajını onaylayın.
+  4) Bilgi iletişim kutusunda İşlem Kimliği ve güncellenen eleman sayısını kontrol edin.
+  5) Aktif görünümün Properties → Phase alanının "Phase 9" olduğunu doğrulayın.
+  6) Duvar/Kapı/Pencere/Zemin kategorilerindeki elemanlardan örnek birini seçip Properties → Phase Created değerinin "Phase 9" olduğunu doğrulayın.
+- Beklenen Sonuçlar:
+  - "Phase 9" fazı dokümana eklenmiş olmalı.
+  - Aktif görünüm fazı "Phase 9" olmalı.
+  - İlgili kategorilerdeki elemanlar "Phase 9" fazına atanmış olmalı.
+- Sorun Giderme:
+  - Görünüm fazı ayarlanamadı uyarısı alırsanız, mesajdaki İşlem Kimliği ile Journal loglarını inceleyin.
+  - Projede faz parametreleri salt-okunur ise görünüm/şablon kilitlerini kontrol edin.

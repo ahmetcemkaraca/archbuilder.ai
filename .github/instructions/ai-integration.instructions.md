@@ -28,7 +28,7 @@ Multi-Language AI Processing:
 Model Selection Strategy:
 ```python
 class AIModelSelector:
-    """Dynamic AI model selection for ArchBuilder.AI with Vertex AI and GitHub Models"""
+    """Dynamic AI model selection for ArchBuilder.AI with Vertex AI and OpenAI/Azure OpenAI"""
     
     def __init__(self):
         self.model_config = {

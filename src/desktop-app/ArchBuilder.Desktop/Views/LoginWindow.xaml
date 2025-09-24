@@ -1,0 +1,32 @@
+<Window x:Class="ArchBuilder.Desktop.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Login" Height="240" Width="420">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="Email" VerticalAlignment="Center"/>
+        <TextBox Grid.Column="1" Margin="8,0,0,8" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Grid.Row="1" Text="Password" VerticalAlignment="Center"/>
+        <PasswordBox Grid.Row="1" Grid.Column="1" Margin="8,0,0,8" x:Name="PasswordBox" PasswordChanged="OnPasswordChanged"/>
+
+        <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Foreground="Red" Text="{Binding Error}"/>
+
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Login" Click="OnLogin"/>
+            <Button Content="Cancel" Margin="8,0,0,0" Click="OnCancel"/>
+        </StackPanel>
+    </Grid>
+</Window>
+
+

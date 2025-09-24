@@ -11,6 +11,86 @@
     {
       "name": "app.routers.v1.rag",
       "exports": ["router", "RAGQueryRequest", "RAGQueryResponse"]
+    },
+    {
+      "name": "app.routers.v1.documents",
+      "exports": ["router", "EnsureDatasetRequest", "EnsureDatasetResponse", "UploadParseResponse"]
+    },
+    {
+      "name": "app.routers.v1.storage",
+      "exports": ["router", "UploadInitResponse"]
+    },
+    {
+      "name": "app.ai.chunking",
+      "exports": ["chunk_text", "chunk_documents"]
+    },
+    {
+      "name": "app.routers.v1.ai",
+      "exports": ["router"]
+    },
+    {
+      "name": "app.routers.v1.websocket",
+      "exports": ["router"]
+    },
+    {
+      "name": "app.services.ai_service",
+      "exports": ["AIService"]
+    },
+    {
+      "name": "app.ai.model_selector",
+      "exports": ["ModelSelector"]
+    },
+    {
+      "name": "app.ai.prompts.templates.prompt_versioning",
+      "exports": ["PromptTemplate", "PromptRegistry", "registry"]
+    },
+    {
+      "name": "app.ai.interfaces",
+      "exports": ["AIClient", "OpenAIClient", "VertexClient"]
+    },
+    {
+      "name": "revit.addin.services.phase_manager",
+      "exports": ["PhaseManager"]
+    },
+    {
+      "name": "revit.addin.commands.initialize_phase_nine",
+      "exports": ["InitializePhaseNineCommand"]
+    },
+    {
+      "name": "app.services.validation_service",
+      "exports": ["ValidationService"]
+    },
+    {
+      "name": "app.services.geometric_validator",
+      "exports": ["GeometricValidator"]
+    },
+    {
+      "name": "app.services.code_validator",
+      "exports": ["CodeValidator"]
+    },
+    {
+      "name": "app.services.review_queue_service",
+      "exports": ["ReviewQueueService", "ReviewStatus", "ReviewPriority"]
+    },
+    {
+      "name": "app.services.rag_metrics_service",
+      "exports": ["RAGMetricsService", "RAGMetrics", "RAGTestScenario"]
+    },
+    {
+      "name": "app.services.regional_config_service",
+      "exports": ["RegionalConfigService"]
+    },
+    {
+      "name": "app.routers.v1.validation",
+      "exports": ["router"]
+    },
+    {
+      "name": "app.database.models.validation_result",
+      "exports": ["ValidationResult"]
+    },
+    {
+      "name": "app.database.models.review_item",
+      "exports": ["ReviewItem"]
     }
   ]
 }

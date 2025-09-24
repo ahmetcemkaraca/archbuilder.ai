@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Phase9_Title" xml:space="preserve">
+    <value>Phase 9</value>
+  </data>
+  <data name="Phase9_Info" xml:space="preserve">
+    <value>İşlem Kimliği: {0}
+'Phase 9' fazı hazırlandı.
+Aktif görünüm fazı ayarlandı.
+Güncellenen eleman sayısı: {1}</value>
+  </data>
+  <data name="Error_NoActiveDocument" xml:space="preserve">
+    <value>Aktif bir belge bulunamadı.</value>
+  </data>
+  <data name="Warn_MinVersion" xml:space="preserve">
+    <value>Uyarı: Desteklenen minimum Revit sürümü 2026. Mevcut: {0}.
+İşleme devam ediliyor, ancak beklenmeyen davranışlar olabilir.
+İşlem Kimliği: {1}</value>
+  </data>
+  <data name="Error_SetViewPhase" xml:space="preserve">
+    <value>Görünüm fazı ayarlanırken hata oluştu: {0}
+İşlem Kimliği: {1}</value>
+  </data>
+  <data name="Ribbon_Phase9_Tooltip" xml:space="preserve">
+    <value>Phase 9 fazını oluşturur/ayarlar ve aktif görünümü bu faza geçirir.</value>
+  </data>
+</root>
+

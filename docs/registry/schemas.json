@@ -1,6 +1,191 @@
 {
   "schemas": [
     {
+      "name": "DB.users",
+      "type": "table",
+      "columns": {
+        "id": {"type": "string", "length": 36, "primary_key": true},
+        "email": {"type": "string", "length": 256, "unique": true},
+        "password_hash": {"type": "string", "length": 256},
+        "role": {"type": "string", "length": 32},
+        "is_active": {"type": "boolean"},
+        "created_at": {"type": "datetime"}
+      },
+      "indexes": [
+        {"name": "ix_users_email", "columns": ["email"]},
+        {"name": "ix_users_role", "columns": ["role"]}
+      ]
+    },
+    {
+      "name": "AICommandPreview",
+      "type": "object",
+      "properties": {
+        "selectedModel": {"type": "object"},
+        "prompt": {"type": "string"},
+        "preview": {"type": "object"}
+      }
+    },
+    {
+      "name": "ValidationRequest",
+      "type": "object",
+      "properties": {
+        "payload": {"type": "object"},
+        "building_type": {"type": "string"}
+      },
+      "required": ["payload"]
+    },
+    {
+      "name": "ValidationResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {"type": "object"}
+      },
+      "required": ["success", "data"]
+    },
+    {
+      "name": "AICommandCreateRequest",
+      "type": "object",
+      "properties": {
+        "command": {"type": "string"},
+        "input": {"type": "object"},
+        "user_id": {"type": "string"},
+        "project_id": {"type": "string"}
+      },
+      "required": ["command"]
+    },
+    {
+      "name": "AICommandResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {"type": "object"}
+      },
+      "required": ["success", "data"]
+    },
+    {
+      "name": "ChunkingConfig",
+      "type": "object",
+      "properties": {
+        "max_chars": {"type": "integer", "minimum": 50, "maximum": 5000},
+        "overlap": {"type": "integer", "minimum": 0, "maximum": 1000}
+      },
+      "required": ["max_chars", "overlap"]
+    },
+    {
+      "name": "DB.projects",
+      "type": "table",
+      "columns": {
+        "id": {"type": "string", "length": 36, "primary_key": true},
+        "owner_id": {"type": "string", "length": 36, "fk": "users.id"},
+        "name": {"type": "string", "length": 200},
+        "description": {"type": "text", "nullable": true},
+        "created_at": {"type": "datetime"}
+      },
+      "indexes": [
+        {"name": "ix_projects_owner_id", "columns": ["owner_id"]},
+        {"name": "ix_projects_name", "columns": ["name"]}
+      ]
+    },
+    {
+      "name": "DB.ai_commands",
+      "type": "table",
+      "columns": {
+        "id": {"type": "string", "length": 36, "primary_key": true},
+        "user_id": {"type": "string", "length": 36, "fk": "users.id", "nullable": true},
+        "project_id": {"type": "string", "length": 36, "fk": "projects.id", "nullable": true},
+        "command": {"type": "string", "length": 100},
+        "input": {"type": "json"},
+        "output": {"type": "json", "nullable": true},
+        "created_at": {"type": "datetime"}
+      },
+      "indexes": [
+        {"name": "ix_ai_commands_user_id", "columns": ["user_id"]},
+        {"name": "ix_ai_commands_project_id", "columns": ["project_id"]}
+      ]
+    },
+    {
+      "name": "DB.subscriptions",
+      "type": "table",
+      "columns": {
+        "id": {"type": "string", "length": 36, "primary_key": true},
+        "user_id": {"type": "string", "length": 36, "fk": "users.id"},
+        "plan": {"type": "string", "length": 50},
+        "started_at": {"type": "datetime"},
+        "ends_at": {"type": "datetime", "nullable": true}
+      },
+      "indexes": [
+        {"name": "ix_subscriptions_user_id", "columns": ["user_id"]}
+      ]
+    },
+    {
+      "name": "DB.usage",
+      "type": "table",
+      "columns": {
+        "id": {"type": "string", "length": 36, "primary_key": true},
+        "user_id": {"type": "string", "length": 36, "fk": "users.id"},
+        "usage_type": {"type": "string", "length": 50},
+        "units": {"type": "integer"},
+        "date": {"type": "date"},
+        "created_at": {"type": "datetime"}
+      },
+      "indexes": [
+        {"name": "ix_usage_user_id", "columns": ["user_id"]},
+        {"name": "ix_usage_usage_type", "columns": ["usage_type"]},
+        {"name": "ix_usage_date", "columns": ["date"]}
+      ]
+    },
+    {
+      "name": "DB.rag_dataset_links",
+      "type": "table",
+      "columns": {
+        "id": {"type": "string", "length": 36, "primary_key": true},
+        "owner_id": {"type": "string", "length": 36, "fk": "users.id"},
+        "project_id": {"type": "string", "length": 36, "fk": "projects.id"},
+        "dataset_id": {"type": "string", "length": 64},
+        "created_at": {"type": "datetime"}
+      },
+      "indexes": [
+        {"name": "ix_rag_dataset_links_owner_id", "columns": ["owner_id"]},
+        {"name": "ix_rag_dataset_links_project_id", "columns": ["project_id"]},
+        {"name": "ix_rag_dataset_links_dataset_id", "columns": ["dataset_id"]}
+      ]
+    },
+    {
+      "name": "DB.rag_jobs",
+      "type": "table",
+      "columns": {
+        "id": {"type": "string", "length": 36, "primary_key": true},
+        "job_type": {"type": "string", "length": 50},
+        "status": {"type": "string", "length": 20},
+        "dataset_id": {"type": "string", "length": 64},
+        "result_json": {"type": "text", "nullable": true},
+        "error_message": {"type": "text", "nullable": true},
+        "created_at": {"type": "datetime"},
+        "updated_at": {"type": "datetime"}
+      },
+      "indexes": [
+        {"name": "ix_rag_jobs_job_type", "columns": ["job_type"]},
+        {"name": "ix_rag_jobs_status", "columns": ["status"]},
+        {"name": "ix_rag_jobs_dataset_id", "columns": ["dataset_id"]}
+      ]
+    },
+    {
+      "name": "DB.rag_document_links",
+      "type": "table",
+      "columns": {
+        "id": {"type": "string", "length": 36, "primary_key": true},
+        "dataset_id": {"type": "string", "length": 64},
+        "document_id": {"type": "string", "length": 64},
+        "filename": {"type": "string", "length": 255},
+        "created_at": {"type": "datetime"}
+      },
+      "indexes": [
+        {"name": "ix_rag_document_links_dataset_id", "columns": ["dataset_id"]},
+        {"name": "ix_rag_document_links_document_id", "columns": ["document_id"]}
+      ]
+    },
+    {
       "name": "HealthResponse",
       "type": "object",
       "properties": {
@@ -87,6 +272,130 @@
         "data": {"type": "object"}
       },
       "required": ["success", "data"]
+    },
+    {
+      "name": "EnsureDatasetRequest",
+      "type": "object",
+      "properties": {
+        "owner_id": {"type": "string"},
+        "project_id": {"type": "string"},
+        "preferred_name": {"type": "string"}
+      },
+      "required": ["owner_id", "project_id", "preferred_name"]
+    },
+    {
+      "name": "EnsureDatasetResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {"type": "object"}
+      },
+      "required": ["success", "data"]
+    },
+    {
+      "name": "UploadParseResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {"type": "object"}
+      },
+      "required": ["success", "data"]
+    },
+    {
+      "name": "IndexBuildRequest",
+      "type": "object",
+      "properties": {
+        "dataset_id": {"type": "string"},
+        "rebuild": {"type": "boolean"}
+      },
+      "required": ["dataset_id"]
+    },
+    {
+      "name": "HybridSearchRequest",
+      "type": "object",
+      "properties": {
+        "query": {"type": "string"},
+        "dataset_ids": {"type": "array", "items": {"type": "string"}},
+        "max_results": {"type": "integer", "minimum": 1, "maximum": 100},
+        "keyword_boost": {"type": "number", "minimum": 0, "maximum": 1},
+        "dense_boost": {"type": "number", "minimum": 0, "maximum": 1},
+        "filters": {"type": "object"}
+      },
+      "required": ["query"]
+    },
+    {
+      "name": "ProjectAnalysisRequest",
+      "type": "object",
+      "properties": {
+        "project_id": {"type": "string"},
+        "analysis_type": {"type": "string", "enum": ["geometry", "code", "both"]},
+        "options": {"type": "object"}
+      },
+      "required": ["project_id", "analysis_type"]
+    },
+    {
+      "name": "ProjectAnalysisResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {
+          "type": "object",
+          "properties": {
+            "geometry_analysis": {"type": "object"},
+            "code_analysis": {"type": "object"},
+            "recommendations": {"type": "array", "items": {"type": "string"}},
+            "confidence_score": {"type": "number", "minimum": 0, "maximum": 1}
+          }
+        }
+      },
+      "required": ["success", "data"]
+    },
+    {
+      "name": "DB.validation_results",
+      "type": "table",
+      "columns": {
+        "id": {"type": "string", "length": 36, "primary_key": true},
+        "payload": {"type": "json"},
+        "building_type": {"type": "string", "length": 50},
+        "results": {"type": "json"},
+        "overall_success": {"type": "boolean"},
+        "correlation_id": {"type": "string", "length": 100, "nullable": true},
+        "created_at": {"type": "datetime"},
+        "updated_at": {"type": "datetime"}
+      },
+      "indexes": [
+        {"name": "ix_validation_results_building_type", "columns": ["building_type"]},
+        {"name": "ix_validation_results_overall_success", "columns": ["overall_success"]},
+        {"name": "ix_validation_results_correlation_id", "columns": ["correlation_id"]}
+      ]
+    },
+    {
+      "name": "DB.review_items",
+      "type": "table",
+      "columns": {
+        "id": {"type": "string", "length": 36, "primary_key": true},
+        "item_type": {"type": "string", "length": 50},
+        "item_data": {"type": "json"},
+        "status": {"type": "string", "length": 20},
+        "priority": {"type": "string", "length": 20},
+        "assigned_to": {"type": "string", "length": 100, "nullable": true},
+        "assigned_at": {"type": "datetime", "nullable": true},
+        "assigned_by": {"type": "string", "length": 100, "nullable": true},
+        "reviewed_by": {"type": "string", "length": 100, "nullable": true},
+        "reviewed_at": {"type": "datetime", "nullable": true},
+        "comments": {"type": "text", "nullable": true},
+        "feedback_data": {"type": "json", "nullable": true},
+        "project_id": {"type": "string", "length": 100, "nullable": true},
+        "created_by": {"type": "string", "length": 100, "nullable": true},
+        "created_at": {"type": "datetime"},
+        "updated_at": {"type": "datetime"}
+      },
+      "indexes": [
+        {"name": "ix_review_items_status", "columns": ["status"]},
+        {"name": "ix_review_items_priority", "columns": ["priority"]},
+        {"name": "ix_review_items_assigned_to", "columns": ["assigned_to"]},
+        {"name": "ix_review_items_project_id", "columns": ["project_id"]}
+      ]
     }
   ]
 }

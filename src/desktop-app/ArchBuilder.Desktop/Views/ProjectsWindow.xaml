@@ -1,0 +1,28 @@
+<Window x:Class="ArchBuilder.Desktop.Views.ProjectsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Projects" Height="420" Width="720">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBox Width="220" Margin="0,0,8,0" PlaceholderText="Project name" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Width="320" Margin="0,0,8,0" PlaceholderText="Description" Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Create" Click="OnCreate"/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Items}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="*"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*"/>
+                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="3*"/>
+                <DataGridTextColumn Header="Created (UTC)" Binding="{Binding CreatedAtUtc}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
+
+

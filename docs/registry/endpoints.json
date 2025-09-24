@@ -9,6 +9,39 @@
     },
     {
       "method": "POST",
+      "path": "/v1/ai/validate",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "ValidationRequest",
+      "response_schema_ref": "ValidationResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ai/commands",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "AICommandCreateRequest",
+      "response_schema_ref": "AICommandResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/v1/ai/commands/{id}",
+      "auth": "api_key|jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "AICommandResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
       "path": "/v1/auth/login",
       "auth": "none",
       "request_schema_ref": "AuthLoginRequest",
@@ -33,21 +66,33 @@
       "path": "/v1/storage/upload/init",
       "auth": "api_key",
       "request_schema_ref": null,
-      "response_schema_ref": "UploadInitResponse"
+      "response_schema_ref": "UploadInitResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
     },
     {
       "method": "POST",
       "path": "/v1/storage/upload/chunk",
       "auth": "api_key",
       "request_schema_ref": null,
-      "response_schema_ref": "StandardResponse"
+      "response_schema_ref": "StandardResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
     },
     {
       "method": "POST",
       "path": "/v1/storage/upload/complete",
       "auth": "api_key",
       "request_schema_ref": null,
-      "response_schema_ref": "StandardResponse"
+      "response_schema_ref": "StandardResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
     },
     {
       "method": "POST",
@@ -59,6 +104,153 @@
         "service": "RAGFlow",
         "method": "POST",
         "path": "/api/v1/retrieval"
+      },
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/documents/rag/ensure-dataset",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "EnsureDatasetRequest",
+      "response_schema_ref": "EnsureDatasetResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/documents/rag/{dataset_id}/upload-parse",
+      "auth": "api_key|jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "UploadParseResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/documents/rag/{dataset_id}/upload-parse/async",
+      "auth": "api_key|jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "JobAcceptedResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/v1/documents/rag/jobs/{job_id}",
+      "auth": "api_key|jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "JobStatusResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/rag/index/build",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "IndexBuildRequest",
+      "response_schema_ref": "StandardResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/rag/hybrid-search",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "HybridSearchRequest",
+      "response_schema_ref": "RAGQueryResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/validation/validate",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "ValidationRequest",
+      "response_schema_ref": "ValidationResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/validation/validate/schema",
+      "auth": "api_key|jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "ValidationResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/validation/validate/geometric",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "ValidationRequest",
+      "response_schema_ref": "ValidationResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/validation/validate/code",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "ValidationRequest",
+      "response_schema_ref": "ValidationResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/validation/analyze/project",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "ProjectAnalysisRequest",
+      "response_schema_ref": "ProjectAnalysisResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/v1/validation/results/{validation_id}",
+      "auth": "api_key|jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/v1/validation/schemas",
+      "auth": "api_key|jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
       }
     }
   ]

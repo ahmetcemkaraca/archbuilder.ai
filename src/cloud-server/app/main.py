@@ -14,6 +14,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from app.routers.v1.rag import router as rag_router
 from app.routers.v1.auth import router as auth_router
 from app.routers.v1.storage import router as storage_router
+from app.routers.v1.ai import router as ai_router
 
 
 def create_app() -> FastAPI:
@@ -33,6 +34,7 @@ def create_app() -> FastAPI:
     app.include_router(rag_router)
     app.include_router(auth_router)
     app.include_router(storage_router)
+    app.include_router(ai_router)
     install_exception_handlers(app)
     return app
 

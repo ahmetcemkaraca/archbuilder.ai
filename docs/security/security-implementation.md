@@ -72,6 +72,15 @@ Bu modül, uygulama genelindeki önemli güvenlik olaylarını (kimlik doğrulam
 - `log_data_access_event`: Hassas veri erişim olaylarını loglar.
 - `log_system_event`: Sistemle ilgili olayları loglar.
 
+## Güvenlik Varsayılanları ve Boşluklar (Güncel Değerlendirme)
+
+- Girdi/çıktı sanitizasyonu: Tüm API girişlerinde zorunlu, şema doğrulama kapsamı genişletilecek.
+- PII maskeleme: Loglarda ve hata mesajlarında otomatik maskeleme kuralı eklenmeli (structlog filter).
+- Secrets in logs: Gizli verileri maskelemek için logger filter/processor zorunlu hale getirilmeli.
+- Güvenlik başlıkları: CSP/HSTS mevcut; CSP kaynak beyaz listesi proje modüllerine göre ayrıntılandırılmalı.
+- Oran sınırlama: `slowapi` aktif; admin yolları için ayrı kısıt politikası eklenecek.
+- Denetim izi: Tüm kritik işlemler için korelasyon kimliği zorunlu (uygulandı), raporlama panosu planlanmalı.
+
 ## Sonuç
 Bu güvenlik katmanı uygulaması, ArchBuilder.AI Cloud Server'ın güvenliğini sağlamak için çok katmanlı bir yaklaşım benimsemektedir. Kimlik doğrulama, yetkilendirme, güvenli iletişim ve kapsamlı denetim günlükleri ile sistem, yetkisiz erişime ve potansiyel tehditlere karşı korunmaktadır.
 

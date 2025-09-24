@@ -24,19 +24,19 @@ $content += ("Tarih: {0}" -f $date)
 $content += ""
 $content += "## Registry Snapshots"
 $content += "### identifiers.json"
-$content += "```json"
+$content += '```json'
 $content += $identJson
-$content += "```"
+$content += '```'
 $content += ""
 $content += "### endpoints.json"
-$content += "```json"
+$content += '```json'
 $content += $endpJson
-$content += "```"
+$content += '```'
 $content += ""
 $content += "### schemas.json"
-$content += "```json"
+$content += '```json'
 $content += $schemJson
-$content += "```"
+$content += '```'
 
 $joined = [string]::Join([Environment]::NewLine, $content)
 Set-Content -Path $ctxFile -Value $joined -Encoding UTF8

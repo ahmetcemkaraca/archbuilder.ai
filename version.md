@@ -29,3 +29,5 @@
 - Rehydrate fix; JWT cfg; registry health schema
 ## auto  rehydrate fixed 2025-09-24 17:14:43
 - context snapshot ok
+## auto  rehydrate markers adjusted 2025-09-24 17:15:23
+- context snapshot ok

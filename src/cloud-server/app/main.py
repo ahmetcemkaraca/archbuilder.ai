@@ -8,6 +8,9 @@ from app.core.config import settings
 from app.core.exceptions import install_exception_handlers
 from app.core.logging import configure_logging
 from app.core.middleware import RequestIdMiddleware
+from app.core.security_headers import SecurityHeadersMiddleware
+from app.core.rate_limit import limiter
+from slowapi.middleware import SlowAPIMiddleware
 from app.routers.v1.rag import router as rag_router
 
 
@@ -16,6 +19,9 @@ def create_app() -> FastAPI:
     configure_logging(settings.log_level)
     app = FastAPI(title=settings.app_name)
     app.add_middleware(RequestIdMiddleware)
+    app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(SlowAPIMiddleware)
+    app.state.limiter = limiter
 
     @app.get("/health")
     async def health() -> Dict[str, Any]:  # TR: Basit sağlık kontrolü

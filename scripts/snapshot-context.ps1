@@ -1,5 +1,5 @@
 param(
-  [string]$RepoRoot = (Resolve-Path "..").Path
+  [string]$RepoRoot = (Resolve-Path ".").Path
 )
 
 Set-StrictMode -Version Latest

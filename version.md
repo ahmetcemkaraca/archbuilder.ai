@@ -21,3 +21,5 @@
 ## 0.1.3  Project structure scope aligned (2025-09-24 14:33:06)
 - Removed website subtree from planned structure and goal list
 - Consolidated governance/workflow, registry notes, env matrix, API URL, and Revit 2026 notes in `docs/structure/project-structure-planned.md`- 2025-09-24 15:49:44 | Added cursortodo.md aligned with .mds docs and prompts
+## auto  completed P01-T3, P02-T3, P03-T3 2025-09-24 17:08:13
+- Python 3.12 pinned; context snapshot; prompt library organized

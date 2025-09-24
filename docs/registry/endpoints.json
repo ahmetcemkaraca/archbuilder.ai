@@ -1,0 +1,17 @@
+{
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/v1/rag/query",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "RAGQueryRequest",
+      "response_schema_ref": "RAGQueryResponse",
+      "upstream": {
+        "service": "RAGFlow",
+        "method": "POST",
+        "path": "/api/v1/retrieval"
+      }
+    }
+  ]
+}
+

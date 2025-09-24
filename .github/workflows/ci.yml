@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies (cloud-server)
+        shell: powershell
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/cloud-server/requirements.txt
+
+      - name: Validate registry
+        shell: powershell
+        run: pwsh -File scripts/validate-registry.ps1
+
+      - name: Rehydrate context
+        shell: powershell
+        run: pwsh -File scripts/rehydrate-context.ps1
+
+      - name: Snapshot context
+        shell: powershell
+        run: pwsh -File scripts/snapshot-context.ps1
+
+      - name: Import/Deps checks
+        shell: powershell
+        run: |
+          pip check
+          Get-ChildItem -Path src/cloud-server -Recurse -Filter *.py | ForEach-Object { python -m py_compile $_.FullName }
+

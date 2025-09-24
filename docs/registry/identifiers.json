@@ -1,0 +1,17 @@
+{
+  "modules": [
+    {
+      "name": "app.ai.ragflow.client",
+      "exports": ["RAGFlowClient"]
+    },
+    {
+      "name": "app.services.rag_service",
+      "exports": ["RAGService"]
+    },
+    {
+      "name": "app.routers.v1.rag",
+      "exports": ["router", "RAGQueryRequest", "RAGQueryResponse"]
+    }
+  ]
+}
+

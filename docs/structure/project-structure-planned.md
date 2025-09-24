@@ -81,7 +81,9 @@ Bu doküman mevcut Docs içeriği ve yol haritasına göre tam üretim yapısın
 │  │  │  ├─ ai/
 │  │  │  │  ├─ openai/
 │  │  │  │  │  └─ client.py
-│  │  │  │  └─ vertex/
+│  │  │  │  ├─ vertex/
+│  │  │  │  │  └─ client.py
+│  │  │  │  └─ ragflow/
 │  │  │  │     └─ client.py
 │  │  │  ├─ routers/
 │  │  │  │  └─ v1/
@@ -90,6 +92,7 @@ Bu doküman mevcut Docs içeriği ve yol haritasına göre tam üretim yapısın
 │  │  │  │     ├─ projects.py
 │  │  │  │     ├─ subscriptions.py
 │  │  │  │     ├─ health.py
+│  │  │  │     ├─ rag.py
 │  │  │  │     └─ websocket.py
 │  │  │  ├─ middleware/
 │  │  │  │  ├─ correlation.py
@@ -168,6 +171,8 @@ Bu doküman mevcut Docs içeriği ve yol haritasına göre tam üretim yapısın
 ├─ project.md
 ├─ version.md
 └─ vibecoding.md
+├─ external/
+│  └─ ragflow/                  # Upstream RAGFlow source (read-only clone)
 ```
 
 ## Governance & Workflow

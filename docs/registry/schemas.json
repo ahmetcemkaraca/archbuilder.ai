@@ -1,0 +1,31 @@
+{
+  "schemas": [
+    {
+      "name": "RAGQueryRequest",
+      "type": "object",
+      "properties": {
+        "query": {"type": "string"},
+        "document_types": {"type": "array", "items": {"type": "string"}},
+        "languages": {"type": "array", "items": {"type": "string"}},
+        "max_results": {"type": "integer", "minimum": 1, "maximum": 100},
+        "similarity_threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "filters": {"type": "object"},
+        "dataset_ids": {"type": "array", "items": {"type": "string"}},
+        "document_ids": {"type": "array", "items": {"type": "string"}},
+        "top_k": {"type": "integer", "minimum": 1, "maximum": 100},
+        "vector_similarity_weight": {"type": "number", "minimum": 0}
+      },
+      "required": ["query"]
+    },
+    {
+      "name": "RAGQueryResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {"type": "object"}
+      },
+      "required": ["success", "data"]
+    }
+  ]
+}
+

@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "archbuilder-cloud-server"
+version = "0.1.0"
+description = "ArchBuilder.AI Cloud Server"
+requires-python = ">=3.12,<3.13"
+readme = "../../docs/README.md"
+authors = [{name = "ArchBuilder.AI"}]

@@ -1,0 +1,401 @@
+# Alert Rules for ArchBuilder.AI
+# Alert rules - P46-T2
+
+groups:
+  # Critical Alerts - Immediate Response Required
+  - name: archbuilder.critical
+    rules:
+      - alert: ServiceDown
+        expr: up{job="archbuilder-ai"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "ArchBuilder.AI service is down"
+          description: "The ArchBuilder.AI service has been down for more than 1 minute"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/service-down"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_failed_total[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/high-error-rate"
+
+      - alert: DatabaseConnectionFailure
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Database connection failure"
+          description: "Database is not responding"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/database-failure"
+
+      - alert: AIModelFailure
+        expr: up{job="ai-model"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: ai
+        annotations:
+          summary: "AI model service failure"
+          description: "AI model service is not responding"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/ai-model-failure"
+
+      - alert: RedisConnectionFailure
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Redis connection failure"
+          description: "Redis cache is not responding"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/redis-failure"
+
+  # High Priority Alerts - Response within 15 minutes
+  - name: archbuilder.high
+    rules:
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: high
+          team: platform
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }}s"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/high-response-time"
+
+      - alert: HighCPUUsage
+        expr: cpu_usage_percent > 80
+        for: 5m
+        labels:
+          severity: high
+          team: platform
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}%"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/high-cpu-usage"
+
+      - alert: HighMemoryUsage
+        expr: memory_usage_percent > 85
+        for: 5m
+        labels:
+          severity: high
+          team: platform
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value }}%"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/high-memory-usage"
+
+      - alert: DiskSpaceLow
+        expr: disk_free_percent < 20
+        for: 5m
+        labels:
+          severity: high
+          team: platform
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is {{ $value }}% free"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/low-disk-space"
+
+      - alert: AIProcessingSlow
+        expr: histogram_quantile(0.95, rate(ai_request_duration_seconds_bucket[5m])) > 30
+        for: 5m
+        labels:
+          severity: high
+          team: ai
+        annotations:
+          summary: "AI processing is slow"
+          description: "95th percentile AI processing time is {{ $value }}s"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/ai-processing-slow"
+
+      - alert: HighAIFailureRate
+        expr: rate(ai_requests_failed_total[5m]) / rate(ai_requests_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: high
+          team: ai
+        annotations:
+          summary: "High AI failure rate"
+          description: "AI failure rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/high-ai-failure-rate"
+
+  # Medium Priority Alerts - Response within 1 hour
+  - name: archbuilder.medium
+    rules:
+      - alert: ElevatedErrorRate
+        expr: rate(http_requests_failed_total[5m]) / rate(http_requests_total[5m]) > 0.02
+        for: 10m
+        labels:
+          severity: medium
+          team: platform
+        annotations:
+          summary: "Elevated error rate"
+          description: "Error rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/elevated-error-rate"
+
+      - alert: SlowDatabaseQueries
+        expr: histogram_quantile(0.95, rate(db_query_duration_seconds_bucket[5m])) > 1
+        for: 10m
+        labels:
+          severity: medium
+          team: platform
+        annotations:
+          summary: "Slow database queries"
+          description: "95th percentile database query time is {{ $value }}s"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/slow-database-queries"
+
+      - alert: HighFileUploadRate
+        expr: rate(file_uploads_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: medium
+          team: platform
+        annotations:
+          summary: "High file upload rate"
+          description: "File upload rate is {{ $value }} uploads/sec"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/high-file-upload-rate"
+
+      - alert: SuspiciousActivity
+        expr: rate(security_violations_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: medium
+          team: security
+        annotations:
+          summary: "Suspicious activity detected"
+          description: "Security violations rate is {{ $value }} violations/sec"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/suspicious-activity"
+
+      - alert: RateLimitExceeded
+        expr: rate(rate_limit_exceeded_total[5m]) > 1
+        for: 5m
+        labels:
+          severity: medium
+          team: platform
+        annotations:
+          summary: "Rate limit exceeded"
+          description: "Rate limit exceeded {{ $value }} times/sec"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/rate-limit-exceeded"
+
+  # Low Priority Alerts - Response within 4 hours
+  - name: archbuilder.low
+    rules:
+      - alert: LowThroughput
+        expr: rate(http_requests_total[5m]) < 1
+        for: 15m
+        labels:
+          severity: low
+          team: platform
+        annotations:
+          summary: "Low throughput"
+          description: "Request rate is {{ $value }} requests/sec"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/low-throughput"
+
+      - alert: HighCacheMissRate
+        expr: rate(cache_misses_total[5m]) / rate(cache_requests_total[5m]) > 0.5
+        for: 15m
+        labels:
+          severity: low
+          team: platform
+        annotations:
+          summary: "High cache miss rate"
+          description: "Cache miss rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/high-cache-miss-rate"
+
+      - alert: LowUserActivity
+        expr: active_users_total < 10
+        for: 30m
+        labels:
+          severity: low
+          team: business
+        annotations:
+          summary: "Low user activity"
+          description: "Active users: {{ $value }}"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/low-user-activity"
+
+  # Business Alerts
+  - name: archbuilder.business
+    rules:
+      - alert: SubscriptionExpiring
+        expr: time() - subscription_expiry_timestamp > 86400 * 7
+        for: 0m
+        labels:
+          severity: medium
+          team: business
+        annotations:
+          summary: "Subscription expiring soon"
+          description: "Subscription for user {{ $labels.user_id }} expires in 7 days"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/subscription-expiring"
+
+      - alert: PaymentFailed
+        expr: payment_failed_total > 0
+        for: 0m
+        labels:
+          severity: high
+          team: business
+        annotations:
+          summary: "Payment failed"
+          description: "Payment failed for user {{ $labels.user_id }}"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/payment-failed"
+
+      - alert: HighUsageAlert
+        expr: user_usage_percent > 90
+        for: 0m
+        labels:
+          severity: medium
+          team: business
+        annotations:
+          summary: "High usage alert"
+          description: "User {{ $labels.user_id }} has used {{ $value }}% of their quota"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/high-usage-alert"
+
+  # Security Alerts
+  - name: archbuilder.security
+    rules:
+      - alert: BruteForceAttack
+        expr: rate(auth_failed_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "Potential brute force attack"
+          description: "Failed authentication attempts: {{ $value }} per second"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/brute-force-attack"
+
+      - alert: SuspiciousFileUpload
+        expr: rate(file_abuse_detected_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: high
+          team: security
+        annotations:
+          summary: "Suspicious file uploads detected"
+          description: "File abuse detection rate: {{ $value }} per second"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/suspicious-file-upload"
+
+      - alert: UnauthorizedAccess
+        expr: rate(unauthorized_access_total[5m]) > 1
+        for: 5m
+        labels:
+          severity: high
+          team: security
+        annotations:
+          summary: "Unauthorized access attempts"
+          description: "Unauthorized access rate: {{ $value }} per second"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/unauthorized-access"
+
+      - alert: DataExfiltrationAttempt
+        expr: rate(data_export_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "Potential data exfiltration"
+          description: "Data export rate: {{ $value }} per second"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/data-exfiltration"
+
+  # AI Model Alerts
+  - name: archbuilder.ai
+    rules:
+      - alert: AIModelOverload
+        expr: ai_model_queue_size > 100
+        for: 5m
+        labels:
+          severity: high
+          team: ai
+        annotations:
+          summary: "AI model overload"
+          description: "AI model queue size: {{ $value }}"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/ai-model-overload"
+
+      - alert: AIModelAccuracyLow
+        expr: ai_model_accuracy < 0.8
+        for: 10m
+        labels:
+          severity: medium
+          team: ai
+        annotations:
+          summary: "AI model accuracy low"
+          description: "AI model accuracy: {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/ai-model-accuracy-low"
+
+      - alert: AIModelCostHigh
+        expr: ai_model_cost_per_hour > 100
+        for: 15m
+        labels:
+          severity: medium
+          team: ai
+        annotations:
+          summary: "AI model cost high"
+          description: "AI model cost: ${{ $value }}/hour"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/ai-model-cost-high"
+
+      - alert: RAGSystemSlow
+        expr: histogram_quantile(0.95, rate(rag_processing_duration_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: medium
+          team: ai
+        annotations:
+          summary: "RAG system slow"
+          description: "95th percentile RAG processing time: {{ $value }}s"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/rag-system-slow"
+
+  # Infrastructure Alerts
+  - name: archbuilder.infrastructure
+    rules:
+      - alert: LoadBalancerDown
+        expr: up{job="nginx"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Load balancer down"
+          description: "Nginx load balancer is not responding"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/load-balancer-down"
+
+      - alert: KubernetesPodCrashLoop
+        expr: rate(kube_pod_container_status_restarts_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: high
+          team: platform
+        annotations:
+          summary: "Pod crash loop detected"
+          description: "Pod {{ $labels.pod }} is restarting frequently"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/pod-crash-loop"
+
+      - alert: KubernetesNodeDown
+        expr: up{job="kubernetes-nodes"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Kubernetes node down"
+          description: "Node {{ $labels.instance }} is down"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/kubernetes-node-down"
+
+      - alert: KubernetesResourceExhausted
+        expr: kube_node_status_condition{condition="MemoryPressure",status="true"} == 1
+        for: 5m
+        labels:
+          severity: high
+          team: platform
+        annotations:
+          summary: "Kubernetes node memory pressure"
+          description: "Node {{ $labels.node }} has memory pressure"
+          runbook_url: "https://docs.archbuilder.ai/runbooks/kubernetes-resource-exhausted"

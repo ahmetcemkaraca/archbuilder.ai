@@ -1,0 +1,162 @@
+# ArchBuilder.AI Istio VirtualService Configuration
+# Blue-Green and Canary deployment support
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: archbuilder
+  namespace: archbuilder
+spec:
+  hosts:
+  - api.archbuilder.app
+  http:
+  # Blue environment (current production)
+  - match:
+    - headers:
+        version:
+          exact: "blue"
+    route:
+    - destination:
+        host: archbuilder-blue
+        port:
+          number: 8000
+      weight: 100
+  
+  # Green environment (new deployment)
+  - match:
+    - headers:
+        version:
+          exact: "green"
+    route:
+    - destination:
+        host: archbuilder-green
+        port:
+          number: 8000
+      weight: 100
+  
+  # Canary traffic (based on user ID hash)
+  - match:
+    - headers:
+        canary:
+          exact: "true"
+    route:
+    - destination:
+        host: archbuilder-green
+        port:
+          number: 8000
+      weight: 100
+  
+  # Default traffic routing (blue-green split)
+  - route:
+    - destination:
+        host: archbuilder-blue
+        port:
+          number: 8000
+      weight: 100  # 100% blue by default
+    - destination:
+        host: archbuilder-green
+        port:
+          number: 8000
+      weight: 0    # 0% green by default
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+    fault:
+      delay:
+        percentage:
+          value: 0.1  # 0.1% delay for testing
+        fixedDelay: 5s
+
+---
+# Destination Rules for Blue Environment
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: archbuilder-blue
+  namespace: archbuilder
+spec:
+  host: archbuilder-blue
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+        consecutiveGatewayErrors: 5
+        interval: 30s
+        baseEjectionTime: 30s
+    circuitBreaker:
+      consecutiveErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+    outlierDetection:
+      consecutiveErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+
+---
+# Destination Rules for Green Environment
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: archbuilder-green
+  namespace: archbuilder
+spec:
+  host: archbuilder-green
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+        consecutiveGatewayErrors: 5
+        interval: 30s
+        baseEjectionTime: 30s
+    circuitBreaker:
+      consecutiveErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+    outlierDetection:
+      consecutiveErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+
+---
+# Gateway Configuration
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: archbuilder-gateway
+  namespace: archbuilder
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - api.archbuilder.app
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - api.archbuilder.app
+    tls:
+      mode: SIMPLE
+      credentialName: archbuilder-tls

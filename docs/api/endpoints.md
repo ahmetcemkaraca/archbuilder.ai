@@ -580,9 +580,148 @@ Authorization: Bearer your_api_key
 {
   "success": true,
   "data": {
-    "upstream": "ragflow",
-    "payload_passthrough": true,
-    "raw": { "code": 0, "data": { "chunks": [...] } }
+    "results": [
+      {
+        "content": "Merdiven genişliği en az 1.20 m olmalıdır...",
+        "score": 0.95,
+        "document_id": "doc_1",
+        "chunk_id": "chunk_1",
+        "source": "building_codes.pdf"
+      }
+    ],
+    "total_results": 1,
+    "query_time_ms": 150
+  }
+}
+```
+
+### Hybrid Search
+```http
+POST /v1/rag/hybrid-search
+Authorization: Bearer your_api_key
+
+{
+  "query": "architectural design principles",
+  "dataset_ids": ["dataset_123"],
+  "max_results": 10,
+  "keyword_boost": 0.4,
+  "dense_boost": 0.6,
+  "filters": {
+    "document_types": ["pdf"],
+    "languages": ["en", "tr"]
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "results": [
+      {
+        "content": "Hybrid search result combining keyword and vector search",
+        "score": 0.92,
+        "document_id": "doc_3",
+        "chunk_id": "chunk_3",
+        "source": "hybrid_doc.pdf",
+        "keyword_score": 0.8,
+        "vector_score": 0.95
+      }
+    ],
+    "total_results": 1,
+    "search_time_ms": 200
+  }
+}
+```
+
+### Ensure Dataset
+```http
+POST /v1/documents/rag/ensure-dataset
+Authorization: Bearer your_api_key
+
+{
+  "owner_id": "user_123",
+  "project_id": "project_123",
+  "preferred_name": "project-dataset"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "dataset_id": "dataset_456",
+    "name": "project-dataset",
+    "created_at": "2025-01-10T10:00:00Z"
+  }
+}
+```
+
+### Upload and Parse Documents (Async)
+```http
+POST /v1/documents/rag/{dataset_id}/upload-parse/async
+Authorization: Bearer your_api_key
+Content-Type: multipart/form-data
+
+file: [binary data]
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "job_id": "parse_job_789",
+    "status": "processing",
+    "estimated_completion": "2025-01-10T10:05:00Z"
+  }
+}
+```
+
+### Get Job Status
+```http
+GET /v1/documents/rag/jobs/{job_id}
+Authorization: Bearer your_api_key
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "job_id": "parse_job_789",
+    "status": "completed",
+    "progress": 100,
+    "result": {
+      "processed_documents": 5,
+      "created_chunks": 25,
+      "processing_time_ms": 5000
+    }
+  }
+}
+```
+
+### Build Index
+```http
+POST /v1/rag/index/build
+Authorization: Bearer your_api_key
+
+{
+  "dataset_id": "dataset_123",
+  "rebuild": false
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "index_id": "index_456",
+    "status": "building",
+    "estimated_completion": "2025-01-10T10:10:00Z"
   }
 }
 ```

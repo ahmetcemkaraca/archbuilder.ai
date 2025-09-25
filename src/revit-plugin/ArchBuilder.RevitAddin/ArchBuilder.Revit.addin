@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>ArchBuilder.AI</Text>
+    <Description>AI-powered architectural layout generation for Revit</Description>
+    <Assembly>ArchBuilder.RevitAddin.dll</Assembly>
+    <AddInId>8B8B8B8B-8B8B-8B8B-8B8B-8B8B8B8B8B8B</AddInId>
+    <FullClassName>ArchBuilder.RevitAddin.Commands.AILayoutCommand</FullClassName>
+    <VendorId>ArchBuilder.AI</VendorId>
+    <VendorDescription>ArchBuilder.AI - AI-powered architectural design</VendorDescription>
+  </AddIn>
+</RevitAddIns>

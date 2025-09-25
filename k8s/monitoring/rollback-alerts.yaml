@@ -1,0 +1,229 @@
+# ArchBuilder.AI Rollback Alert Configuration
+# Automated rollback triggers based on metrics and alerts
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: archbuilder-rollback-alerts
+  namespace: archbuilder
+  labels:
+    app: archbuilder
+    component: monitoring
+spec:
+  groups:
+  - name: archbuilder.rollback
+    rules:
+    # High error rate trigger
+    - alert: HighErrorRate
+      expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+      for: 2m
+      labels:
+        severity: critical
+        component: rollback
+      annotations:
+        summary: "High error rate detected"
+        description: "Error rate is {{ $value }} errors per second for the last 5 minutes"
+        runbook_url: "https://archbuilder.app/docs/runbooks/high-error-rate"
+    
+    # Response time degradation
+    - alert: HighResponseTime
+      expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 5
+      for: 3m
+      labels:
+        severity: warning
+        component: rollback
+      annotations:
+        summary: "High response time detected"
+        description: "95th percentile response time is {{ $value }} seconds"
+        runbook_url: "https://archbuilder.app/docs/runbooks/high-response-time"
+    
+    # Database connectivity issues
+    - alert: DatabaseConnectivity
+      expr: up{job="postgresql"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        component: rollback
+      annotations:
+        summary: "Database connectivity lost"
+        description: "PostgreSQL database is not responding"
+        runbook_url: "https://archbuilder.app/docs/runbooks/database-connectivity"
+    
+    # Redis connectivity issues
+    - alert: RedisConnectivity
+      expr: up{job="redis"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        component: rollback
+      annotations:
+        summary: "Redis connectivity lost"
+        description: "Redis cache is not responding"
+        runbook_url: "https://archbuilder.app/docs/runbooks/redis-connectivity"
+    
+    # AI service failures
+    - alert: AIServiceFailure
+      expr: rate(ai_requests_failed_total[5m]) > 0.05
+      for: 2m
+      labels:
+        severity: warning
+        component: rollback
+      annotations:
+        summary: "AI service failure rate high"
+        description: "AI service failure rate is {{ $value }} failures per second"
+        runbook_url: "https://archbuilder.app/docs/runbooks/ai-service-failure"
+    
+    # Memory usage critical
+    - alert: HighMemoryUsage
+      expr: (container_memory_usage_bytes / container_spec_memory_limit_bytes) > 0.9
+      for: 5m
+      labels:
+        severity: critical
+        component: rollback
+      annotations:
+        summary: "High memory usage detected"
+        description: "Memory usage is {{ $value }}% of limit"
+        runbook_url: "https://archbuilder.app/docs/runbooks/high-memory-usage"
+    
+    # CPU usage critical
+    - alert: HighCPUUsage
+      expr: rate(container_cpu_usage_seconds_total[5m]) > 0.8
+      for: 5m
+      labels:
+        severity: warning
+        component: rollback
+      annotations:
+        summary: "High CPU usage detected"
+        description: "CPU usage is {{ $value }} cores"
+        runbook_url: "https://archbuilder.app/docs/runbooks/high-cpu-usage"
+    
+    # Pod crash loop
+    - alert: PodCrashLoop
+      expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+      for: 5m
+      labels:
+        severity: critical
+        component: rollback
+      annotations:
+        summary: "Pod in crash loop"
+        description: "Pod {{ $labels.pod }} is restarting frequently"
+        runbook_url: "https://archbuilder.app/docs/runbooks/pod-crash-loop"
+    
+    # Deployment failure
+    - alert: DeploymentFailure
+      expr: kube_deployment_status_replicas_unavailable > 0
+      for: 2m
+      labels:
+        severity: critical
+        component: rollback
+      annotations:
+        summary: "Deployment has unavailable replicas"
+        description: "Deployment {{ $labels.deployment }} has {{ $value }} unavailable replicas"
+        runbook_url: "https://archbuilder.app/docs/runbooks/deployment-failure"
+
+---
+# Rollback Webhook Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rollback-webhook-config
+  namespace: archbuilder
+data:
+  webhook.yaml: |
+    global:
+      webhook_url: "https://api.archbuilder.app/v1/webhooks/rollback"
+      timeout: 30s
+      retry_attempts: 3
+      retry_delay: 5s
+    
+    triggers:
+      high_error_rate:
+        enabled: true
+        threshold: 0.1
+        duration: "2m"
+        action: "quick_rollback"
+        webhook_payload:
+          type: "rollback"
+          reason: "high_error_rate"
+          severity: "critical"
+      
+      database_connectivity:
+        enabled: true
+        threshold: 0
+        duration: "1m"
+        action: "emergency_rollback"
+        webhook_payload:
+          type: "rollback"
+          reason: "database_connectivity"
+          severity: "critical"
+      
+      pod_crash_loop:
+        enabled: true
+        threshold: 0
+        duration: "5m"
+        action: "full_rollback"
+        webhook_payload:
+          type: "rollback"
+          reason: "pod_crash_loop"
+          severity: "critical"
+
+---
+# Rollback Job Template
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: archbuilder-rollback-job
+  namespace: archbuilder
+spec:
+  template:
+    spec:
+      containers:
+      - name: rollback-executor
+        image: archbuilder/rollback-executor:latest
+        env:
+        - name: ROLLBACK_TYPE
+          value: "quick"
+        - name: NAMESPACE
+          value: "archbuilder"
+        - name: WEBHOOK_URL
+          value: "https://api.archbuilder.app/v1/webhooks/rollback"
+        command:
+        - /bin/bash
+        - -c
+        - |
+          #!/bin/bash
+          set -euo pipefail
+          
+          echo "Starting automated rollback..."
+          
+          # Get current deployment status
+          CURRENT_ENV=$(kubectl get service -n $NAMESPACE archbuilder -o jsonpath='{.spec.selector.version}' || echo "blue")
+          TARGET_ENV=$(if [ "$CURRENT_ENV" = "blue" ]; then echo "green"; else echo "blue"; fi)
+          
+          echo "Current environment: $CURRENT_ENV"
+          echo "Target environment: $TARGET_ENV"
+          
+          # Switch traffic
+          kubectl patch service -n $NAMESPACE archbuilder -p "{\"spec\":{\"selector\":{\"version\":\"$TARGET_ENV\"}}}"
+          kubectl patch ingress -n $NAMESPACE archbuilder -p "{\"spec\":{\"rules\":[{\"host\":\"api.archbuilder.app\",\"http\":{\"paths\":[{\"path\":\"/\",\"backend\":{\"service\":{\"name\":\"archbuilder-$TARGET_ENV\",\"port\":{\"number\":8000}}}}]}}]}}"
+          
+          # Wait for traffic to switch
+          sleep 30
+          
+          # Verify rollback
+          if curl -f https://api.archbuilder.app/health; then
+            echo "Rollback successful"
+            # Send success webhook
+            curl -X POST "$WEBHOOK_URL" \
+              -H "Content-Type: application/json" \
+              -d '{"type":"rollback_success","environment":"'$TARGET_ENV'","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}'
+          else
+            echo "Rollback failed"
+            # Send failure webhook
+            curl -X POST "$WEBHOOK_URL" \
+              -H "Content-Type: application/json" \
+              -d '{"type":"rollback_failure","environment":"'$CURRENT_ENV'","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}'
+            exit 1
+          fi
+      restartPolicy: Never
+  backoffLimit: 3

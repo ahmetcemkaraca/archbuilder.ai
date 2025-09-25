@@ -1,0 +1,15 @@
+# ArchBuilder.AI Grafana Dashboard Provisioning
+# Automatic dashboard loading
+
+apiVersion: 1
+
+providers:
+  - name: 'archbuilder-dashboards'
+    orgId: 1
+    folder: 'ArchBuilder.AI'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

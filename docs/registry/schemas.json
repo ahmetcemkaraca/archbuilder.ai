@@ -396,6 +396,83 @@
         {"name": "ix_review_items_assigned_to", "columns": ["assigned_to"]},
         {"name": "ix_review_items_project_id", "columns": ["project_id"]}
       ]
+    },
+    {
+      "name": "JobAcceptedResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {
+          "type": "object",
+          "properties": {
+            "job_id": {"type": "string"},
+            "status": {"type": "string"},
+            "estimated_completion": {"type": "string", "format": "date-time"}
+          },
+          "required": ["job_id", "status"]
+        }
+      },
+      "required": ["success", "data"]
+    },
+    {
+      "name": "JobStatusResponse",
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {
+          "type": "object",
+          "properties": {
+            "job_id": {"type": "string"},
+            "status": {"type": "string", "enum": ["pending", "processing", "completed", "failed"]},
+            "progress": {"type": "integer", "minimum": 0, "maximum": 100},
+            "result": {"type": "object", "nullable": true},
+            "error_message": {"type": "string", "nullable": true}
+          },
+          "required": ["job_id", "status"]
+        }
+      },
+      "required": ["success", "data"]
+    },
+    {
+      "name": "RAGFlowDataset",
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "document_count": {"type": "integer"},
+        "chunk_count": {"type": "integer"},
+        "status": {"type": "string", "enum": ["active", "building", "error"]}
+      },
+      "required": ["id", "name", "created_at"]
+    },
+    {
+      "name": "RAGFlowDocument",
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "filename": {"type": "string"},
+        "file_size": {"type": "integer"},
+        "content_type": {"type": "string"},
+        "uploaded_at": {"type": "string", "format": "date-time"},
+        "processed_at": {"type": "string", "format": "date-time", "nullable": true},
+        "status": {"type": "string", "enum": ["uploaded", "processing", "processed", "error"]},
+        "chunk_count": {"type": "integer", "nullable": true}
+      },
+      "required": ["id", "filename", "file_size", "uploaded_at", "status"]
+    },
+    {
+      "name": "RAGFlowChunk",
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "content": {"type": "string"},
+        "document_id": {"type": "string"},
+        "chunk_index": {"type": "integer"},
+        "similarity_score": {"type": "number", "minimum": 0, "maximum": 1},
+        "metadata": {"type": "object", "nullable": true}
+      },
+      "required": ["id", "content", "document_id", "chunk_index"]
     }
   ]
 }

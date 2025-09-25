@@ -1,0 +1,159 @@
+# ArchBuilder.AI Canary Deployment Configuration
+# Gradual traffic shifting for safe deployments
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: archbuilder-canary
+  namespace: archbuilder
+spec:
+  hosts:
+  - api.archbuilder.app
+  http:
+  # Canary traffic based on user ID hash (consistent routing)
+  - match:
+    - headers:
+        canary:
+          exact: "true"
+    route:
+    - destination:
+        host: archbuilder-green
+        port:
+          number: 8000
+      weight: 100
+  
+  # Canary traffic based on user agent (for testing)
+  - match:
+    - headers:
+        user-agent:
+          regex: ".*canary.*"
+    route:
+    - destination:
+        host: archbuilder-green
+        port:
+          number: 8000
+      weight: 100
+  
+  # Canary traffic based on custom header
+  - match:
+    - headers:
+        x-canary:
+          exact: "true"
+    route:
+    - destination:
+        host: archbuilder-green
+        port:
+          number: 8000
+      weight: 100
+  
+  # Default traffic routing with gradual canary percentage
+  - route:
+    - destination:
+        host: archbuilder-blue
+        port:
+          number: 8000
+      weight: 90  # 90% blue
+    - destination:
+        host: archbuilder-green
+        port:
+          number: 8000
+      weight: 10  # 10% green (canary)
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+    fault:
+      delay:
+        percentage:
+          value: 0.1
+        fixedDelay: 5s
+
+---
+# Canary-specific Destination Rule
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: archbuilder-canary-rule
+  namespace: archbuilder
+spec:
+  host: archbuilder-green
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 50  # Lower limits for canary
+      http:
+        http1MaxPendingRequests: 25
+        http2MaxRequests: 50
+        maxRequestsPerConnection: 5
+        maxRetries: 2
+        consecutiveGatewayErrors: 3
+        interval: 15s
+        baseEjectionTime: 15s
+    circuitBreaker:
+      consecutiveErrors: 3
+      interval: 15s
+      baseEjectionTime: 15s
+      maxEjectionPercent: 30
+    outlierDetection:
+      consecutiveErrors: 3
+      interval: 15s
+      baseEjectionTime: 15s
+      maxEjectionPercent: 30
+
+---
+# Canary Traffic Management
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: archbuilder-canary-filter
+  namespace: archbuilder
+spec:
+  workloadSelector:
+    labels:
+      app: archbuilder
+  configPatches:
+  - applyTo: HTTP_ROUTE
+    match:
+      context: SIDECAR_INBOUND
+      routeConfiguration:
+        vhost:
+          name: "api.archbuilder.app"
+          route:
+            name: "default"
+    patch:
+      operation: MERGE
+      value:
+        route:
+          weighted_clusters:
+            clusters:
+            - name: "archbuilder-blue"
+              weight: 90
+            - name: "archbuilder-green"
+              weight: 10
+              request_headers_to_add:
+              - header:
+                  key: "x-canary-version"
+                  value: "green"
+              - header:
+                  key: "x-canary-traffic"
+                  value: "true"
+
+---
+# Canary Monitoring Configuration
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: archbuilder-canary-monitoring
+  namespace: archbuilder
+spec:
+  hosts:
+  - canary-monitoring.archbuilder.app
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+  - number: 443
+    name: https
+    protocol: HTTPS
+  location: MESH_EXTERNAL
+  resolution: DNS

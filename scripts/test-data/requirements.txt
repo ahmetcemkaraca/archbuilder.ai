@@ -1,0 +1,9 @@
+# Test Data Generator Requirements
+psycopg2-binary==2.9.7
+faker==19.6.2
+requests==2.31.0
+python-dotenv==1.0.0
+sqlalchemy==2.0.21
+alembic==1.12.0
+pytest==7.4.2
+pytest-asyncio==0.21.1

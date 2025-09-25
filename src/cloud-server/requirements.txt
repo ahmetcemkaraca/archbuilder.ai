@@ -15,3 +15,25 @@ jsonschema==4.23.0
 sqlalchemy==2.0.35
 asyncpg==0.29.0
 
+# Performance and Caching
+redis==5.0.1
+aioredis==2.0.1
+celery==5.3.4
+redis-py==5.0.1
+
+# Monitoring and Observability
+prometheus-client==0.20.0
+opentelemetry-api==1.24.0
+opentelemetry-sdk==1.24.0
+opentelemetry-instrumentation-fastapi==0.45b0
+opentelemetry-instrumentation-sqlalchemy==0.45b0
+opentelemetry-instrumentation-redis==0.45b0
+opentelemetry-exporter-prometheus==1.12.0rc1
+
+# Database Performance
+alembic==1.13.1
+psycopg2-binary==2.9.9
+
+# Load Testing
+locust==2.24.1
+

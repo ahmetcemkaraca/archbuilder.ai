@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "archbuilder.fullname" . }}-config
+  labels:
+    {{- include "archbuilder.labels" . | nindent 4 }}
+data:
+  {{- if .Values.configMap.create }}
+  {{- toYaml .Values.configMap.data | nindent 2 }}
+  {{- end }}
+  app.yaml: |
+    server:
+      host: 0.0.0.0
+      port: 8000
+      workers: 4
+    database:
+      pool_size: 20
+      max_overflow: 30
+      pool_timeout: 30
+      pool_recycle: 3600
+    redis:
+      max_connections: 20
+      retry_on_timeout: true
+      socket_keepalive: true
+      socket_keepalive_options: {}
+    ai:
+      default_model: "gpt-4"
+      temperature: 0.1
+      max_tokens: 4000
+      confidence_threshold: 0.8
+      timeout: 30
+    monitoring:
+      metrics_enabled: true
+      tracing_enabled: true
+      log_level: "INFO"
+    security:
+      cors_origins: ["https://archbuilder.app", "https://app.archbuilder.app"]
+      rate_limit_per_minute: 60
+      rate_limit_burst: 100
+    logging:
+      format: "json"
+      level: "INFO"
+      file_path: "/app/logs/app.log"
+      rotation_size: "10MB"
+      retention_days: 30

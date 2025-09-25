@@ -92,70 +92,70 @@ Bu dosya, ArchBuilder.AI projesinde henüz tamamlanmamış olan görevleri mant�
 - [x] P25-T3: Localization plumbing (@TODO §85)
 - [x] VAL-03: Regional config/i18n bağları (P15-T3, P25-T2/T3, P33-T2)
 
-## 5. Revit Plugin Geliştirme
+## 5. Revit Plugin Geliştirme ✅ TAMAMLANDI
 
-### 5.1 Revit Plugin Basics
-- [ ] P35-T2: Logging setup (@REVITAPI; @TODO §101)
-- [ ] P35-T3: Config file (@REVITAPI; @TODO §109)
+### 5.1 Revit Plugin Basics ✅ TAMAMLANDI
+- [x] P35-T2: Logging setup (@REVITAPI; @TODO §101)
+- [x] P35-T3: Config file (@REVITAPI; @TODO §109)
 
-### 5.2 Transactions and Elements
-- [ ] P36-T1: Transaction helpers (@REVITAPI §Transaction; @TODO §102)
-- [ ] P36-T2: Wall/door/window helpers (@REVITAPI §Element Creation; @TODO §103)
-- [ ] P36-T3: Parameter utilities (@REVITAPI §Parameters)
+### 5.2 Transactions and Elements ✅ TAMAMLANDI
+- [x] P36-T1: Transaction helpers (@REVITAPI §Transaction; @TODO §102)
+- [x] P36-T2: Wall/door/window helpers (@REVITAPI §Element Creation; @TODO §103)
+- [x] P36-T3: Parameter utilities (@REVITAPI §Parameters)
 
-### 5.3 Project Analysis Export
-- [ ] P37-T1: Extract counts/metrics (@REVITAPI; @TODO §104)
-- [ ] P37-T2: Export clash data (@REVITAPI; @TODO §105)
-- [ ] P37-T3: Wire to desktop app (@TODO §105)
+### 5.3 Project Analysis Export ✅ TAMAMLANDI
+- [x] P37-T1: Extract counts/metrics (@REVITAPI; @TODO §104)
+- [x] P37-T2: Export clash data (@REVITAPI; @TODO §105)
+- [x] P37-T3: Wire to desktop app (@TODO §105)
 
-### 5.4 Local Communication
-- [ ] P38-T1: Named Pipes/HTTP client (@PROJECT §2.2.3; @TODO §106)
-- [ ] P38-T2: Message contracts (@TODO §106)
-- [ ] P38-T3: Error handling (@TODO §107)
+### 5.4 Local Communication ✅ TAMAMLANDI
+- [x] P38-T1: Named Pipes/HTTP client (@PROJECT §2.2.3; @TODO §106)
+- [x] P38-T2: Message contracts (@TODO §106)
+- [x] P38-T3: Error handling (@TODO §107)
 
-### 5.5 Rollback and Safety
-- [ ] P39-T1: Rollback helpers (@REVITAPI §Failures; @TODO §107)
-- [ ] P39-T2: Validation before commit (@DYNAMO; @TODO §103)
-- [ ] P39-T3: Failure paths (@REVITAPI §Error Handling)
+### 5.5 Rollback and Safety ✅ TAMAMLANDI
+- [x] P39-T1: Rollback helpers (@REVITAPI §Failures; @TODO §107)
+- [x] P39-T2: Validation before commit (@DYNAMO; @TODO §103)
+- [x] P39-T3: Failure paths (@REVITAPI §Error Handling)
 
-## 6. Performans ve Ölçeklenebilirlik
+## 6. Performans ve Ölçeklenebilirlik ✅ TAMAMLANDI
 
-### 6.1 Performance I
-- [ ] P40-T1: Redis cache layer (@TODO §111)
-- [ ] P40-T2: Query profiling and indexes (@TODO §112)
-- [ ] P40-T3: Pool/timeout tuning (@TODO §113)
+### 6.1 Performance I ✅ TAMAMLANDI
+- [x] P40-T1: Redis cache layer (@TODO §111)
+- [x] P40-T2: Query profiling and indexes (@TODO §112)
+- [x] P40-T3: Pool/timeout tuning (@TODO §113)
 
-### 6.2 Performance II
-- [ ] P41-T1: Queue for long tasks (@TODO §113)
-- [ ] P41-T2: WS scaling (@TODO §114)
-- [ ] P41-T3: AI request pool + caps (@TODO §116)
+### 6.2 Performance II ✅ TAMAMLANDI
+- [x] P41-T1: Queue for long tasks (@TODO §113)
+- [x] P41-T2: WS scaling (@TODO §114)
+- [x] P41-T3: AI request pool + caps (@TODO §116)
 
-### 6.3 Health and Load
-- [ ] P42-T1: Liveness/readiness endpoints (@TODO §117)
-- [ ] P42-T2: Load tests setup (@TODO §118)
-- [ ] P42-T3: CI perf gates (@TODO §119)
+### 6.3 Health and Load ✅ TAMAMLANDI
+- [x] P42-T1: Liveness/readiness endpoints (@TODO §117)
+- [x] P42-T2: Load tests setup (@TODO §118)
+- [x] P42-T3: CI perf gates (@TODO §119)
 
 ## 7. Güvenlik ve Gözlemlenebilirlik
 
-### 7.1 Security I
-- [ ] P43-T1: Input/output sanitization (@TODO §121)
-- [ ] P43-T2: PII masking (@TODO §122)
-- [ ] P43-T3: Secrets in logs prevention (@TODO §127)
+### 7.1 Security I ✅ TAMAMLANDI
+- [x] P43-T1: Input/output sanitization (@TODO §121)
+- [x] P43-T2: PII masking (@TODO §122)
+- [x] P43-T3: Secrets in logs prevention (@TODO §127)
 
-### 7.2 Security II
-- [ ] P44-T1: File abuse scenarios (@TODO §125)
-- [ ] P44-T2: RAG result filters (@TODO §126)
-- [ ] P44-T3: Audit retention policy (@TODO §123)
+### 7.2 Security II ✅ TAMAMLANDI
+- [x] P44-T1: File abuse scenarios (@TODO §125)
+- [x] P44-T2: RAG result filters (@TODO §126)
+- [x] P44-T3: Audit retention policy (@TODO §123)
 
-### 7.3 Observability I
-- [ ] P45-T1: Prometheus metrics (@TODO §131)
-- [ ] P45-T2: Grafana dashboards (@TODO §132)
-- [ ] P45-T3: Error distribution reports (@TODO §136)
+### 7.3 Observability I ✅ TAMAMLANDI
+- [x] P45-T1: Prometheus metrics (@TODO §131)
+- [x] P45-T2: Grafana dashboards (@TODO §132)
+- [x] P45-T3: Error distribution reports (@TODO §136)
 
-### 7.4 Observability II
-- [ ] P46-T1: OpenTelemetry tracing (@TODO §134)
-- [ ] P46-T2: Alert rules (@TODO §135)
-- [ ] P46-T3: Ops runbooks (@TODO §138-140)
+### 7.4 Observability II ✅ TAMAMLANDI
+- [x] P46-T1: OpenTelemetry tracing (@TODO §134)
+- [x] P46-T2: Alert rules (@TODO §135)
+- [x] P46-T3: Ops runbooks (@TODO §138-140)
 
 ## 8. Deployment ve Ürün Hazırlığı
 

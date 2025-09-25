@@ -1,0 +1,257 @@
+# ArchBuilder.AI Staging Environment Values
+# Staging-specific configuration
+
+# Global configuration
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: ""
+
+# Image configuration
+image:
+  registry: docker.io
+  repository: archbuilder/cloud-server
+  tag: "staging"
+  pullPolicy: Always
+
+# Replica count for staging
+replicaCount: 2
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+  annotations:
+    staging.archbuilder.app/environment: "staging"
+
+# Ingress configuration for staging
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    staging.archbuilder.app/environment: "staging"
+  hosts:
+    - host: staging-api.archbuilder.app
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# Resource limits for staging
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+# Autoscaling for staging
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 85
+
+# Environment variables for staging
+env:
+  - name: ENVIRONMENT
+    value: "staging"
+  - name: LOG_LEVEL
+    value: "DEBUG"
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: archbuilder-staging-secrets
+        key: database-url
+  - name: REDIS_URL
+    valueFrom:
+      secretKeyRef:
+        name: archbuilder-staging-secrets
+        key: redis-url
+  - name: OPENAI_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: archbuilder-staging-secrets
+        key: openai-api-key
+  - name: VERTEX_AI_PROJECT_ID
+    valueFrom:
+      secretKeyRef:
+        name: archbuilder-staging-secrets
+        key: vertex-ai-project-id
+  - name: RAGFLOW_API_URL
+    value: "http://ragflow-staging-service:8000"
+  - name: RAGFLOW_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: archbuilder-staging-secrets
+        key: ragflow-api-key
+  - name: STRIPE_SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: archbuilder-staging-secrets
+        key: stripe-test-secret-key
+  - name: STRIPE_PUBLISHABLE_KEY
+    valueFrom:
+      secretKeyRef:
+        name: archbuilder-staging-secrets
+        key: stripe-test-publishable-key
+
+# ConfigMap for staging configuration
+configMap:
+  create: true
+  data:
+    app.yaml: |
+      server:
+        host: 0.0.0.0
+        port: 8000
+        workers: 2
+      database:
+        pool_size: 10
+        max_overflow: 15
+        pool_timeout: 30
+        pool_recycle: 3600
+      redis:
+        max_connections: 10
+        retry_on_timeout: true
+        socket_keepalive: true
+      ai:
+        default_model: "gpt-4"
+        temperature: 0.1
+        max_tokens: 4000
+        confidence_threshold: 0.7
+        timeout: 30
+      monitoring:
+        metrics_enabled: true
+        tracing_enabled: true
+        log_level: "DEBUG"
+      security:
+        cors_origins: ["https://staging.archbuilder.app", "https://staging-app.archbuilder.app"]
+        rate_limit_per_minute: 120
+        rate_limit_burst: 200
+      logging:
+        format: "json"
+        level: "DEBUG"
+        file_path: "/app/logs/app.log"
+        rotation_size: "5MB"
+        retention_days: 7
+
+# PostgreSQL configuration for staging
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "archbuilder"
+    username: "archbuilder"
+    password: "archbuilder"
+    database: "archbuilder_staging"
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+
+# Redis configuration for staging
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "archbuilder"
+  master:
+    persistence:
+      enabled: true
+      size: 2Gi
+    resources:
+      limits:
+        cpu: 250m
+        memory: 512Mi
+      requests:
+        cpu: 125m
+        memory: 256Mi
+
+# Monitoring configuration for staging
+monitoring:
+  prometheus:
+    enabled: true
+    server:
+      persistentVolume:
+        enabled: true
+        size: 5Gi
+      retention: "7d"
+  grafana:
+    enabled: true
+    adminPassword: "staging"
+    persistence:
+      enabled: true
+      size: 2Gi
+    dashboards:
+      default:
+        archbuilder-staging:
+          gnetId: 0
+          revision: 0
+          datasource: Prometheus
+
+# Network policies for staging
+networkPolicy:
+  enabled: true
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: archbuilder-staging
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6379
+
+# Service monitor for staging
+serviceMonitor:
+  enabled: true
+  interval: 15s
+  scrapeTimeout: 5s
+  labels:
+    environment: staging
+  annotations: {}
+
+# Horizontal Pod Autoscaler for staging
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 85
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 20
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 2
+        periodSeconds: 15
+      selectPolicy: Max

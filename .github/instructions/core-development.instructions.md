@@ -7,11 +7,37 @@ description: Core Development Rules — unified workflow, registry management, c
 
 ## 🔧 Development Workflow (Universal)
 
+### MANDATORY Issue-First Workflow:
+**Every task MUST start with an issue and follow GitFlow**
+
+1. **Create GitHub Issue First**:
+   ```bash
+   # Create issue via GitHub CLI or web interface
+   gh issue create --title "feat: PostgreSQL connection pool optimization" --body "Implement connection pooling optimization as per TODO.md task 5"
+   ```
+
+2. **Commit Current State**:
+   ```bash
+   # Always commit current state before starting new work
+   git add .
+   git commit -m "checkpoint: save current progress before task #<issue-number>"
+   git push origin <current-branch>
+   ```
+
+3. **Create Feature Branch**:
+   ```bash
+   # GitFlow pattern: feature/<issue-number>-<kebab-title>
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/<issue-number>-postgresql-connection-optimization
+   ```
+
 ### Before ANY Implementation:
-1. **Context Rehydration** - Read `.mds/context/current-context.md` and `docs/registry/*.json` first
-2. **Plan → Validate → Implement → Test → Ship** (1-2 prompt cadence)
-3. **Vertical Slices** - Prefer small, testable implementations with clear boundaries
-4. **Registry Updates** - Plan contract changes before coding
+1. **Issue Assignment** - Assign the GitHub issue to yourself
+2. **Context Rehydration** - Read `.mds/context/current-context.md` and `docs/registry/*.json` first
+3. **Plan → Validate → Implement → Test → Ship** (1-2 prompt cadence)
+4. **Vertical Slices** - Prefer small, testable implementations with clear boundaries
+5. **Registry Updates** - Plan contract changes before coding
 
 ### Registry & Persistent Context (Mandatory)
 

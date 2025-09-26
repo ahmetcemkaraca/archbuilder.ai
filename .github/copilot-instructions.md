@@ -243,18 +243,10 @@ Minimal schemas:
 ```
 
 ### Versioning cadence (local policy)
-- Update version.md at the end of every 2 prompts (development cycle).
+- Update version.md at the end of every 1 prompts (development cycle).
 - Use PowerShell to stamp the date/time: `Get-Date -Format 'yyyy-MM-dd HH:mm:ss'`.
 - Each entry must summarize key changes, new features, or bug fixes. Do not delete previous entries.
 
-### Provider naming and versions
-- Replace ambiguous "GitHub Models" references with the actual provider used (e.g. Azure OpenAI or OpenAI API). Use accurate base URLs and auth flows.
-- Target Python 3.11 or 3.12 for cloud server until 3.13 is stable. Update CI and docs accordingly.
-- Revit plugin targets .NET Framework 4.8 unless Revit 2026 supports .NET 8; document interop.
-
-### Scope and anti-bloat
-- Avoid over-ambitious "Apple-like UI" goals on WPF for MVP; prefer modern, professional Windows design with achievable components.
-- Prefer existing ORM/db capabilities over custom “automatic query optimization”.
 
 ### AI client gaps
 - Implement analyze_project in AI clients; define input/output schemas and add tests.

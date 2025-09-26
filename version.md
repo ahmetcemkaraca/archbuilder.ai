@@ -175,3 +175,11 @@ Timestamp: (to be set via PowerShell `Get-Date -Format 'yyyy-MM-dd HH:mm:ss'` du
 - Support Workflows: Multi-tier support system with escalation procedures, knowledge base, and quality assurance
 - Production Checklist: Comprehensive production readiness checklist covering security, performance, compliance, and operational requirements
 - All deployment and production readiness tasks completed successfully
+## 0.1.20  Instruction Rules Synchronization (2025-09-26 10:25:57)
+- Cursor rules (.cursor\rules) incelendi ve .github\instructions ile karþýlaþtýrýldý
+- Mevcut instruction dosyalarý _archive klasörüne yedeklendi
+- registry-and-context.instructions.md eklendi - registry management ve context rehydration kurallarý
+- role-instructions.instructions.md eklendi - role-based instruction attachment sistemi
+- Registry identifiers.json güncellendi - yeni instruction modülleri eklendi
+- Registry validation ve context rehydration scriptleri baþarýyla çalýþtýrýldý
+- GitHub Copilot için YAML formatýnda instruction kurallarý hazýrlandý

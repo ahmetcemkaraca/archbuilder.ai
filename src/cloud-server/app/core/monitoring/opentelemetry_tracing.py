@@ -450,3 +450,5 @@ def setup_auto_instrumentation(app=None):
         RedisInstrumentor().instrument()
         
         logger.info("OpenTelemetry auto-instrumentation enabled")
+
+

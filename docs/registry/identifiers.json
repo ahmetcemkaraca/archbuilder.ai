@@ -91,6 +91,14 @@
     {
       "name": "app.database.models.review_item",
       "exports": ["ReviewItem"]
+    },
+    {
+      "name": ".github.instructions.registry-and-context",
+      "exports": ["registry_validation", "context_rehydration", "versioning_cadence"]
+    },
+    {
+      "name": ".github.instructions.role-instructions",
+      "exports": ["role_attachment_rules", "instruction_compliance", "context_aware_development"]
     }
   ]
 }

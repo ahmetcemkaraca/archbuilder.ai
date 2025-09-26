@@ -183,3 +183,16 @@ Timestamp: (to be set via PowerShell `Get-Date -Format 'yyyy-MM-dd HH:mm:ss'` du
 - Registry identifiers.json güncellendi - yeni instruction modülleri eklendi
 - Registry validation ve context rehydration scriptleri baþarýyla çalýþtýrýldý
 - GitHub Copilot için YAML formatýnda instruction kurallarý hazýrlandý
+
+## 0.1.21  GitFlow Implementation and Branch Protection Setup (2025-09-26 10:55:00)
+- CODEOWNERS dosyasý eklendi - kritik dosyalar için code ownership kurallarý
+- CONTRIBUTING.md oluþturuldu - kapsamlý GitFlow workflow rehberi
+- PULL_REQUEST_TEMPLATE.md eklendi - standardize PR format ve checklist
+- lint.yml workflow eklendi - Python, .NET, PowerShell, Markdown linting
+- pr-governance.yml workflow eklendi - GitFlow validation ve PR compliance
+- performance-gates.yml GitFlow için güncellendi - develop branch support
+- ci.yml GitFlow branch patterns için güncellendi
+- docs/git-workflow.md eklendi - detaylý GitFlow dokümantasyonu
+- README.md oluþturuldu - proje overview ve quick start guide
+- Registry identifiers.json güncellendi - yeni governance dosyalarý eklendi
+- Tüm workflow'lar branch protection rules ile uyumlu hale getirildi

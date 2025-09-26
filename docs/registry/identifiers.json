@@ -99,6 +99,34 @@
     {
       "name": ".github.instructions.role-instructions",
       "exports": ["role_attachment_rules", "instruction_compliance", "context_aware_development"]
+    },
+    {
+      "name": ".github.CODEOWNERS",
+      "exports": ["code_ownership_rules", "critical_file_protection"]
+    },
+    {
+      "name": "CONTRIBUTING.md",
+      "exports": ["gitflow_workflow", "development_process", "review_requirements"]
+    },
+    {
+      "name": ".github.PULL_REQUEST_TEMPLATE",
+      "exports": ["pr_template", "validation_checklist", "review_guidance"]
+    },
+    {
+      "name": ".github.workflows.lint",
+      "exports": ["code_formatting_checks", "quality_validation", "multi_language_linting"]
+    },
+    {
+      "name": ".github.workflows.pr-governance",
+      "exports": ["gitflow_validation", "pr_compliance", "branch_protection_enforcement"]
+    },
+    {
+      "name": "docs.git-workflow",
+      "exports": ["gitflow_documentation", "branch_strategies", "workflow_examples"]
+    },
+    {
+      "name": "README.md",
+      "exports": ["project_overview", "quick_start_guide", "architecture_summary"]
     }
   ]
 }

@@ -1,5 +1,5 @@
 ---
-applyTo: "src/revit-plugin/**/*.cs,src/mcp-server/**/*.py,src/ai-models/**/*.cs,**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
+applyTo: "src/revit-plugin/**/*.cs,src/cloud-server/**/*.py,src/desktop-app/**/*.cs,**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 description: Error Handling Standards — consistent exception handling, logging, and recovery patterns across all systems.
 ---
 As Error Handling Developer:
@@ -365,26 +365,26 @@ class NetworkException(RevitAutoPlanException):
         self.http_status_code = http_status_code
 
 
-class MCPException(RevitAutoPlanException):
-    """Exception for MCP protocol errors."""
+class ApiException(RevitAutoPlanException):
+    """Exception for HTTP API communication errors."""
     
     def __init__(
         self,
         message: str,
         correlation_id: str,
-        mcp_method: Optional[str] = None,
-        mcp_error_code: Optional[str] = None,
+        http_method: Optional[str] = None,
+        status_code: Optional[int] = None,
         inner_exception: Optional[Exception] = None
     ) -> None:
         context = {}
-        if mcp_method:
-            context["mcp_method"] = mcp_method
-        if mcp_error_code:
-            context["mcp_error_code"] = mcp_error_code
+        if http_method:
+            context["http_method"] = http_method
+        if status_code:
+            context["status_code"] = status_code
             
-        super().__init__(message, "MCP_001", correlation_id, context, inner_exception)
-        self.mcp_method = mcp_method
-        self.mcp_error_code = mcp_error_code
+        super().__init__(message, "API_001", correlation_id, context, inner_exception)
+        self.http_method = http_method
+        self.status_code = status_code
 ```
 
 ## Error Handling Patterns

@@ -34,11 +34,18 @@
     },
     {
       "name": "app.services.ai_service",
-      "exports": ["AIService"]
+      "exports": ["EnhancedAIService", "AIService"],
+      "version": "2.0.0", 
+      "lastUpdated": "2025-09-26T10:30:00Z",
+      "dependencies": ["app.ai.openai.client", "app.ai.vertex.client", "app.ai.model_selector"],
+      "description": "Gelişmiş AI service gerçek model entegrasyonu ile"
     },
     {
       "name": "app.ai.model_selector",
-      "exports": ["ModelSelector"]
+      "exports": ["AdvancedModelSelector", "ModelSelector", "ModelProvider", "TaskComplexity", "AnalysisType", "ModelConfig", "model_selector"],
+      "version": "2.0.0",
+      "lastUpdated": "2025-09-26T10:30:00Z",
+      "description": "Gelişmiş AI model seçimi sistemi - dil, karmaşıklık, maliyet optimizasyonu"
     },
     {
       "name": "app.ai.prompts.templates.prompt_versioning",
@@ -46,7 +53,27 @@
     },
     {
       "name": "app.ai.interfaces",
-      "exports": ["AIClient", "OpenAIClient", "VertexClient"]
+      "exports": ["AIClient", "BaseAIClient", "OpenAIClient", "VertexClient"]
+    },
+    {
+      "name": "app.ai.openai.client", 
+      "exports": ["OpenAIClient", "create_openai_client"],
+      "variables": ["OPENAI_API_KEY", "OPENAI_ORGANIZATION"],
+      "configKeys": ["openai_api_key", "openai_organization"],
+      "version": "1.0.0",
+      "lastUpdated": "2025-09-26T10:30:00Z",
+      "dependencies": ["openai", "tiktoken", "httpx"],
+      "description": "Gerçek OpenAI GPT-4.1 API entegrasyonu"
+    },
+    {
+      "name": "app.ai.vertex.client",
+      "exports": ["VertexAIClient", "create_vertex_client"], 
+      "variables": ["GOOGLE_CLOUD_PROJECT", "GOOGLE_CLOUD_REGION"],
+      "configKeys": ["google_cloud_project", "google_cloud_region", "google_application_credentials"],
+      "version": "1.0.0",
+      "lastUpdated": "2025-09-26T10:30:00Z",
+      "dependencies": ["vertexai", "google-cloud-aiplatform"],
+      "description": "Gerçek Vertex AI Gemini model entegrasyonu"
     },
     {
       "name": "revit.addin.services.phase_manager",
@@ -127,6 +154,46 @@
     {
       "name": "README.md",
       "exports": ["project_overview", "quick_start_guide", "architecture_summary"]
+    },
+    {
+      "name": "app.core.enhanced_security",
+      "exports": ["EnhancedSecurityMiddleware", "SecurityViolation", "InputSanitizer", "FileSecurityValidator"],
+      "variables": ["THREAT_DETECTION_THRESHOLD", "MAX_FILE_SIZE", "BLOCKED_IPS_CACHE"],
+      "configKeys": ["enhanced_security_enabled", "max_file_upload_size", "threat_detection_threshold"],
+      "version": "1.0.0",
+      "lastUpdated": "2025-09-26T11:00:00Z",
+      "dependencies": ["bleach", "magic", "defusedxml", "pydantic"],
+      "description": "Comprehensive security middleware with threat detection, input validation, and file security"
+    },
+    {
+      "name": "app.core.vault_integration",
+      "exports": ["VaultSecretManager", "SecureSettings", "ArchBuilderSecureConfig", "get_secret_manager", "get_secret", "setup_secret_rotation"],
+      "variables": ["VAULT_URL", "VAULT_TOKEN", "VAULT_ROLE_ID", "VAULT_SECRET_ID"],
+      "configKeys": ["vault_url", "vault_token", "vault_role_id", "vault_secret_id", "vault_mount_path"],
+      "version": "1.0.0",
+      "lastUpdated": "2025-09-26T11:00:00Z",
+      "dependencies": ["hvac", "pydantic-settings", "asyncio"],
+      "description": "HashiCorp Vault integration for secure secret management and rotation"
+    },
+    {
+      "name": "app.core.input_validation",
+      "exports": ["EnhancedInputValidator", "CADFileValidator", "SecurityConfig", "ValidationResult", "validate_api_input"],
+      "variables": ["SQL_INJECTION_PATTERNS", "XSS_PATTERNS", "PATH_TRAVERSAL_PATTERNS"],
+      "configKeys": ["max_string_length", "max_file_size", "allowed_file_extensions"],
+      "version": "1.0.0",
+      "lastUpdated": "2025-09-26T11:00:00Z",
+      "dependencies": ["bleach", "defusedxml", "email-validator", "magic", "pydantic"],
+      "description": "Enhanced input validation with CAD file support, XSS/SQL injection detection"
+    },
+    {
+      "name": "app.middleware.tenant_security",
+      "exports": ["TenantIsolationMiddleware", "RateLimitingMiddleware", "TenantDataFilter", "require_tenant_access", "add_tenant_context"],
+      "variables": ["ADMIN_PATHS", "EXCLUDED_PATHS", "DEFAULT_RATE_LIMITS"],
+      "configKeys": ["rate_limit_enabled", "tenant_isolation_enabled"],
+      "version": "1.1.0",
+      "lastUpdated": "2025-09-26T11:00:00Z",
+      "dependencies": ["redis", "fastapi", "starlette"],
+      "description": "Multi-tenant security with isolation, rate limiting, and audit logging"
     }
   ]
 }

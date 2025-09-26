@@ -1,52 +1,75 @@
 Project-wide Copilot instructions for ArchBuilder.AI autonomous development across desktop/cloud/Revit. Keep answers concise; code complete and runnable.
 
 ## 🔧 MANDATORY DEVELOPMENT WORKFLOW
+### Before ANY Function Implementation or Code Fix:
+**ALWAYS** read the relevant `*.instructions.md` files from `.github/instructions/` directory before writing or modifying any code. This is **NON-NEGOTIABLE** and ensures consistency, security, and quality across the entire codebase.
+**Always** use Context7 MCP tools when I need code generation, setup or configuration steps, or library/API documentation. This means you should automatically use the Context7 MCP tools to resolve library id and get library docs without me having to explicitly ask.
 
-### 🌟 GIT BRANCH WORKFLOW
-**ALWAYS** work with feature branches for every task/implementation:
+### 🌟 GITFLOW WORKFLOW (Issue-first)
+**ALWAYS** start from an Issue, then work with GitFlow branch structure:
 
-#### Git Branch Strategy:
-1. **Create Feature Branch**: Before starting any task, create a new branch from master
+#### GitFlow Branch Strategy:
+1. **Main Branches**:
+   - `main`: Production-ready code (stable releases only)
+   - `develop`: Integration branch (active development)
+
+2. **Supporting Branches**:
    ```bash
-   git checkout master
-   git pull origin master
-   git checkout -b feature/task-name-description
+   # Features: develop → feature → develop
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/123-add-user-login
+   
+   # Hotfixes: main → hotfix → main + develop
+   git checkout main
+   git pull origin main
+   git checkout -b hotfix/456-critical-bug
+   
+   # Releases: develop → release → main + develop
+   git checkout develop
+   git pull origin develop
+   git checkout -b release/1.2.0
    ```
 
-2. **Branch Naming Convention**:
-   - `feature/mainwindow-implementation`
-   - `feature/project-management-views`
-   - `feature/revit-commands-core`
-   - `bugfix/issue-description`
-   - `docs/update-instructions`
+3. **Branch Naming Convention**:
+   - `feature/<issue-number>-<kebab-title>` (from develop)
+   - `release/<version>` (from develop, merge to main + develop)
+   - `hotfix/<issue-number>-<kebab-title>` (from main, merge to main + develop)
+   - `docs/<kebab-title>` (from develop)
 
-3. **Work on Feature Branch**: 
+4. **Work on Feature Branch**: 
    - Make all commits to the feature branch
    - Use descriptive commit messages with conventional commits format
    - Push feature branch to origin regularly
 
-4. **Submit for Review**:
-   - When task is complete, push final branch to origin
-   - DO NOT merge to master directly
-   - Human reviewer will merge after approval
+5. **Submit for Review (PR)**:
+   - **Features/Docs**: PR from `feature/*` → `develop`
+   - **Releases**: PR from `release/*` → `main` (then merge `main` → `develop`)
+   - **Hotfixes**: PR from `hotfix/*` → `main` (then merge `main` → `develop`)
+   - Use conventional commits; PR title conventional (`feat(scope): summary`)
+   - Link the issue in PR description using `Closes #<id>`
+   - Prefer Squash & Merge; delete branch after merge
+   - **NEVER** merge directly to `main` except through releases/hotfixes
 
-5. **Example Workflow**:
+6. **Example Workflow**:
    ```bash
-   # Start new task
-   git checkout master
-   git pull origin master
-   git checkout -b feature/project-management-views
+   # Start from issue
+   # 1. Create/assign GitHub issue first
+   # 2. Start feature development
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/123-project-management-views
    
    # Work and commit
    git add .
-   git commit -m "feat: implement project dashboard UI"
-   git push origin feature/project-management-views
+   git commit -m "feat(desktop): implement project dashboard UI"
+   git push origin feature/123-project-management-views
    
-   # Continue until task complete, then wait for merge approval
+   # Submit PR: feature/123-project-management-views → develop
+   # PR title: "feat(desktop): implement project management views"
+   # PR body: "Closes #123"
    ```
-
-### Before ANY Function Implementation or Code Fix:
-**ALWAYS** read the relevant `*.instructions.md` files from `.github/instructions/` directory before writing or modifying any code. This is **NON-NEGOTIABLE** and ensures consistency, security, and quality across the entire codebase.
+### Before ANY Implementation:
 
 #### Workflow Steps:
 1. **Identify the task** - Understand what needs to be implemented or fixed
@@ -108,7 +131,7 @@ After creating ANY new module, service, or significant feature, you MUST:
 
 3. **Auto-Documentation Template**:
    ```markdown
-   # [Module Name] Dokumentasyonu
+   # [Module Name] Dokümantasyonu
    
    ## Genel Bakış
    [Modülün ne yaptığının açıklaması]
@@ -166,7 +189,8 @@ When asked for help
 
 Copilot behavior
 - Keep chat replies compact. Prefer bullet lists and fenced code for commands when needed. Cite files you change.
-- Use `.github/instructions/*.instructions.md` for role-specific rules, and `.github/prompts/*.prompt.md` for reusable tasks.
+- Use `core-development.instructions.md` for unified development rules and `role-assignment.instructions.md` for role-specific guidance.
+- Legacy role-specific files remain available in individual `.github/instructions/*.instructions.md` files.
 
 Semantic Versioning (SemVer)
 - Use SemVer: MAJOR.MINOR.PATCH (e.g., 1.4.2).
@@ -181,7 +205,7 @@ Semantic Versioning (SemVer)
 This policy is mandatory and overrides any conflicting older statements:
 
 - Code and identifiers: English
-- In-code comments and log messages: Turkish
+- In-code comments and log messages: English
 - UI text: English by default via i18n/locale files (Turkish translation optional); never hardcode in components
 - Chat responses to the user: Turkish, concise and actionable
 
@@ -205,6 +229,13 @@ Required files/directories:
 - docs/registry/identifiers.json — modules, exports, variables, config keys
 - docs/registry/endpoints.json — HTTP/gRPC/GraphQL contracts (method, path, schemas, version, auth)
 - docs/registry/schemas.json — data models, DB tables, migrations
+- docs/registry/permissions.json — access control policies, roles, and permissions
+- docs/registry/hooks.json — webhooks, event subscriptions, and related configurations
+- docs/registry/secrets.json — sensitive information and secrets management
+- docs/registry/configuration.json — application configuration settings
+- docs/registry/logging.json — logging formats and levels
+- .mds/Todo.md — task list with EARS-style requirements
+- .mds/context/ — context-related files
 - .mds/context/current-context.md — short technical summary of active contracts and critical variables
 - .mds/context/history/ — versioned session summaries (e.g., 0001.md, 0002.md)
 

@@ -37,7 +37,7 @@ Teach/Coach mode
 
 Language & output policy
 - Code and identifiers must be in English.
-- In-code comments and log messages must be in Turkish.
+- In-code comments and log messages must be in English.
 - UI text must be provided via i18n (default English then Turkish). Do not hardcode strings in components.
 - Chat responses to the user must be in Turkish, concise and practical.
 

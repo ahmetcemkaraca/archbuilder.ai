@@ -58,7 +58,7 @@ public enum AIProcessingStatus
 }
 ```
 
-### Python (MCP Server/Backend)
+### Python (Cloud Server/Backend)
 ```python
 # Classes: PascalCase
 class AILayoutService:
@@ -183,19 +183,19 @@ public class ValidationCommand
 public class DocumentationCommand
 ```
 
-### MCP Protocol Objects
+### REST API Objects  
 ```python
-# MCP Standard Naming
-class mcp_request:
-class mcp_response:
-class mcp_notification:
-class mcp_error:
+# HTTP Request/Response Models
+class ai_request:
+class ai_response:
+class layout_request:
+class validation_result:
 
-# Custom MCP Extensions
-class revit_mcp_command:
-class ai_mcp_request:
-class layout_mcp_response:
-class validation_mcp_result:
+# Desktop-Cloud Communication
+class desktop_api_request:
+class cloud_api_response:
+class revit_command_data:
+class project_analysis_result:
 ```
 
 ### WebSocket Message Types
@@ -280,11 +280,12 @@ src/
     Services/
     Models/
     Validators/
-  mcp-server/
-    ai_services/
-    validation/
-    mcp_handlers/
-    models/
+  cloud-server/
+    app/
+      routers/
+      services/
+      models/
+      core/
   shared/
     data-contracts/
     enums/
@@ -299,8 +300,8 @@ public const string AI_VALIDATION_FAILED = "AI_002";
 public const string AI_CONFIDENCE_TOO_LOW = "AI_003";
 public const string REVIT_API_ERROR = "RVT_001";
 public const string REVIT_TRANSACTION_FAILED = "RVT_002";
-public const string MCP_CONNECTION_ERROR = "MCP_001";
-public const string MCP_PROTOCOL_ERROR = "MCP_002";
+public const string HTTP_CONNECTION_ERROR = "HTTP_001";
+public const string API_PROTOCOL_ERROR = "HTTP_002";
 ```
 
 ## Correlation ID Pattern

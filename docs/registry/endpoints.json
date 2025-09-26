@@ -254,38 +254,6 @@
       }
     },
     {
-      "method": "POST",
-      "path": "/v1/rag/hybrid-search",
-      "auth": "api_key|jwt",
-      "request_schema_ref": "HybridSearchRequest",
-      "response_schema_ref": "RAGQueryResponse",
-      "upstream": {
-        "service": "RAGFlow",
-        "method": "POST",
-        "path": "/api/v1/retrieval"
-      },
-      "headers": {
-        "request": ["X-Correlation-ID?"],
-        "response": ["X-Correlation-ID", "X-Request-ID"]
-      }
-    },
-    {
-      "method": "POST",
-      "path": "/v1/rag/index/build",
-      "auth": "api_key|jwt",
-      "request_schema_ref": "IndexBuildRequest",
-      "response_schema_ref": "StandardResponse",
-      "upstream": {
-        "service": "RAGFlow",
-        "method": "POST",
-        "path": "/api/v1/datasets/{dataset_id}/index"
-      },
-      "headers": {
-        "request": ["X-Correlation-ID?"],
-        "response": ["X-Correlation-ID", "X-Request-ID"]
-      }
-    },
-    {
       "method": "GET",
       "path": "/v1/rag/datasets",
       "auth": "api_key|jwt",
@@ -316,6 +284,14 @@
         "request": ["X-Correlation-ID?"],
         "response": ["X-Correlation-ID", "X-Request-ID"]
       }
+    },
+    {
+      "method": "WebSocket",
+      "path": "/v1/ws",
+      "auth": "none",
+      "request_schema_ref": null,
+      "response_schema_ref": "WebSocketMessage",
+      "description": "WebSocket endpoint for real-time communication and progress updates"
     }
   ]
 }

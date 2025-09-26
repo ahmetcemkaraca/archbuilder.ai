@@ -125,7 +125,7 @@ class ValidationService:
             logger.error(f"TR: JSON schema validation hatası: {e}")
             return {
                 "success": False,
-                "errors": [f"TR: Validation hatası: {str(e)}"]
+                "errors": ["TR: Internal validation error occurred."]
             }
     
     async def validate_geometric(
@@ -144,7 +144,7 @@ class ValidationService:
             logger.error(f"TR: Geometric validation hatası: {e}")
             return {
                 "success": False,
-                "data": {"error": str(e)}
+                "data": {"error": "TR: Internal geometric validation error occurred."}
             }
     
     async def validate_code(
@@ -305,5 +305,5 @@ class ValidationService:
             logger.error(f"TR: Proje analizi hatası: {e}")
             return {
                 "success": False,
-                "data": {"error": str(e)}
+                "data": {"error": "TR: Internal project analysis error occurred."}
             }

@@ -91,6 +91,34 @@
     {
       "name": "app.database.models.review_item",
       "exports": ["ReviewItem"]
+    },
+    {
+      "name": "app.routers.v1.websocket",
+      "exports": ["router"]
+    },
+    {
+      "name": "app.database.models.project",
+      "exports": ["Project", "RAGDatasetLink"]
+    },
+    {
+      "name": "app.database.models.subscription", 
+      "exports": ["Subscription"]
+    },
+    {
+      "name": "app.database.models.user",
+      "exports": ["User"]
+    },
+    {
+      "name": "app.database.models.ai_command",
+      "exports": ["AICommand"]
+    },
+    {
+      "name": "app.database.models.usage",
+      "exports": ["Usage"]
+    },
+    {
+      "name": "app.database.models.rag",
+      "exports": ["RAGJob", "RAGDocumentLink"]
     }
   ]
 }

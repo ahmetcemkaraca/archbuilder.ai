@@ -17,6 +17,15 @@ class Settings(BaseSettings):
     auth_dev_mode: bool = Field(default=False)
     jwt_secret: str | None = Field(default=None)
 
+    # Database Configuration
+    database_url: str | None = Field(default=None)
+    database_replica_url: str | None = Field(default=None)
+    db_pool_size: int = Field(default=20)
+    db_max_overflow: int = Field(default=30)
+    db_pool_timeout: int = Field(default=30)
+    db_pool_recycle: int = Field(default=3600)
+    db_echo: bool = Field(default=False)
+
     # RAGFlow integration
     ragflow_base_url: HttpUrl | str = Field(default="http://localhost")
     ragflow_api_key: str | None = Field(default=None)

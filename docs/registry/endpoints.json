@@ -292,6 +292,46 @@
       "request_schema_ref": null,
       "response_schema_ref": "WebSocketMessage",
       "description": "WebSocket endpoint for real-time communication and progress updates"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/database/health",
+      "auth": "none",
+      "request_schema_ref": null,
+      "response_schema_ref": "DatabaseHealthResponse",
+      "description": "Database health check endpoint"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/database/monitoring/summary",
+      "auth": "admin",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse",
+      "description": "Database monitoring summary (admin only)"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/database/monitoring/slow-queries",
+      "auth": "admin",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse",
+      "description": "List slow queries (admin only)"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/database/monitoring/start",
+      "auth": "admin",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse",
+      "description": "Start database monitoring (admin only)"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/database/monitoring/stop", 
+      "auth": "admin",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse",
+      "description": "Stop database monitoring (admin only)"
     }
   ]
 }

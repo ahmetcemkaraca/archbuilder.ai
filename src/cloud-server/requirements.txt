@@ -33,6 +33,8 @@ opentelemetry-exporter-prometheus==1.12.0rc1
 # Database Performance
 alembic==1.13.1
 psycopg2-binary==2.9.9
+psycopg==3.2.3
+psycopg-pool==3.2.4
 
 # Load Testing
 locust==2.24.1

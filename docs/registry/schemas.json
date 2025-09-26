@@ -518,6 +518,81 @@
         "metadata": {"type": "object", "nullable": true}
       },
       "required": ["id", "content", "document_id", "chunk_index"]
+    },
+    {
+      "name": "DatabaseHealthResponse",
+      "type": "object",
+      "properties": {
+        "status": {"type": "string"},
+        "is_healthy": {"type": "boolean"},
+        "response_time_ms": {"type": "number"},
+        "connection_stats": {"type": "object"},
+        "timestamp": {"type": "string", "format": "date-time"}
+      },
+      "required": ["status", "is_healthy", "response_time_ms", "timestamp"]
+    },
+    {
+      "name": "MigrationStatusResponse",
+      "type": "object",
+      "properties": {
+        "current_revision": {"type": "string", "nullable": true},
+        "head_revision": {"type": "string", "nullable": true},
+        "is_up_to_date": {"type": "boolean"},
+        "pending_upgrades": {"type": "array", "items": {"type": "object"}},
+        "pending_count": {"type": "integer"}
+      },
+      "required": ["is_up_to_date", "pending_upgrades", "pending_count"]
+    },
+    {
+      "name": "BackupResponse",
+      "type": "object",
+      "properties": {
+        "status": {"type": "string"},
+        "backup_name": {"type": "string", "nullable": true},
+        "file_size_bytes": {"type": "integer", "nullable": true},
+        "error": {"type": "string", "nullable": true},
+        "timestamp": {"type": "string", "format": "date-time"}
+      },
+      "required": ["status", "timestamp"]
+    },
+    {
+      "name": "ConnectionHealth",
+      "type": "object",
+      "properties": {
+        "is_healthy": {"type": "boolean"},
+        "response_time_ms": {"type": "number"},
+        "active_connections": {"type": "integer"},
+        "pool_size": {"type": "integer"},
+        "checked_out_connections": {"type": "integer"},
+        "timestamp": {"type": "string", "format": "date-time"}
+      },
+      "required": ["is_healthy", "response_time_ms", "timestamp"]
+    },
+    {
+      "name": "SlowQuery",
+      "type": "object",
+      "properties": {
+        "query": {"type": "string"},
+        "duration_ms": {"type": "number"},
+        "correlation_id": {"type": "string", "nullable": true},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "parameters": {"type": "object", "nullable": true}
+      },
+      "required": ["query", "duration_ms", "timestamp"]
+    },
+    {
+      "name": "PaginatedResult",
+      "type": "object",
+      "properties": {
+        "items": {"type": "array"},
+        "total": {"type": "integer"},
+        "page": {"type": "integer"},
+        "page_size": {"type": "integer"},
+        "total_pages": {"type": "integer"},
+        "has_next": {"type": "boolean"},
+        "has_previous": {"type": "boolean"}
+      },
+      "required": ["items", "total", "page", "page_size", "total_pages", "has_next", "has_previous"]
     }
   ]
 }

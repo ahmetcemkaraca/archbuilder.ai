@@ -17,7 +17,7 @@ ArchBuilder.AI is a hybrid system featuring:
 - Python 3.12+ for cloud server
 - .NET Framework 4.8+ for desktop application
 - Autodesk Revit 2024+ for plugin integration
-- PostgreSQL database (optional, SQLite used by default)
+- PostgreSQL 15+ database (production) / SQLite (development)
 
 ### Cloud Server Setup
 
@@ -31,11 +31,24 @@ ArchBuilder.AI is a hybrid system featuring:
    Create a `.env` file in `src/cloud-server/`:
    ```env
    JWT_SECRET=your_secure_jwt_secret_here
+   
+   # Database Configuration - Production PostgreSQL
    DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/archbuilder
+   DB_POOL_SIZE=20
+   DB_MAX_OVERFLOW=30
+   DB_POOL_TIMEOUT=30
+   DB_POOL_RECYCLE=3600
+   DB_ECHO=false
+   
+   # Optional read replica for scaling
+   DATABASE_REPLICA_URL=postgresql+asyncpg://user:pass@replica:5432/archbuilder
+   
+   # RAG Service Configuration
    RAGFLOW_BASE_URL=http://localhost:12345
    RAGFLOW_API_KEY=your_ragflow_api_key
    RAGFLOW_API_VERSION=v1
    RAGFLOW_TIMEOUT_SECONDS=30
+   
    LOG_LEVEL=INFO
    ```
 
@@ -101,6 +114,13 @@ ArchBuilder.AI is a hybrid system featuring:
 - **Space Optimization**: AI-driven layout generation and improvement suggestions
 - **Existing Project Analysis**: Comprehensive BIM project evaluation
 
+### Production-Ready Database Infrastructure ✨ NEW
+- **PostgreSQL Connection Pooling**: Optimized for high-concurrency workloads
+- **Real-time Performance Monitoring**: Database health and slow query tracking
+- **Automated Backup & Recovery**: Point-in-time recovery capabilities
+- **Migration Management**: Alembic-based schema versioning with rollback
+- **Connection Leak Detection**: Proactive monitoring and alerting
+
 ### Cloud-First SaaS Platform
 - **Multi-tenant Architecture**: Scalable cloud deployment
 - **Subscription Management**: Flexible pricing tiers and usage tracking
@@ -120,6 +140,13 @@ ArchBuilder.AI is a hybrid system featuring:
 - `POST /v1/auth/login` - User authentication
 - `POST /v1/ai/commands` - AI processing requests
 - `POST /v1/validation/validate` - Data validation
+
+### Database Administration (Admin Only)
+- `GET /v1/database/health` - Database health monitoring
+- `POST /v1/database/monitoring/start` - Start performance monitoring
+- `GET /v1/database/monitoring/summary` - Get monitoring summary
+- `POST /v1/database/migrations/upgrade` - Run database migrations
+- `POST /v1/database/backup/create` - Create database backup
 
 ### Document Processing
 - `POST /v1/documents/rag/ensure-dataset` - Dataset management
@@ -221,7 +248,9 @@ pwsh -File scripts/rehydrate-context.ps1
 
 ### Performance Monitoring
 - **Response Time Tracking**: API endpoint performance
+- **Database Performance**: Connection pool metrics, slow query analysis
 - **Resource Usage**: CPU, memory, and storage monitoring
+- **Connection Health**: Real-time database connection monitoring
 - **Error Tracking**: Comprehensive error logging and alerting
 - **User Analytics**: Usage patterns and feature adoption
 

@@ -14,7 +14,7 @@ jobs:
   format:
     runs-on: ubuntu-latest
     if: github.actor != 'github-actions[bot]'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -58,7 +58,7 @@ jobs:
           - Applied black formatting with line-length=88
           - Applied isort import sorting with black profile
           - Automated formatting to maintain code consistency
-          
+
           [skip ci]"
           git push
 
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: format
     if: always()
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -98,11 +98,11 @@ jobs:
           # Check if code is properly formatted
           python -m black --check --diff .
           python -m isort --check-only --diff . --profile=black
-          
+
       - name: Run linting
         run: |
           python -m flake8 src/cloud-server/app --count --select=E9,F63,F7,F82 --show-source --statistics
-          
+
       - name: Validation success
         run: |
           echo "✅ All Python code is properly formatted and passes linting checks!"

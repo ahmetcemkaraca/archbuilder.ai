@@ -92,11 +92,11 @@ jobs:
         shell: powershell
         run: |
           pip check
-          Get-ChildItem -Path src/cloud-server -Recurse -Filter *.py | ForEach-Object { 
-            try { 
-              python -m py_compile $_.FullName 
-            } catch { 
-              Write-Warning "Failed to compile: $($_.FullName)" 
+          Get-ChildItem -Path src/cloud-server -Recurse -Filter *.py | ForEach-Object {
+            try {
+              python -m py_compile $_.FullName
+            } catch {
+              Write-Warning "Failed to compile: $($_.FullName)"
             }
           }
 

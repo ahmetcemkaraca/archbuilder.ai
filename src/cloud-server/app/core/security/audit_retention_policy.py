@@ -510,5 +510,3 @@ async def generate_compliance_report(regulation: str) -> Dict[str, Any]:
     else:
         return {"error": f"Unsupported regulation: {regulation}"}
 
-
-

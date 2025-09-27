@@ -4,9 +4,9 @@ Bu sistem, Gemini Code Assist ve diğer AI botlarının önerilerini otomatik ol
 
 ## 🎯 Özellikler
 
-### 1. **Automated Security Analysis** 
+### 1. **Automated Security Analysis**
 - **Bandit**: Python security linter
-- **Safety**: Dependency vulnerability scanner  
+- **Safety**: Dependency vulnerability scanner
 - **Semgrep**: Static analysis for security patterns
 - **Custom Patterns**: ArchBuilder.AI-specific security checks
 
@@ -45,7 +45,7 @@ Bu sistem, Gemini Code Assist ve diğer AI botlarının önerilerini otomatik ol
 patterns = {
     "missing_file_validation": {
         "pattern": r"UploadFile.*File\(",
-        "check": r"validate_upload_file|validate_file_type", 
+        "check": r"validate_upload_file|validate_file_type",
         "message": "File upload endpoint missing security validation",
         "severity": "HIGH"
     }
@@ -68,7 +68,7 @@ async def upload(file: UploadFile = File(...)):
     return {"status": "uploaded"}
 
 # AFTER (Secure) - Otomatik eklendi
-@router.post("/upload")  
+@router.post("/upload")
 async def upload(file: UploadFile = File(...)):
     # Enhanced security validation
     security_validator = get_enhanced_security()
@@ -90,14 +90,14 @@ SEMGREP_APP_TOKEN=xxx  # Semgrep Cloud token (optional)
 ```yaml
 on:
   push: [develop, main]
-  pull_request: [develop, main] 
+  pull_request: [develop, main]
   schedule: '0 2 * * 0'  # Weekly
   workflow_dispatch:     # Manual
 ```
 
 ## 📈 Metrics & Reporting
 
-### Security Report Format  
+### Security Report Format
 - **Summary by Severity**: CRITICAL, HIGH, MEDIUM, LOW
 - **Detailed Findings**: File, line, code snippet
 - **Auto-Fix Suggestions**: Actionable recommendations
@@ -105,7 +105,7 @@ on:
 
 ### Artifact Storage
 - `security-report.md`: Human readable
-- `custom-security-findings.json`: Machine readable  
+- `custom-security-findings.json`: Machine readable
 - `bandit-report.json`: Bandit results
 - `safety-report.json`: Dependency vulnerabilities
 - `semgrep-report.json`: Static analysis results
@@ -115,7 +115,7 @@ on:
 Bu sistem, Gemini'nin önerdiği gibi eksik `_validate_file_type` metodunu:
 
 ✅ **Implemented**: Enhanced security validator oluşturduk
-✅ **Integrated**: Upload endpoint'lerine validation ekledik  
+✅ **Integrated**: Upload endpoint'lerine validation ekledik
 ✅ **Automated**: GitHub Actions ile sürekli monitoring
 ✅ **Auto-Fixed**: Gelecekteki benzer sorunları otomatik çözer
 

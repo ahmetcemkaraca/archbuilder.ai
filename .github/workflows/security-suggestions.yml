@@ -106,13 +106,13 @@ jobs:
         }
 
         findings = []
-        
+
         # Scan Python files
         for py_file in Path("src/cloud-server/app").rglob("*.py"):
             with open(py_file, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
                 lines = content.split('\n')
-                
+
                 for i, line in enumerate(lines, 1):
                     for pattern_name, config in patterns.items():
                         import re
@@ -142,7 +142,7 @@ jobs:
         # Save findings
         with open("custom-security-findings.json", "w") as f:
             json.dump(findings, f, indent=2)
-            
+
         print(f"Found {len(findings)} potential security issues")
         EOF
 
@@ -155,7 +155,7 @@ jobs:
 
         # Load all scan results
         findings = []
-        
+
         # Load custom findings
         try:
             with open("custom-security-findings.json", "r") as f:
@@ -173,7 +173,7 @@ jobs:
         ## 📊 Summary by Severity
 
         """
-        
+
         severities = {}
         for finding in findings:
             sev = finding.get('severity', 'UNKNOWN')
@@ -187,7 +187,7 @@ jobs:
 
         for i, finding in enumerate(findings, 1):
             severity_icon = {"CRITICAL": "🚨", "HIGH": "⚠️", "MEDIUM": "⚡", "LOW": "ℹ️"}.get(finding.get('severity', 'UNKNOWN'), "❓")
-            
+
             report += f"""### {severity_icon} Finding #{i}: {finding.get('message', 'Security Issue')}
 
         **File:** `{finding.get('file', 'Unknown')}`
@@ -201,7 +201,7 @@ jobs:
         """
             if 'suggestion' in finding:
                 report += f"**💡 Suggestion:** {finding['suggestion']}\n"
-            
+
             report += "\n---\n\n"
 
         # Save report
@@ -219,13 +219,13 @@ jobs:
       with:
         script: |
           const fs = require('fs');
-          
+
           // Read security report
           const report = fs.readFileSync('security-report.md', 'utf8');
-          
+
           // Create or update security issue
           const issueTitle = `🔒 Automated Security Analysis - ${new Date().toISOString().split('T')[0]}`;
-          
+
           // Check if similar issue exists
           const { data: issues } = await github.rest.issues.listForRepo({
             owner: context.repo.owner,
@@ -233,11 +233,11 @@ jobs:
             labels: ['security', 'automated'],
             state: 'open'
           });
-          
-          const existingIssue = issues.find(issue => 
+
+          const existingIssue = issues.find(issue =>
             issue.title.includes('Automated Security Analysis')
           );
-          
+
           if (existingIssue) {
             // Update existing issue
             await github.rest.issues.createComment({
@@ -264,16 +264,16 @@ jobs:
         import os
         import re
         from pathlib import Path
-        
+
         fixes_applied = []
-        
+
         # Auto-fix pattern: Add file validation to upload endpoints
         for py_file in Path("src/cloud-server/app/routers").rglob("*.py"):
             with open(py_file, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
+
             original_content = content
-            
+
             # Check if file has UploadFile but no validation
             if "UploadFile" in content and "validate_upload_file" not in content:
                 # Add import if missing
@@ -284,28 +284,28 @@ jobs:
                     for i, line in enumerate(lines):
                         if line.startswith('from app.') and 'import' in line:
                             import_line_idx = i
-                    
+
                     if import_line_idx >= 0:
                         lines.insert(import_line_idx + 1, "from app.core.security.enhanced_security import get_enhanced_security")
                         content = '\n'.join(lines)
-                
+
                 # Add Path import if missing
                 if "from pathlib import Path" not in content:
                     content = content.replace(
-                        "from typing import", 
+                        "from typing import",
                         "from pathlib import Path\nfrom typing import"
                     )
-            
+
             if content != original_content:
                 with open(py_file, 'w', encoding='utf-8') as f:
                     f.write(content)
                 fixes_applied.append(f"Added security imports to {py_file}")
-        
+
         if fixes_applied:
             print("Applied auto-fixes:")
             for fix in fixes_applied:
                 print(f"  - {fix}")
-            
+
             # Set flag for commit
             with open(os.environ['GITHUB_ENV'], 'a') as f:
                 f.write("AUTO_FIXES_APPLIED=true\n")
@@ -345,7 +345,7 @@ jobs:
         script: |
           const fs = require('fs');
           const report = fs.readFileSync('security-report.md', 'utf8');
-          
+
           await github.rest.issues.createComment({
             owner: context.repo.owner,
             repo: context.repo.repo,

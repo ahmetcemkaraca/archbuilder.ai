@@ -46,7 +46,7 @@
     },
     {
       "name": "app.ai.interfaces",
-      "exports": ["AIClient", "OpenAIClient", "VertexClient"]
+      "exports": ["AIClient", "BaseAIClient"]
     },
     {
       "name": "revit.addin.services.phase_manager",
@@ -191,6 +191,22 @@
     {
       "name": "app.utils.pagination",
       "exports": ["PaginationHelper", "PaginatedResult"]
+    },
+    {
+      "name": "app.core.security.enhanced_security",
+      "exports": ["EnhancedSecurityValidator", "get_enhanced_security"]
+    },
+    {
+      "name": "app.core.security.distributed_threat_tracker",
+      "exports": ["DistributedThreatTracker", "get_threat_tracker", "initialize_threat_tracker"]
+    },
+    {
+      "name": "app.core.security.comprehensive_middleware",
+      "exports": ["ComprehensiveSecurityMiddleware", "SecurityViolation", "create_comprehensive_security_middleware"]
+    },
+    {
+      "name": "app.ai.legacy_stubs",
+      "exports": ["OpenAIClient", "VertexClient"]
     }
   ]
 }

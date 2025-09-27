@@ -43,18 +43,18 @@ async def upload_chunk(
     upload_id: str = Form(...), index: int = Form(...), file: UploadFile = File(...)
 ) -> Dict[str, Any]:
     content = await file.read()
-    
+
     # Enhanced security validation for file chunks
     if file.filename:  # Only validate if filename is available
         security_validator = get_enhanced_security()
         file_path = Path(file.filename)
-        
+
         validation_result = security_validator.validate_upload_file(file_path, content)
-        
+
         if not validation_result['is_valid']:
             error_msg = f"File validation failed for {file.filename}: {', '.join(validation_result['errors'])}"
             raise HTTPException(status_code=400, detail=error_msg)
-    
+
     storage.write_chunk(upload_id, index, content)
     return envelope(True, {"received": index})
 

@@ -1,0 +1,48 @@
+# ArchBuilder.AI Code Ownership Rules
+# More specific rules override general ones
+
+# Critical infrastructure and configuration files
+/.github/ @ahmetcemkaraca
+/.github/workflows/ @ahmetcemkaraca
+/scripts/ @ahmetcemkaraca
+/docker-compose*.yml @ahmetcemkaraca
+/k8s/ @ahmetcemkaraca
+/helm/ @ahmetcemkaraca
+
+# Documentation and governance
+/docs/governance.md @ahmetcemkaraca
+/CONTRIBUTING.md @ahmetcemkaraca
+/SECURITY.md @ahmetcemkaraca
+/README.md @ahmetcemkaraca
+/CHANGELOG.md @ahmetcemkaraca
+
+# Registry and context management (critical for system integrity)
+/docs/registry/ @ahmetcemkaraca
+/.mds/context/ @ahmetcemkaraca
+/version.md @ahmetcemkaraca
+
+# Cloud server critical components
+/src/cloud-server/app/main.py @ahmetcemkaraca
+/src/cloud-server/app/core/ @ahmetcemkaraca
+/src/cloud-server/app/services/ @ahmetcemkaraca
+
+# Desktop app critical components  
+/src/desktop-app/App.xaml @ahmetcemkaraca
+/src/desktop-app/App.xaml.cs @ahmetcemkaraca
+/src/desktop-app/Services/ @ahmetcemkaraca
+
+# Revit plugin critical components
+/src/revit-plugin/ArchBuilderRevit.addin @ahmetcemkaraca
+/src/revit-plugin/Services/ @ahmetcemkaraca
+/src/revit-plugin/Commands/ @ahmetcemkaraca
+
+# Instruction and rule files
+/.github/instructions/ @ahmetcemkaraca
+/.cursor/rules/ @ahmetcemkaraca
+
+# Security-related files require extra review
+/src/cloud-server/app/core/security/ @ahmetcemkaraca
+/src/cloud-server/app/middleware/ @ahmetcemkaraca
+
+# Default fallback - all other files
+* @ahmetcemkaraca

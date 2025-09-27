@@ -6,11 +6,12 @@ Provides advanced security features including:
 - MIME type verification
 - File content analysis
 - Security threat detection
+- Distributed threat tracking (Redis-based)
 """
 
 import logging
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 
 try:
     import magic
@@ -19,23 +20,26 @@ except ImportError:
     magic = None
     MAGIC_AVAILABLE = False
 
+# Distributed threat tracking will be imported when needed
+# from app.core.security.distributed_threat_tracker import get_threat_tracker
+
 logger = logging.getLogger(__name__)
 
 
 class EnhancedSecurityValidator:
     """Enhanced security validator with file type validation"""
-    
+
     # Dangerous file extensions that should always be blocked
     DANGEROUS_EXTENSIONS = {
         '.exe', '.bat', '.cmd', '.com', '.pif', '.scr', '.vbs', '.js', '.jar',
         '.sh', '.py', '.php', '.asp', '.aspx', '.jsp', '.pl', '.rb', '.go'
     }
-    
+
     # Allowed file extensions by category
     ALLOWED_CAD_EXTENSIONS = {'.dwg', '.dxf', '.ifc', '.rvt', '.3dm', '.step', '.iges'}
     ALLOWED_DOC_EXTENSIONS = {'.pdf', '.doc', '.docx', '.txt', '.rtf'}
     ALLOWED_IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'}
-    
+
     def __init__(self):
         """Initialize enhanced security validator"""
         if MAGIC_AVAILABLE:
@@ -47,15 +51,15 @@ class EnhancedSecurityValidator:
         else:
             self.file_magic = None
             logger.info("python-magic not available, MIME validation disabled")
-    
+
     def validate_upload_file(self, file_path: Path, content: bytes) -> Dict[str, any]:
         """
         Comprehensive file validation
-        
+
         Args:
             file_path: Path object with file name and extension
             content: File content as bytes
-            
+
         Returns:
             Dict with validation results
         """
@@ -65,12 +69,12 @@ class EnhancedSecurityValidator:
             'warnings': [],
             'file_info': {}
         }
-        
+
         # Basic extension validation
         if not self._validate_file_type(file_path, content):
             result['is_valid'] = False
             result['errors'].append(f"File type validation failed for {file_path.name}")
-        
+
         # File size validation
         file_size = len(content)
         if file_size == 0:
@@ -79,13 +83,13 @@ class EnhancedSecurityValidator:
         elif file_size > 100 * 1024 * 1024:  # 100MB limit
             result['is_valid'] = False
             result['errors'].append("File size exceeds 100MB limit")
-        
+
         # Content analysis
         content_analysis = self._analyze_file_content(content)
         result['file_info'].update(content_analysis)
-        
+
         return result
-    
+
     def _validate_file_type(self, file_path: Path, content: bytes) -> bool:
         """Validate file type using magic numbers and extension"""
 
@@ -99,8 +103,8 @@ class EnhancedSecurityValidator:
 
         # Check if extension is in allowed lists
         allowed_extensions = (
-            self.ALLOWED_CAD_EXTENSIONS | 
-            self.ALLOWED_DOC_EXTENSIONS | 
+            self.ALLOWED_CAD_EXTENSIONS |
+            self.ALLOWED_DOC_EXTENSIONS |
             self.ALLOWED_IMAGE_EXTENSIONS
         )
 
@@ -117,7 +121,7 @@ class EnhancedSecurityValidator:
                 mime_mapping = {
                     '.pdf': 'application/pdf',
                     '.jpg': 'image/jpeg',
-                    '.jpeg': 'image/jpeg', 
+                    '.jpeg': 'image/jpeg',
                     '.png': 'image/png',
                     '.gif': 'image/gif',
                     '.txt': 'text/plain',
@@ -138,7 +142,7 @@ class EnhancedSecurityValidator:
                 return False
 
         return True
-    
+
     def _analyze_file_content(self, content: bytes) -> Dict[str, any]:
         """Analyze file content for additional security checks"""
         analysis = {
@@ -146,10 +150,10 @@ class EnhancedSecurityValidator:
             'has_null_bytes': b'\x00' in content[:1024],
             'suspicious_patterns': []
         }
-        
+
         # Check for suspicious patterns in first 1KB
         sample = content[:1024]
-        
+
         # Look for script tags, executable headers, etc.
         suspicious_patterns = [
             b'<script',
@@ -157,11 +161,11 @@ class EnhancedSecurityValidator:
             b'MZ',  # PE executable header
             b'\x7fELF',  # ELF executable header
         ]
-        
+
         for pattern in suspicious_patterns:
             if pattern in sample:
                 analysis['suspicious_patterns'].append(pattern.decode('utf-8', errors='ignore'))
-        
+
         return analysis
 
 

@@ -21,6 +21,9 @@ import numpy as np
 from pydantic import BaseModel
 from structlog import get_logger
 
+# TR: Structured logging setup
+logger = get_logger(__name__)
+
 # CAD processing imports
 try:
     import ezdxf
@@ -51,8 +54,6 @@ except ImportError:
 
 # Temporary type definitions for standalone operation
 from typing import List, Dict, Any
-
-logger = get_logger(__name__)
 
 
 class CADFormat(str, Enum):

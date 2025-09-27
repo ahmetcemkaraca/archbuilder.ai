@@ -10,6 +10,16 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 
+class AuthenticationError(Exception):
+    """Authentication related errors"""
+    pass
+
+
+class AuthorizationError(Exception):
+    """Authorization related errors"""
+    pass
+
+
 def envelope(success: bool, data: Any | None = None, error: Dict[str, Any] | None = None) -> Dict[str, Any]:
     return {"success": success, "data": data, "error": error}
 

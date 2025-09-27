@@ -466,3 +466,4 @@ async def generate_user_error_report(user_id: str) -> Dict[str, Any]:
 async def generate_security_error_report() -> Dict[str, Any]:
     """Generate security-focused error report"""
     return await _error_reporter.generate_security_error_report()
+

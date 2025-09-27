@@ -576,3 +576,4 @@ _rag_filter = RAGResultFilter()
 async def filter_rag_result(rag_result: RAGResult) -> Dict[str, Any]:
     """Filter a RAG result"""
     return await _rag_filter.filter_rag_result(rag_result)
+

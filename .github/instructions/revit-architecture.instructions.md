@@ -1,671 +1,721 @@
 ---
 applyTo: "src/revit-plugin/**/*.cs,src/desktop-app/**/*.cs,src/revit-plugin/**/*Service*.cs,src/revit-plugin/**/*Repository*.cs,src/revit-plugin/**/*Model*.cs"
-description: Revit Architecture role — element creation, family management, BIM model structure, geometric operations for ArchBuilder.AI with multi-format CAD support.
+description: Revit Architecture role — element creation, family management, BIM model structure, geometric operations for ArchBuilder.AI with direct Revit API only.
 ---
-As Revit Architecture Developer:
-- Design efficient element creation patterns with proper transactions
-- Implement family management and parameter handling systems
-- Create geometric validation and constraint checking algorithms
-- Build BIM model structure with proper element relationships
-- Integrate Dynamo as geometric script engine for complex operations
-- **NO AI PROCESSING**: Focus on executing validated layouts from Python MCP Server
 
-Dynamo Integration for Complex Geometry:
+# Revit Architecture Development Guidelines
+
+## Core Principles
+As Revit Architecture Developer:
+- **REVIT API ONLY**: Use direct Revit API calls for all geometry and element creation
+- **NO EXTERNAL ENGINES**: No Dynamo, pyRevit or other external script engines - keep it simple
+- **NO AI PROCESSING**: Focus on executing validated layouts from Cloud API Server
+- Design efficient element creation patterns with proper transactions and rollback mechanisms
+- Implement comprehensive family management and parameter handling systems  
+- Create robust geometric validation and constraint checking algorithms
+- Build sophisticated BIM model structure with proper element relationships and spatial hierarchy
+- Maintain data integrity through proper transaction management and error handling
+- Implement performance optimization for large-scale architectural projects
+- Follow existing ElementCreationService patterns in the codebase
+
+## Transaction Management Pattern
+Follow the existing pattern used in ElementCreationService:
+
 ```csharp
-public class DynamoGeometryEngine
+public class RevitTransactionManager
 {
-    private readonly ILogger<DynamoGeometryEngine> _logger;
-    private readonly string _dynamoScriptsPath;
+    private readonly ILogger<RevitTransactionManager> _logger;
     
-    public DynamoGeometryEngine(ILogger<DynamoGeometryEngine> logger, IConfiguration config)
+    public RevitTransactionManager(ILogger<RevitTransactionManager> logger)
     {
         _logger = logger;
-        _dynamoScriptsPath = config.GetValue<string>("Dynamo:ScriptsPath");
     }
     
-    public async Task<GeometryResult> ExecuteComplexGeometry(
-        GeometryParameters parameters,
+    public T ExecuteInTransaction<T>(
+        Document document, 
+        string transactionName, 
+        Func<Transaction, T> operation, 
+        string correlationId = null)
+    {
+        using var transaction = new Transaction(document, transactionName);
+        transaction.Start();
+        
+        try
+        {
+            _logger.LogInformation("Transaction başlatıldı: {TransactionName}", 
+                transactionName, correlation_id: correlationId);
+            
+            var result = operation(transaction);
+            
+            if (transaction.Commit() == TransactionStatus.Committed)
+            {
+                _logger.LogInformation("Transaction başarılı: {TransactionName}", 
+                    transactionName, correlation_id: correlationId);
+                return result;
+            }
+            else
+            {
+                _logger.LogWarning("Transaction commit başarısız: {TransactionName}", 
+                    transactionName, correlation_id: correlationId);
+                throw new InvalidOperationException($"Transaction {transactionName} commit başarısız");
+            }
+        }
+        catch (Exception ex)
+        {
+            transaction.RollBack();
+            _logger.LogError(ex, "Transaction hata ile geri alındı: {TransactionName}", 
+                transactionName, correlation_id: correlationId);
+            throw;
+        }
+    }
+}
+```
+
+## Element Creation Patterns
+
+### Wall Creation with Revit API
+```csharp
+public class AdvancedElementCreationService : IElementCreationService
+{
+    private readonly ILogger<AdvancedElementCreationService> _logger;
+    private readonly ITransactionService _transactionService;
+    private readonly FamilyManager _familyManager;
+    
+    public AdvancedElementCreationService(
+        ILogger<AdvancedElementCreationService> logger,
+        ITransactionService transactionService,
+        FamilyManager familyManager)
+    {
+        _logger = logger;
+        _transactionService = transactionService;
+        _familyManager = familyManager;
+    }
+    
+    public List<Wall> CreateComplexWalls(
+        Document document, 
+        List<WallDefinition> wallDefinitions, 
+        string correlationId)
+    {
+        var createdWalls = new List<Wall>();
+        
+        var result = _transactionService.ExecuteTransaction(document, "Create Complex Walls", transaction =>
+        {
+            foreach (var wallDef in wallDefinitions)
+            {
+                try
+                {
+                    Wall wall;
+                    
+                    // Handle different wall types with direct Revit API
+                    if (wallDef.IsCurved && wallDef.CurvePoints?.Count > 2)
+                    {
+                        // Create curved wall using Revit API
+                        wall = CreateCurvedWall(document, wallDef, correlationId);
+                    }
+                    else if (wallDef.HasComplexProfile)
+                    {
+                        // Create wall with custom profile
+                        wall = CreateProfileWall(document, wallDef, correlationId);
+                    }
+                    else
+                    {
+                        // Standard straight wall
+                        wall = CreateStraightWall(document, wallDef, correlationId);
+                    }
+                    
+                    if (wall != null)
+                    {
+                        // Apply advanced parameters
+                        ApplyWallParameters(wall, wallDef.Parameters);
+                        
+                        // Handle wall joins and connections
+                        HandleWallConnections(document, wall, wallDef.JoinBehavior);
+                        
+                        createdWalls.Add(wall);
+                        
+                        _logger.LogDebug("Karmaşık duvar oluşturuldu", 
+                            wall_id: wall.Id.IntegerValue,
+                            wall_type: wallDef.WallTypeName,
+                            is_curved: wallDef.IsCurved,
+                            correlation_id: correlationId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Karmaşık duvar oluşturma hatası", 
+                        wall_definition: wallDef.ToString(),
+                        correlation_id: correlationId);
+                }
+            }
+        }, correlationId);
+        
+        return createdWalls;
+    }
+    
+    private Wall CreateCurvedWall(Document document, WallDefinition wallDef, string correlationId)
+    {
+        try
+        {
+            // Create curve from points using Revit API geometry
+            var curve = CreateCurveFromPoints(wallDef.CurvePoints);
+            
+            if (curve == null)
+            {
+                _logger.LogWarning("Eğrisel duvar için curve oluşturulamadı", correlation_id: correlationId);
+                return null;
+            }
+            
+            var wallType = GetWallType(document, wallDef.WallTypeName);
+            var level = GetLevel(document, wallDef.LevelName);
+            
+            // Use Revit API to create curved wall
+            var wall = Wall.Create(document, curve, wallType.Id, level.Id, 
+                wallDef.Height, 0, false, false);
+            
+            _logger.LogDebug("Eğrisel duvar oluşturuldu", 
+                wall_id: wall?.Id.IntegerValue,
+                curve_type: curve.GetType().Name,
+                correlation_id: correlationId);
+            
+            return wall;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Eğrisel duvar oluşturma hatası", correlation_id: correlationId);
+            return null;
+        }
+    }
+    
+    private Curve CreateCurveFromPoints(List<XYZ> points)
+    {
+        if (points == null || points.Count < 2)
+            return null;
+        
+        try
+        {
+            if (points.Count == 2)
+            {
+                // Simple line
+                return Line.CreateBound(points[0], points[1]);
+            }
+            else if (points.Count == 3)
+            {
+                // Arc through 3 points
+                return Arc.Create(points[0], points[2], points[1]);
+            }
+            else
+            {
+                // Spline or complex curve - use NurbSpline
+                var nurbs = NurbSpline.CreateCurve(points);
+                return nurbs;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Fallback to line between first and last points
+            return Line.CreateBound(points[0], points[points.Count - 1]);
+        }
+    }
+}
+```
+
+### Family Management System
+```csharp
+public class EnhancedFamilyManager
+{
+    private readonly Document document;
+    private readonly ILogger<EnhancedFamilyManager> _logger;
+    private readonly Dictionary<string, FamilySymbol> familyCache;
+    private readonly ITransactionService _transactionService;
+    
+    public EnhancedFamilyManager(
+        Document document, 
+        ITransactionService transactionService,
+        ILogger<EnhancedFamilyManager> logger)
+    {
+        this.document = document;
+        this._transactionService = transactionService;
+        _logger = logger;
+        familyCache = new Dictionary<string, FamilySymbol>();
+        
+        InitializeFamilyCache();
+    }
+    
+    public async Task<FamilySymbol> GetFamilySymbolAsync(
+        string familyName, 
+        string typeName = null, 
+        string correlationId = null)
+    {
+        var key = GenerateFamilyKey(familyName, typeName);
+        
+        _logger.LogDebug("Family symbol aranıyor", 
+            family_name: familyName, 
+            type_name: typeName, 
+            correlation_id: correlationId);
+        
+        // Cache kontrolü
+        if (familyCache.TryGetValue(key, out var cachedSymbol) && IsSymbolValid(cachedSymbol))
+        {
+            _logger.LogDebug("Family symbol cache'den bulundu", 
+                family_key: key, 
+                correlation_id: correlationId);
+            return cachedSymbol;
+        }
+        
+        // Document'te arama
+        var familySymbol = SearchFamilyInDocument(familyName, typeName, correlationId);
+        
+        if (familySymbol == null)
+        {
+            // Kütüphaneden yükleme
+            familySymbol = await LoadFamilyFromLibrary(familyName, typeName, correlationId);
+        }
+        
+        if (familySymbol != null)
+        {
+            // Symbol'ü aktive et
+            await EnsureFamilySymbolActive(familySymbol, correlationId);
+            
+            // Cache'e ekle
+            familyCache[key] = familySymbol;
+            
+            _logger.LogInformation("Family symbol başarıyla alındı", 
+                family_name: familyName,
+                type_name: typeName,
+                symbol_id: familySymbol.Id.IntegerValue,
+                correlation_id: correlationId);
+        }
+        else
+        {
+            _logger.LogWarning("Family symbol bulunamadı", 
+                family_name: familyName,
+                type_name: typeName,
+                correlation_id: correlationId);
+        }
+        
+        return familySymbol;
+    }
+    
+    private async Task<FamilySymbol> LoadFamilyFromLibrary(
+        string familyName, 
+        string typeName, 
         string correlationId)
     {
         try
         {
-            // Determine if geometry is complex enough for Dynamo
-            if (parameters.ComplexityLevel == GeometryComplexity.Simple)
-            {
-                return await CreateSimpleGeometryWithRevitAPI(parameters);
-            }
-            
-            // Generate Dynamo script for complex geometry
-            var scriptPath = await GenerateDynamoScript(parameters, correlationId);
-            
-            _logger.LogInformation("Executing Dynamo script for complex geometry",
-                correlation_id: correlationId,
-                script_path: scriptPath,
-                complexity: parameters.ComplexityLevel.ToString());
-            
-            // Execute Dynamo script
-            var dynamoResult = await ExecuteDynamoScript(scriptPath, parameters);
-            
-            // Convert Dynamo output to Revit elements
-            var revitElements = await ConvertDynamoToRevitElements(dynamoResult);
-            
-            return new GeometryResult
-            {
-                Elements = revitElements,
-                GeneratedBy = "Dynamo",
-                ScriptPath = scriptPath,
-                ExecutionTime = dynamoResult.ExecutionTime
-            };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Dynamo geometry execution failed", correlation_id: correlationId);
-            
-            // Fallback to simple Revit API geometry
-            _logger.LogInformation("Falling back to simple Revit API geometry", correlation_id: correlationId);
-            return await CreateSimpleGeometryWithRevitAPI(parameters);
-        }
-    }
-    
-    private async Task<string> GenerateDynamoScript(GeometryParameters parameters, string correlationId)
-    {
-        var scriptTemplate = parameters.ComplexityLevel switch
-        {
-            GeometryComplexity.CurvedWalls => await LoadTemplate("curved_walls.dyn"),
-            GeometryComplexity.ComplexFacade => await LoadTemplate("parametric_facade.dyn"), 
-            GeometryComplexity.OrganicShapes => await LoadTemplate("organic_geometry.dyn"),
-            _ => await LoadTemplate("basic_geometry.dyn")
-        };
-        
-        // Replace parameters in template
-        var script = scriptTemplate
-            .Replace("{{BuildingWidth}}", parameters.BuildingWidth.ToString())
-            .Replace("{{BuildingLength}}", parameters.BuildingLength.ToString())
-            .Replace("{{FloorHeight}}", parameters.FloorHeight.ToString())
-            .Replace("{{CorrelationId}}", correlationId);
-        
-        var scriptPath = Path.Combine(_dynamoScriptsPath, $"generated_{correlationId}.dyn");
-        await File.WriteAllTextAsync(scriptPath, script);
-        
-        return scriptPath;
-    }
-}
-
-public enum GeometryComplexity
-{
-    Simple,        // Direct Revit API
-    CurvedWalls,   // Dynamo required
-    ComplexFacade, // Dynamo + custom nodes
-    OrganicShapes  // Advanced Dynamo
-}
-```
-
-Enhanced Element Creation with Dynamo Support:
-```csharp
-public class LayoutExecutor
-{
-    private readonly Document document;
-    private readonly ILogger logger;
-    private readonly DynamoGeometryEngine dynamoEngine;
-    
-    public LayoutExecutor(Document document, DynamoGeometryEngine dynamoEngine)
-    {
-        this.document = document;
-        this.logger = Log.ForContext<LayoutExecutor>();
-        this.dynamoEngine = dynamoEngine;
-    }
-    
-    public async Task CreateLayoutAsync(LayoutResult layout, string correlationId)
-    {
-        using (var transaction = new Transaction(document, "Create AI Layout"))
-        {
-            transaction.Start();
-            
-            try
-            {
-                // Analyze geometry complexity
-                var complexityAnalysis = AnalyzeGeometryComplexity(layout);
-                
-                if (complexityAnalysis.RequiresDynamo)
-                {
-                    _logger.LogInformation("Complex geometry detected, using Dynamo",
-                        correlation_id: correlationId,
-                        complexity: complexityAnalysis.ComplexityLevel.ToString());
-                    
-                    // Use Dynamo for complex geometry
-                    var geometryParams = CreateGeometryParameters(layout);
-                    var geometryResult = await dynamoEngine.ExecuteComplexGeometry(geometryParams, correlationId);
-                    
-                    // Apply Dynamo-generated elements
-                    ApplyDynamoElements(geometryResult.Elements);
-                }
-                else
-                {
-                    // Use direct Revit API for simple geometry
-                    _logger.LogInformation("Simple geometry, using direct Revit API", correlation_id: correlationId);
-                    await CreateElementsWithRevitAPI(layout);
-                }
-                
-                // Create rooms and spaces
-                CreateRooms(layout.Rooms);
-                
-                // Apply AI-generated parameters and metadata
-                ApplyLayoutMetadata(layout, correlationId);
-                
-                // Validate geometric relationships
-                ValidateElementRelationships();
-                
-                transaction.Commit();
-                
-                _logger.LogInformation("Layout created successfully",
-                    correlation_id: correlationId,
-                    wall_count: layout.Walls?.Count ?? 0,
-                    door_count: layout.Doors?.Count ?? 0,
-                    used_dynamo: complexityAnalysis.RequiresDynamo);
-            }
-            catch (Exception ex)
-            {
-                transaction.RollBack();
-                _logger.LogError(ex, "Failed to create layout", correlation_id: correlationId);
-                throw;
-            }
-        }
-    }
-    
-    private ComplexityAnalysis AnalyzeGeometryComplexity(LayoutResult layout)
-    {
-        var analysis = new ComplexityAnalysis();
-        
-        // Check for curved walls
-        var curvedWalls = layout.Walls?.Where(w => w.IsCurved).Count() ?? 0;
-        if (curvedWalls > 0)
-        {
-            analysis.ComplexityLevel = GeometryComplexity.CurvedWalls;
-            analysis.RequiresDynamo = true;
-        }
-        
-        // Check for complex facade patterns
-        var complexWindows = layout.Windows?.Where(w => w.IsParametric).Count() ?? 0;
-        if (complexWindows > 5)
-        {
-            analysis.ComplexityLevel = GeometryComplexity.ComplexFacade;
-            analysis.RequiresDynamo = true;
-        }
-        
-        // Check for organic or complex shapes
-        if (layout.CustomGeometry?.Any() == true)
-        {
-            analysis.ComplexityLevel = GeometryComplexity.OrganicShapes;
-            analysis.RequiresDynamo = true;
-        }
-        
-        analysis.ReasonForComplexity = GenerateComplexityReason(analysis);
-        
-        return analysis;
-    }
-}
-
-public class ComplexityAnalysis
-{
-    public GeometryComplexity ComplexityLevel { get; set; } = GeometryComplexity.Simple;
-    public bool RequiresDynamo { get; set; } = false;
-    public string ReasonForComplexity { get; set; } = "";
-    public List<string> DynamoNodes { get; set; } = new();
-}
-```
-                logger.Information("Layout successfully created", 
-                    wall_count = layout.Walls.Count,
-                    door_count = layout.Doors.Count,
-                    room_count = layout.Rooms.Count);
-            }
-            catch (Exception ex)
-            {
-                transaction.RollBack();
-                logger.Error(ex, "Failed to create layout");
-                throw;
-            }
-        }
-    }
-    
-    private List<ElementId> CreateWalls(List<WallDefinition> wallDefinitions)
-    {
-        var wallIds = new List<ElementId>();
-        var wallType = GetDefaultWallType();
-        var level = GetActiveLevel();
-        
-        foreach (var wallDef in wallDefinitions)
-        {
-            try
-            {
-                // Convert AI coordinates to Revit units
-                var startPoint = new XYZ(
-                    UnitUtils.ConvertToInternalUnits(wallDef.Start.X, UnitTypeId.Millimeters),
-                    UnitUtils.ConvertToInternalUnits(wallDef.Start.Y, UnitTypeId.Millimeters),
-                    0);
-                var endPoint = new XYZ(
-                    UnitUtils.ConvertToInternalUnits(wallDef.End.X, UnitTypeId.Millimeters),
-                    UnitUtils.ConvertToInternalUnits(wallDef.End.Y, UnitTypeId.Millimeters),
-                    0);
-                
-                var line = Line.CreateBound(startPoint, endPoint);
-                var wall = Wall.Create(document, line, wallType.Id, level.Id, 
-                                     UnitUtils.ConvertToInternalUnits(wallDef.Height, UnitTypeId.Millimeters), 
-                                     0, false, false);
-                
-                // Set AI-generated parameters
-                if (wallDef.Parameters != null)
-                {
-                    SetElementParameters(wall, wallDef.Parameters);
-                }
-                
-                wallIds.Add(wall.Id);
-                logger.Debug("Wall created", wall_id = wall.Id.IntegerValue);
-            }
-            catch (Exception ex)
-            {
-                logger.Warning(ex, "Failed to create wall", wall_definition = wallDef);
-                throw;
-            }
-        }
-        
-        return wallIds;
-    }
-    
-    private void CreateDoors(List<DoorDefinition> doorDefinitions, List<ElementId> wallIds)
-    {
-        var doorFamilySymbol = GetDoorFamilySymbol("Standard Door");
-        
-        foreach (var doorDef in doorDefinitions)
-        {
-            try
-            {
-                var hostWall = document.GetElement(wallIds[doorDef.WallIndex]) as Wall;
-                if (hostWall == null)
-                {
-                    logger.Warning("Invalid wall index for door", wall_index = doorDef.WallIndex);
-                    continue;
-                }
-                
-                // Calculate door position on wall
-                var wallCurve = (hostWall.Location as LocationCurve).Curve;
-                var doorPoint = wallCurve.Evaluate(doorDef.PositionRatio, false);
-                
-                // Create door instance
-                var door = document.Create.NewFamilyInstance(
-                    doorPoint, doorFamilySymbol, hostWall, 
-                    document.ActiveView.GenLevel, StructuralType.NonStructural);
-                
-                // Set door width from AI
-                var widthParam = door.LookupParameter("Width");
-                if (widthParam != null && !widthParam.IsReadOnly)
-                {
-                    var widthInFeet = UnitUtils.ConvertToInternalUnits(doorDef.Width, UnitTypeId.Millimeters);
-                    widthParam.Set(widthInFeet);
-                }
-                
-                logger.Debug("Door created", door_id = door.Id.IntegerValue, wall_id = hostWall.Id.IntegerValue);
-            }
-            catch (Exception ex)
-            {
-                logger.Warning(ex, "Failed to create door", door_definition = doorDef);
-            }
-        }
-    }
-}
-```
-
-Family Management System:
-```csharp
-public class FamilyManager
-{
-    private readonly Document document;
-    private readonly Dictionary<string, FamilySymbol> familyCache;
-    
-    public FamilyManager(Document document)
-    {
-        this.document = document;
-        this.familyCache = new Dictionary<string, FamilySymbol>();
-        CacheFamilySymbols();
-    }
-    
-    public FamilySymbol GetFamilySymbol(string familyName, string typeName = null)
-    {
-        var key = $"{familyName}_{typeName ?? "Default"}";
-        
-        if (familyCache.TryGetValue(key, out var cachedSymbol))
-        {
-            return cachedSymbol;
-        }
-        
-        // Search for family in document
-        var familySymbol = new FilteredElementCollector(document)
-            .OfClass(typeof(FamilySymbol))
-            .Cast<FamilySymbol>()
-            .FirstOrDefault(fs => fs.FamilyName.Equals(familyName, StringComparison.OrdinalIgnoreCase) &&
-                                 (typeName == null || fs.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase)));
-        
-        if (familySymbol == null)
-        {
-            // Try to load family from library
-            familySymbol = LoadFamilyFromLibrary(familyName, typeName);
-        }
-        
-        if (familySymbol != null && !familySymbol.IsActive)
-        {
-            familySymbol.Activate();
-        }
-        
-        familyCache[key] = familySymbol;
-        return familySymbol;
-    }
-    
-    private FamilySymbol LoadFamilyFromLibrary(string familyName, string typeName)
-    {
-        try
-        {
-            var familyPath = GetFamilyPath(familyName);
+            var familyPath = await GetFamilyPathAsync(familyName, correlationId);
             if (string.IsNullOrEmpty(familyPath) || !File.Exists(familyPath))
             {
-                logger.Warning("Family file not found", family_name = familyName);
+                _logger.LogWarning("Family dosyası bulunamadı", 
+                    family_name: familyName, 
+                    expected_path: familyPath,
+                    correlation_id: correlationId);
                 return null;
             }
             
-            Family family;
-            if (document.LoadFamily(familyPath, out family))
-            {
-                var symbolIds = family.GetFamilySymbolIds();
-                foreach (var symbolId in symbolIds)
+            return _transactionService.ExecuteTransaction(document, 
+                $"Load Family: {familyName}",
+                transaction =>
                 {
-                    var symbol = document.GetElement(symbolId) as FamilySymbol;
-                    if (typeName == null || symbol.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase))
+                    var loadOptions = new ArchBuilderFamilyLoadOptions(_logger, correlationId);
+                    
+                    if (document.LoadFamily(familyPath, loadOptions, out Family family))
                     {
-                        return symbol;
+                        _logger.LogInformation("Family başarıyla yüklendi", 
+                            family_name: familyName,
+                            family_path: familyPath,
+                            family_id: family.Id.IntegerValue,
+                            correlation_id: correlationId);
+                        
+                        // Symbol arama
+                        var symbolIds = family.GetFamilySymbolIds();
+                        foreach (var symbolId in symbolIds)
+                        {
+                            var symbol = document.GetElement(symbolId) as FamilySymbol;
+                            if (typeName == null || symbol.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return symbol;
+                            }
+                        }
+                        
+                        _logger.LogWarning("Family yüklendi ancak istenen tip bulunamadı", 
+                            family_name: familyName,
+                            type_name: typeName,
+                            available_types: symbolIds.Count,
+                            correlation_id: correlationId);
                     }
-                }
-            }
+                    else
+                    {
+                        _logger.LogError("Family yüklenemedi", 
+                            family_name: familyName,
+                            family_path: familyPath,
+                            correlation_id: correlationId);
+                    }
+                    
+                    return null;
+                },
+                correlationId);
         }
         catch (Exception ex)
         {
-            logger.Warning(ex, "Failed to load family", family_name = familyName);
+            _logger.LogError(ex, "Family yükleme hatası", 
+                family_name: familyName, 
+                correlation_id: correlationId);
+            return null;
         }
-        
-        return null;
+    }
+}
+
+public class ArchBuilderFamilyLoadOptions : IFamilyLoadOptions
+{
+    private readonly ILogger _logger;
+    private readonly string _correlationId;
+    
+    public ArchBuilderFamilyLoadOptions(ILogger logger, string correlationId)
+    {
+        _logger = logger;
+        _correlationId = correlationId;
     }
     
-    public void ConfigureFamilyForAI(FamilySymbol familySymbol, Dictionary<string, object> aiParameters)
+    public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
     {
-        """Configure family parameters based on AI requirements"""
-        
-        foreach (var paramPair in aiParameters)
-        {
-            var parameter = familySymbol.LookupParameter(paramPair.Key);
-            if (parameter != null && !parameter.IsReadOnly)
-            {
-                SetParameterValue(parameter, paramPair.Value);
-            }
-        }
+        overwriteParameterValues = true;
+        _logger.LogDebug("Family zaten kullanımda, parametreler üzerine yazılacak", 
+            correlation_id: _correlationId);
+        return true;
+    }
+    
+    public bool OnSharedFamilyFound(
+        Family sharedFamily, 
+        bool familyInUse, 
+        out FamilySource source, 
+        out bool overwriteParameterValues)
+    {
+        source = FamilySource.Family;
+        overwriteParameterValues = true;
+        _logger.LogDebug("Paylaşılan family bulundu, kullanılacak", 
+            shared_family_name: sharedFamily.Name,
+            correlation_id: _correlationId);
+        return true;
     }
 }
 ```
 
-Dynamo Integration as Script Engine:
+## Geometric Validation System
 ```csharp
-public class DynamoScriptEngine
+public class RevitGeometricValidator
 {
-    private readonly ILogger logger;
-    private DynamoModel dynamoModel;
+    private readonly ILogger<RevitGeometricValidator> _logger;
     
-    public DynamoScriptEngine()
+    public RevitGeometricValidator(ILogger<RevitGeometricValidator> logger)
     {
-        this.logger = Log.ForContext<DynamoScriptEngine>();
-        InitializeDynamo();
+        _logger = logger;
     }
     
-    public GeometryResult ExecuteGeometricOperation(GeometryScript script, GeometryParameters parameters)
+    public ValidationResult ValidateLayout(LayoutResult layout, string correlationId)
     {
-        """Execute complex geometric operations using Dynamo as script engine"""
+        var result = new ValidationResult { IsValid = true };
+        
+        _logger.LogInformation("Layout geometrik doğrulama başlatılıyor", 
+            wall_count: layout.Walls?.Count ?? 0,
+            door_count: layout.Doors?.Count ?? 0,
+            window_count: layout.Windows?.Count ?? 0,
+            room_count: layout.Rooms?.Count ?? 0,
+            correlation_id: correlationId);
         
         try
         {
-            logger.Information("Executing Dynamo geometric operation", script_type = script.Type);
+            // 1. Wall intersection validation
+            var wallErrors = ValidateWallIntersections(layout.Walls, correlationId);
+            result.Errors.AddRange(wallErrors);
             
-            // Generate Dynamo script from AI parameters
-            var dynamoScript = GenerateDynamoScript(script, parameters);
+            // 2. Room geometry validation
+            var roomErrors = ValidateRoomGeometry(layout.Rooms, correlationId);
+            result.Errors.AddRange(roomErrors);
             
-            // Execute script in Dynamo engine
-            var workspace = WorkspaceModel.FromXmlDocument(dynamoScript);
-            dynamoModel.OpenWorkspace(workspace);
+            // 3. Door and window placement validation
+            var openingErrors = ValidateOpeningPlacements(layout.Doors, layout.Windows, layout.Walls, correlationId);
+            result.Errors.AddRange(openingErrors);
             
-            // Run and get results
-            var runner = new DynamoRunner(dynamoModel);
-            var results = runner.Execute();
+            // 4. Building code compliance
+            var codeErrors = ValidateBuildingCodeCompliance(layout, correlationId);
+            result.Errors.AddRange(codeErrors);
             
-            // Convert Dynamo geometry to Revit geometry
-            var revitGeometry = ConvertDynamoToRevitGeometry(results);
+            // 5. Revit API limitations check
+            var apiLimitErrors = ValidateRevitAPILimitations(layout, correlationId);
+            result.Errors.AddRange(apiLimitErrors);
             
-            return new GeometryResult
-            {
-                Geometry = revitGeometry,
-                Success = true,
-                ExecutionTime = runner.ExecutionTime
-            };
+            result.IsValid = result.Errors.Count == 0;
+            result.Confidence = CalculateGeometricConfidence(layout, result.Errors.Count);
+            
+            _logger.LogInformation("Layout geometrik doğrulama tamamlandı", 
+                is_valid: result.IsValid,
+                error_count: result.Errors.Count,
+                confidence: result.Confidence,
+                correlation_id: correlationId);
+            
+            return result;
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Dynamo script execution failed");
-            return new GeometryResult { Success = false, Error = ex.Message };
+            _logger.LogError(ex, "Geometrik doğrulama hatası", correlation_id: correlationId);
+            result.IsValid = false;
+            result.Errors.Add($"Doğrulama hatası: {ex.Message}");
+            return result;
         }
     }
     
-    private XmlDocument GenerateDynamoScript(GeometryScript script, GeometryParameters parameters)
-    {
-        """Generate Dynamo script XML from AI geometric requirements"""
-        
-        var scriptBuilder = new DynamoScriptBuilder();
-        
-        switch (script.Type)
-        {
-            case GeometryScriptType.ComplexCurtainWall:
-                return scriptBuilder.CreateCurtainWallScript(parameters);
-                
-            case GeometryScriptType.ParametricStair:
-                return scriptBuilder.CreateStairScript(parameters);
-                
-            case GeometryScriptType.AdaptiveRoof:
-                return scriptBuilder.CreateRoofScript(parameters);
-                
-            case GeometryScriptType.CustomMassing:
-                return scriptBuilder.CreateMassingScript(parameters);
-                
-            default:
-                throw new NotSupportedException($"Script type {script.Type} not supported");
-        }
-    }
-    
-    public void CreateAdaptiveFamily(AdaptiveFamilyDefinition definition)
-    {
-        """Create adaptive families using Dynamo for complex AI-generated geometries"""
-        
-        var scriptTemplate = @"
-        // Dynamo script for adaptive family creation
-        import('ProtoGeometry.dll');
-        import('DSCoreNodes.dll');
-        
-        // Create adaptive points from AI coordinates
-        points = List.Create(
-            {0}, {1}, {2}, {3}  // AI-generated points
-        );
-        
-        // Generate adaptive surface
-        surface = NurbsSurface.ByPoints(points);
-        
-        // Apply AI parameters
-        surface = surface.Scale({4}); // AI scale factor
-        
-        return surface;
-        ";
-        
-        var formattedScript = string.Format(scriptTemplate,
-            definition.AdaptivePoints[0],
-            definition.AdaptivePoints[1], 
-            definition.AdaptivePoints[2],
-            definition.AdaptivePoints[3],
-            definition.ScaleFactor);
-        
-        ExecuteScript(formattedScript);
-    }
-}
-```
-
-Geometric Validation and Constraints:
-```csharp
-public class GeometricValidator
-{
-    public ValidationResult ValidateLayout(LayoutResult layout)
+    private List<string> ValidateRevitAPILimitations(LayoutResult layout, string correlationId)
     {
         var errors = new List<string>();
         
-        // Validate wall intersections
-        var wallIntersectionErrors = ValidateWallIntersections(layout.Walls);
-        errors.AddRange(wallIntersectionErrors);
-        
-        // Validate room areas and adjacencies
-        var roomErrors = ValidateRoomGeometry(layout.Rooms);
-        errors.AddRange(roomErrors);
-        
-        // Validate door and window placement
-        var openingErrors = ValidateOpenings(layout.Doors, layout.Windows, layout.Walls);
-        errors.AddRange(openingErrors);
-        
-        // Validate accessibility requirements
-        var accessibilityErrors = ValidateAccessibility(layout);
-        errors.AddRange(accessibilityErrors);
-        
-        return new ValidationResult
+        // Check curve complexity limits
+        foreach (var wall in layout.Walls?.Where(w => w.IsCurved) ?? Enumerable.Empty<WallDefinition>())
         {
-            IsValid = errors.Count == 0,
-            Errors = errors,
-            Confidence = CalculateGeometricConfidence(layout)
-        };
-    }
-    
-    private List<string> ValidateWallIntersections(List<WallDefinition> walls)
-    {
-        var errors = new List<string>();
-        
-        for (int i = 0; i < walls.Count; i++)
-        {
-            for (int j = i + 1; j < walls.Count; j++)
+            if (wall.CurvePoints?.Count > 100)
             {
-                var wall1 = walls[i];
-                var wall2 = walls[j];
-                
-                // Check for overlapping walls
-                if (WallsOverlap(wall1, wall2))
+                errors.Add($"Duvar {wall.Id}: Çok fazla eğri noktası ({wall.CurvePoints.Count}). Revit API limiti: 100");
+            }
+            
+            // Check curve continuity
+            if (wall.CurvePoints?.Count >= 3)
+            {
+                for (int i = 1; i < wall.CurvePoints.Count - 1; i++)
                 {
-                    errors.Add($"Walls {i} and {j} overlap");
-                }
-                
-                // Check for T-junctions and proper connections
-                if (!WallsProperlyConnected(wall1, wall2))
-                {
-                    var intersection = GetWallIntersection(wall1, wall2);
-                    if (intersection.HasValue && !IsValidIntersection(intersection.Value))
+                    var dist = wall.CurvePoints[i].DistanceTo(wall.CurvePoints[i - 1]);
+                    if (dist < 0.01) // 1cm minimum distance
                     {
-                        errors.Add($"Invalid wall connection between walls {i} and {j}");
+                        errors.Add($"Duvar {wall.Id}: Çok yakın eğri noktaları tespit edildi (indeks: {i})");
                     }
                 }
             }
         }
         
+        // Check element count limits
+        var totalElements = (layout.Walls?.Count ?? 0) + 
+                          (layout.Doors?.Count ?? 0) + 
+                          (layout.Windows?.Count ?? 0) + 
+                          (layout.Rooms?.Count ?? 0);
+        
+        if (totalElements > 10000)
+        {
+            errors.Add($"Toplam element sayısı çok yüksek: {totalElements}. Performans sorunları yaşanabilir.");
+        }
+        
         return errors;
     }
+}
+```
+
+## Performance Optimization Strategies
+```csharp
+public class PerformanceOptimizedCreation
+{
+    private readonly Document document;
+    private readonly ILogger<PerformanceOptimizedCreation> _logger;
     
-    private List<string> ValidateRoomGeometry(List<RoomDefinition> rooms)
+    public async Task<ElementCreationResult> CreateElementsBatch(
+        List<ElementDefinition> elements, 
+        string correlationId)
     {
-        var errors = new List<string>();
+        _logger.LogInformation("Batch element oluşturma başlatıldı", 
+            element_count: elements.Count,
+            correlation_id: correlationId);
         
-        foreach (var room in rooms)
+        var result = new ElementCreationResult();
+        var stopwatch = Stopwatch.StartNew();
+        
+        try
         {
-            // Check minimum room area
-            if (room.Area < 5.0) // 5 m² minimum
-            {
-                errors.Add($"Room '{room.Name}' area ({room.Area:F1} m²) below minimum 5 m²");
-            }
+            // Group elements by type for optimized creation
+            var elementGroups = elements.GroupBy(e => e.ElementType).ToList();
             
-            // Check room proportions (not too narrow)
-            var aspectRatio = Math.Max(room.Width, room.Height) / Math.Min(room.Width, room.Height);
-            if (aspectRatio > 4.0)
-            {
-                errors.Add($"Room '{room.Name}' has extreme proportions (aspect ratio: {aspectRatio:F1})");
-            }
+            // Pre-load all required families to avoid multiple transactions
+            await PreloadRequiredFamilies(elements, correlationId);
             
-            // Check for room overlaps
-            foreach (var otherRoom in rooms.Where(r => r != room))
+            // Cache frequently used elements
+            CacheCommonElements();
+            
+            foreach (var group in elementGroups)
             {
-                if (RoomsOverlap(room, otherRoom))
+                switch (group.Key)
                 {
-                    errors.Add($"Rooms '{room.Name}' and '{otherRoom.Name}' overlap");
+                    case ElementType.Wall:
+                        var walls = await CreateWallsBatchOptimized(group.Cast<WallDefinition>().ToList(), correlationId);
+                        result.CreatedElements.AddRange(walls);
+                        break;
+                        
+                    case ElementType.Door:
+                        var doors = await CreateDoorsBatchOptimized(group.Cast<DoorDefinition>().ToList(), correlationId);
+                        result.CreatedElements.AddRange(doors);
+                        break;
+                        
+                    case ElementType.Window:
+                        var windows = await CreateWindowsBatchOptimized(group.Cast<WindowDefinition>().ToList(), correlationId);
+                        result.CreatedElements.AddRange(windows);
+                        break;
+                }
+                
+                // Memory cleanup for large batches
+                if (result.CreatedElements.Count % 500 == 0)
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
                 }
             }
+            
+            stopwatch.Stop();
+            result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
+            result.Success = true;
+            
+            _logger.LogInformation("Batch element oluşturma tamamlandı", 
+                total_elements: result.CreatedElements.Count,
+                execution_time_ms: result.ExecutionTimeMs,
+                elements_per_second: Math.Round(result.CreatedElements.Count / (stopwatch.ElapsedMilliseconds / 1000.0), 2),
+                correlation_id: correlationId);
+            
+            return result;
         }
-        
-        return errors;
-    }
-    
-    private bool IsValidIntersection(XYZ intersection)
-    {
-        // Implement geometric validation logic
-        // Check if intersection point is within tolerance
-        // Validate that intersection creates proper joints
-        return true; // Simplified for example
+        catch (Exception ex)
+        {
+            stopwatch.Stop();
+            _logger.LogError(ex, "Batch element oluşturma hatası", correlation_id: correlationId);
+            
+            result.Success = false;
+            result.ErrorMessage = ex.Message;
+            return result;
+        }
     }
 }
 ```
 
-BIM Model Structure and Relationships:
+## Modern Revit API Features
 ```csharp
-public class BIMModelBuilder
+public class ModernRevitFeatures
 {
-    public void EstablishElementRelationships(LayoutResult layout)
+    private readonly Document document;
+    private readonly ILogger<ModernRevitFeatures> _logger;
+    
+    // Toposolid creation (Revit 2024+)
+    public async Task<Toposolid> CreateAdvancedToposolid(
+        ToposolidDefinition definition, 
+        string correlationId)
     {
-        """Create proper BIM relationships between AI-generated elements"""
+        _logger.LogInformation("Gelişmiş Toposolid oluşturuluyor", correlation_id: correlationId);
         
-        // Create spatial hierarchy
-        EstablishSpatialHierarchy(layout.Rooms);
-        
-        // Link hosted elements to hosts
-        LinkDoorsToWalls(layout.Doors, layout.Walls);
-        LinkWindowsToWalls(layout.Windows, layout.Walls);
-        
-        // Create room boundaries
-        CreateRoomBoundaries(layout.Rooms, layout.Walls);
-        
-        // Establish MEP connections (if AI generated)
-        if (layout.MEPSystems != null)
+        try
         {
-            EstablishMEPConnections(layout.MEPSystems);
+            var topoType = GetOrCreateToposolidType(definition.TypeName);
+            var level = GetLevel(definition.LevelId);
+            
+            Toposolid toposolid;
+            
+            if (definition.CurveLoops?.Any() == true && definition.Points?.Any() == true)
+            {
+                // Combined creation method
+                toposolid = Toposolid.Create(
+                    document, 
+                    definition.CurveLoops, 
+                    definition.Points, 
+                    topoType.Id, 
+                    level.Id);
+            }
+            else if (definition.CurveLoops?.Any() == true)
+            {
+                // Curve-based creation
+                toposolid = Toposolid.Create(
+                    document, 
+                    definition.CurveLoops, 
+                    topoType.Id, 
+                    level.Id);
+            }
+            else if (definition.Points?.Any() == true)
+            {
+                // Point-based creation
+                toposolid = Toposolid.Create(
+                    document, 
+                    definition.Points, 
+                    topoType.Id, 
+                    level.Id);
+            }
+            else
+            {
+                throw new ArgumentException("Toposolid tanımı için curve loops veya points gerekli");
+            }
+            
+            _logger.LogInformation("Gelişmiş Toposolid başarıyla oluşturuldu", 
+                toposolid_id: toposolid.Id.IntegerValue,
+                correlation_id: correlationId);
+            
+            return toposolid;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Gelişmiş Toposolid oluşturma hatası", correlation_id: correlationId);
+            throw;
         }
     }
     
-    private void EstablishSpatialHierarchy(List<RoomDefinition> rooms)
+    // DirectShape with geometry (for complex shapes)
+    public DirectShape CreateComplexGeometryWithDirectShape(
+        List<GeometryObject> geometryObjects, 
+        string correlationId)
     {
-        foreach (var room in rooms)
+        try
         {
-            // Create room element if it doesn't exist
-            var roomElement = CreateOrUpdateRoom(room);
+            var directShape = DirectShape.CreateElement(
+                document, 
+                new ElementId(BuiltInCategory.OST_GenericModel));
             
-            // Set room properties from AI
-            SetRoomProperties(roomElement, room.AIProperties);
+            // Set geometry
+            directShape.SetShape(geometryObjects);
             
-            // Establish department/zone relationships
-            if (!string.IsNullOrEmpty(room.Department))
-            {
-                CreateDepartmentRelationship(roomElement, room.Department);
-            }
+            _logger.LogInformation("DirectShape ile karmaşık geometri oluşturuldu", 
+                shape_id: directShape.Id.IntegerValue,
+                geometry_count: geometryObjects.Count,
+                correlation_id: correlationId);
+            
+            return directShape;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "DirectShape oluşturma hatası", correlation_id: correlationId);
+            throw;
         }
     }
 }
 ```
 
-Always validate geometry, establish proper BIM relationships, and use Dynamo for complex operations.
+## Key Integration Points & Best Practices
+
+### 1. **Revit API Only** 
+- Use direct Revit API for all operations
+- No external engines (Dynamo, pyRevit, etc.)
+- Leverage modern Revit API features (Toposolid, DirectShape, etc.)
+
+### 2. **Transaction Management**
+- Wrap all operations in proper transactions
+- Use correlation IDs for tracking
+- Implement rollback strategies
+
+### 3. **Performance Optimization**
+- Batch operations where possible
+- Cache frequently used elements
+- Memory management for large projects
+
+### 4. **Error Handling**
+- Comprehensive logging with English comments
+- Graceful fallbacks for complex geometry
+- Validation before creation
+
+### 5. **Modern API Features**
+- Toposolid for complex topography
+- DirectShape for organic geometry
+- Enhanced family management
+- Improved geometric validation
+
+### 6. **Project Consistency**
+- Follow existing ElementCreationService patterns
+- Use established dependency injection
+- Maintain logging standards
+- Consistent parameter handling

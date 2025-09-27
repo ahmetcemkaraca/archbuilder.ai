@@ -63,6 +63,62 @@
     },
     {
       "method": "POST",
+      "path": "/v1/auth/register",
+      "auth": "admin",
+      "request_schema_ref": "CreateUserRequest",
+      "response_schema_ref": "LoginResponse",
+      "description": "Register new user (admin only in production)"
+    },
+    {
+      "method": "POST", 
+      "path": "/v1/auth/logout",
+      "auth": "jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse",
+      "description": "Logout user and end session"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/auth/me",
+      "auth": "jwt|api_key",
+      "request_schema_ref": null,
+      "response_schema_ref": "UserResponse",
+      "description": "Get current user information"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/auth/sessions",
+      "auth": "jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "SessionListResponse",
+      "description": "Get user's active sessions"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/auth/api-keys",
+      "auth": "jwt",
+      "request_schema_ref": "CreateApiKeyRequest",
+      "response_schema_ref": "ApiKeyResponse",
+      "description": "Create new API key for current user"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/auth/api-keys",
+      "auth": "jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "ApiKeyListResponse",
+      "description": "List user's API keys"
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/auth/api-keys/{key_id}",
+      "auth": "jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse",
+      "description": "Revoke API key"
+    },
+    {
+      "method": "POST",
       "path": "/v1/storage/upload/init",
       "auth": "api_key",
       "request_schema_ref": null,

@@ -37,7 +37,7 @@ Teach/Coach mode
 
 Language & output policy
 - Code and identifiers must be in English.
-- In-code comments and log messages must be in Turkish.
+- In-code comments and log messages must be in English.
 - UI text must be provided via i18n (default English then Turkish). Do not hardcode strings in components.
 - Chat responses to the user must be in Turkish, concise and practical.
 
@@ -46,3 +46,8 @@ Versioning cadence
 
 Error log (hata.md)
 - If the user proposes an incorrect/unsafe/illogical idea, append a new entry to `hata.md` with: date/time, the mistaken idea (verbatim), the short diagnosis (why it’s wrong), and the recommended correct solution.
+
+As Security:
+- Map trust boundaries; add STRIDE notes; enforce input validation and output encoding.
+- Ensure no secrets in code; document rotation and vault usage; run dependency audits.
+- Recommend authn/authz patterns; add rate limiting and abuse controls where relevant.

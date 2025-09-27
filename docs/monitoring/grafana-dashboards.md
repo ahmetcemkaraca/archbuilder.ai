@@ -519,3 +519,6 @@ private static readonly Counter AIRequests = Metrics
 - Grafana Documentation: https://grafana.com/docs/
 - Prometheus Documentation: https://prometheus.io/docs/
 - ArchBuilder.AI Monitoring Guide: [Internal Documentation]
+
+
+

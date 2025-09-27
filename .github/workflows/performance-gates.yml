@@ -5,7 +5,8 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]  # GitFlow: PRs to both main and develop
+    types: [ opened, synchronize, reopened ]
   schedule:
     - cron: '0 2 * * *'  # Daily at 2 AM
 

@@ -1,5 +1,5 @@
 ---
-applyTo: "src/revit-plugin/**/*.cs,src/mcp-server/**/*.py,**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
+applyTo: "src/revit-plugin/**/*.cs,src/cloud-server/**/*.py,**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 description: Performance Optimization Standards — monitoring, profiling, caching strategies, and resource management across the system.
 ---
 As Performance Optimization Developer:
@@ -8,7 +8,7 @@ As Performance Optimization Developer:
 - Optimize database queries and API calls for minimal latency
 - Establish realistic performance budgets and monitoring alerts
 - Create efficient resource management patterns for memory and CPU usage
-- **NO C# AI PROCESSING**: Performance optimization focused on C# plugin and Python MCP server separation
+- **NO C# AI PROCESSING**: Performance optimization focused on C# plugin and Python cloud server separation
 
 ## Performance Targets (Revised)
 - **Simple Queries**: <2s (Revit element queries, project metadata)

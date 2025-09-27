@@ -109,6 +109,58 @@
       "exports": ["User"]
     },
     {
+      "name": "app.services.layout_generation_service",
+      "exports": ["LayoutGenerationService", "LayoutGenerationRequest", "LayoutGenerationResult"]
+    },
+    {
+      "name": "app.services.cad_processing_service",
+      "exports": ["CADProcessingService", "CADFormat", "CADElement", "CADAnalysisResult"]
+    },
+    {
+      "name": "app.services.human_review_service",
+      "exports": ["HumanReviewService", "ReviewRequest", "ReviewResult", "ReviewStatus", "ReviewPriority"]
+    },
+    {
+      "name": "app.services.layout_integration_service",
+      "exports": ["LayoutIntegrationService", "IntegrationRequest", "IntegrationResult"]
+    },
+    {
+      "name": "app.services.simple_layout_validator",
+      "exports": ["SimpleLayoutValidator", "ValidationRule", "ValidationResult"]
+    },
+    {
+      "name": "app.services.notification_service",
+      "exports": ["NotificationService", "NotificationChannel", "NotificationTemplate"]
+    },
+    {
+      "name": "src.desktop-app.services.local_data_manager",
+      "exports": ["LocalDataManager", "ILocalDataManager"]
+    },
+    {
+      "name": "src.desktop-app.services.cloud_storage_manager",
+      "exports": ["CloudStorageManager", "ICloudStorageManager"]
+    },
+    {
+      "name": "src.desktop-app.services.user_permission_service",
+      "exports": ["UserPermissionService", "IUserPermissionService"]
+    },
+    {
+      "name": "src.desktop-app.services.cloud_providers.google_cloud_storage_provider",
+      "exports": ["GoogleCloudStorageProvider"]
+    },
+    {
+      "name": "src.desktop-app.services.cloud_providers.oracle_cloud_storage_provider",
+      "exports": ["OracleCloudStorageProvider"]
+    },
+    {
+      "name": "src.desktop-app.models.data_models",
+      "exports": ["RevitModelData", "LocalRevitData", "WallData", "DoorData", "WindowData"]
+    },
+    {
+      "name": "src.revit-plugin.commands.extract_and_sync_data_command",
+      "exports": ["ExtractAndSyncDataCommand"]
+    },
+    {
       "name": "app.database.models.ai_command",
       "exports": ["AICommand"]
     },

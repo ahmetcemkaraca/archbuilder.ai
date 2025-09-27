@@ -332,6 +332,90 @@
       "request_schema_ref": null,
       "response_schema_ref": "StandardResponse",
       "description": "Stop database monitoring (admin only)"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ai/layouts/generate",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "LayoutGenerationRequest",
+      "response_schema_ref": "LayoutGenerationResult",
+      "description": "Generate architectural layout using AI models",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST", 
+      "path": "/v1/ai/layouts/generate/async",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "LayoutGenerationRequest",
+      "response_schema_ref": "JobAcceptedResponse",
+      "description": "Start asynchronous layout generation process",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ai/cad/process",
+      "auth": "api_key|jwt", 
+      "request_schema_ref": "CADProcessingRequest",
+      "response_schema_ref": "CADAnalysisResult",
+      "description": "Process and analyze CAD files (multi-format support)",
+      "headers": {
+        "request": ["X-Correlation-ID?"],
+        "response": ["X-Correlation-ID", "X-Request-ID"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/v1/ai/cad/formats",
+      "auth": "api_key|jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse",
+      "description": "Get supported CAD file formats and capabilities"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ai/reviews/submit",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "ReviewRequest",
+      "response_schema_ref": "StandardResponse",
+      "description": "Submit item for human review"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/ai/reviews/queue",
+      "auth": "api_key|jwt",
+      "request_schema_ref": null,
+      "response_schema_ref": "StandardResponse", 
+      "description": "Get current review queue status"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ai/reviews/{review_id}/complete",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "ReviewResult",
+      "response_schema_ref": "StandardResponse",
+      "description": "Complete a review with results"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ai/notify",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "NotificationRequest", 
+      "response_schema_ref": "StandardResponse",
+      "description": "Send notification via multiple channels"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ai/integration/process",
+      "auth": "api_key|jwt",
+      "request_schema_ref": "IntegrationRequest",
+      "response_schema_ref": "IntegrationResult",
+      "description": "Run complete AI processing workflow (generation + validation + review)"
     }
   ]
 }

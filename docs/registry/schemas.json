@@ -593,6 +593,102 @@
         "has_previous": {"type": "boolean"}
       },
       "required": ["items", "total", "page", "page_size", "total_pages", "has_next", "has_previous"]
+    },
+    {
+      "name": "LayoutGenerationRequest",
+      "type": "object",
+      "properties": {
+        "project_requirements": {"type": "object"},
+        "building_type": {"type": "string"},
+        "area_sqm": {"type": "number"},
+        "floors": {"type": "integer"},
+        "constraints": {"type": "object"},
+        "regional_code": {"type": "string"},
+        "ai_model_preference": {"type": "string", "enum": ["gpt-4", "gemini-pro", "auto"]}
+      },
+      "required": ["project_requirements", "building_type", "area_sqm"]
+    },
+    {
+      "name": "LayoutGenerationResult",
+      "type": "object",
+      "properties": {
+        "layout_data": {"type": "object"},
+        "ai_model_used": {"type": "string"},
+        "generation_time_ms": {"type": "integer"},
+        "confidence_score": {"type": "number", "minimum": 0, "maximum": 1},
+        "validation_results": {"type": "array", "items": {"type": "object"}},
+        "recommendations": {"type": "array", "items": {"type": "string"}},
+        "cost_estimate": {"type": "object"}
+      },
+      "required": ["layout_data", "ai_model_used", "generation_time_ms", "confidence_score"]
+    },
+    {
+      "name": "CADProcessingRequest",
+      "type": "object", 
+      "properties": {
+        "file_path": {"type": "string"},
+        "file_format": {"type": "string", "enum": ["dwg", "dxf", "ifc", "rvt", "3dm", "ply"]},
+        "processing_options": {"type": "object"},
+        "extract_elements": {"type": "boolean"},
+        "analyze_geometry": {"type": "boolean"}
+      },
+      "required": ["file_path", "file_format"]
+    },
+    {
+      "name": "CADAnalysisResult",
+      "type": "object",
+      "properties": {
+        "file_info": {"type": "object"},
+        "elements": {"type": "array", "items": {"type": "object"}},
+        "geometry_analysis": {"type": "object"},
+        "coordinate_system": {"type": "object"},
+        "units": {"type": "string"},
+        "bounding_box": {"type": "object"},
+        "processing_time_ms": {"type": "integer"},
+        "warnings": {"type": "array", "items": {"type": "string"}}
+      },
+      "required": ["file_info", "processing_time_ms"]
+    },
+    {
+      "name": "ReviewRequest",
+      "type": "object",
+      "properties": {
+        "item_type": {"type": "string"},
+        "item_data": {"type": "object"},
+        "priority": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+        "project_id": {"type": "string"},
+        "created_by": {"type": "string"},
+        "deadline": {"type": "string", "format": "date-time"},
+        "review_instructions": {"type": "string"}
+      },
+      "required": ["item_type", "item_data", "priority"]
+    },
+    {
+      "name": "ReviewResult", 
+      "type": "object",
+      "properties": {
+        "review_id": {"type": "string"},
+        "status": {"type": "string", "enum": ["approved", "rejected", "needs_changes"]},
+        "reviewer_id": {"type": "string"},
+        "reviewed_at": {"type": "string", "format": "date-time"},
+        "comments": {"type": "string"},
+        "feedback_data": {"type": "object"},
+        "performance_metrics": {"type": "object"}
+      },
+      "required": ["review_id", "status", "reviewer_id", "reviewed_at"]
+    },
+    {
+      "name": "NotificationRequest",
+      "type": "object",
+      "properties": {
+        "recipient": {"type": "string"},
+        "channel": {"type": "string", "enum": ["email", "sms", "push", "webhook"]},
+        "template": {"type": "string"},
+        "data": {"type": "object"},
+        "priority": {"type": "string", "enum": ["low", "medium", "high"]},
+        "send_at": {"type": "string", "format": "date-time"}
+      },
+      "required": ["recipient", "channel", "template"]
     }
   ]
 }

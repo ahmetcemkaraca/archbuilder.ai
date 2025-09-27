@@ -1,15 +1,16 @@
 Project-wide Copilot instructions for ArchBuilder.AI autonomous development across desktop/cloud/Revit. Keep answers concise; code complete and runnable.
 
 ## 🔧 MANDATORY DEVELOPMENT WORKFLOW
+**Always** use **Context7** MCP server tools when I need code generation, setup or configuration steps, or library/API documentation. This means you should automatically use the Context7 MCP tools to resolve library id and get library docs without me having to explicitly ask.
 
 ### 🌟 GIT BRANCH WORKFLOW
 **ALWAYS** work with feature branches for every task/implementation:
 
 #### Git Branch Strategy:
-1. **Create Feature Branch**: Before starting any task, create a new branch from master
+1. **Create Feature Branch**: Before starting any task, create a new branch from develop
    ```bash
-   git checkout master
-   git pull origin master
+   git checkout develop
+   git pull origin develop
    git checkout -b feature/task-name-description
    ```
 
@@ -33,8 +34,8 @@ Project-wide Copilot instructions for ArchBuilder.AI autonomous development acro
 5. **Example Workflow**:
    ```bash
    # Start new task
-   git checkout master
-   git pull origin master
+   git checkout develop
+   git pull origin develop
    git checkout -b feature/project-management-views
    
    # Work and commit
@@ -48,15 +49,43 @@ Project-wide Copilot instructions for ArchBuilder.AI autonomous development acro
 ### Before ANY Function Implementation or Code Fix:
 **ALWAYS** read the relevant `*.instructions.md` files from `.github/instructions/` directory before writing or modifying any code. This is **NON-NEGOTIABLE** and ensures consistency, security, and quality across the entire codebase.
 
-#### Workflow Steps:
-1. **Identify the task** - Understand what needs to be implemented or fixed
-2. **Read relevant instruction files** - Based on file patterns and technologies involved
-3. **Apply the guidelines** - Follow the specific patterns, standards, and best practices
-4. **Preserve existing functionality** - Ensure that existing features are not removed, broken, or changed
-5. **Check and fix imports** - MANDATORY: Verify all imports are valid and install missing dependencies
-6. **Update documentation** - MANDATORY: Document all new modules in corresponding docs/ files
-7. **Implement the code** - Write code that adheres to all applicable instructions
-8. **Validate compliance** - Ensure the implementation follows all guidelines
+#### MANDATORY Issue-First Workflow:
+**Every task MUST start with an issue and follow GitFlow**
+
+1. **Create GitHub Issue First**:
+   ```bash
+   # Create issue via GitHub CLI or web interface
+   gh issue create --title "feat: PostgreSQL connection pool optimization" --body "Implement connection pooling optimization as per TODO.md task 5"
+   ```
+
+2. **Commit Current State**:
+   ```bash
+   # Always commit current state before starting new work
+   git add .
+   git commit -m "checkpoint: save current progress before task #<issue-number>"
+   git push origin <current-branch>
+   ```
+
+#### Before Coding Checklist:
+- [ ] **Issue Assignment** - Assign the GitHub issue to yourself
+- [ ] **Context Rehydration** - Read `.mds/context/current-context.md` and `docs/registry/*.json` first
+- [ ] Read relevant instruction files based on file patterns and technologies involved
+- [ ] Plan registry updates for contract changes
+- [ ] Add/modify i18n resources for UI text (no hardcoding)
+
+#### After Coding Checklist:
+- [ ] Update registry files (`identifiers.json`, `endpoints.json`, `schemas.json`)
+- [ ] Refresh `.mds/context/current-context.md`
+- [ ] Update issue status and add comments about implementation details
+- [ ] Update `CHANGELOG.md` if applicable
+- [ ] Add at least one test covering new/changed contract
+- [ ] Run validation scripts (Windows PowerShell):
+  - `pwsh -File scripts/validate-registry.ps1`
+  - `pwsh -File scripts/rehydrate-context.ps1`
+- [ ] Lint/tests pass locally and in CI
+- [ ] Update `version.md` (1 prompt cadence)
+- [ ] Commit final state of project files
+
 
 ### 🚨 CRITICAL: Import Management and Documentation Automation
 
@@ -86,6 +115,14 @@ After EVERY code modification or new file creation, you MUST:
    - Use absolute imports for clarity
    - Add missing packages to requirements.txt immediately
    - Document import failures and resolution steps
+
+#### Dependency Management Rules:
+1. **Always check imports before committing code**
+2. **Update requirements.txt immediately when adding new dependencies**  
+3. **Use version pinning for production dependencies**
+4. **Document why each dependency is needed**
+5. **Prefer stable, well-maintained packages**
+6. **Test imports in clean virtual environment**
 
 #### MANDATORY Documentation Process:
 After creating ANY new module, service, or significant feature, you MUST:
@@ -147,26 +184,58 @@ After creating ANY new module, service, or significant feature, you MUST:
 5. **Link related modules and services**
 6. **Document error scenarios and troubleshooting**
 
-### 📋 Instruction Files Reference Guide
+#### Environment Targets:
+- **Cloud server**: Python 3.11 or 3.12 (pin in CI and docs)
+- **Desktop**: WPF on .NET (target Revit-supported runtime)
+- **Target Stack**: Desktop (WPF), Cloud (FastAPI), Revit Plugin
 
-Quality gates
+#### Rollback/Rollforward:
+- **Rollback**: Use `git revert` for faulty commits (never force-push on shared branches)
+- **Hotfix**: Create `hotfix/<short-desc>` if recovery > 15 minutes
+- **Data Safety**: Require dry-run + backup plan for destructive migrations
+
+### 📋 Development Standards & Quality Gates
+
+#### Quality Gates:
 - Lint/format, unit + integration, smoke/e2e. Ship only when green. Provide rollback steps.
 
-Artifacts to maintain
+#### Artifacts to Maintain:
 - README.md (how to run, test, deploy)
 - CHANGELOG.md (semantic, user-facing)
 - ADRs for significant decisions
 - RISKS.md for top risks + mitigations
+- .env.example (document environment variables)
 
-Security defaults
+#### Security Defaults:
 - Validate inputs (schema), sanitize outputs, authn/authz where relevant, secret hygiene, dependency audits.
+- Input Validation: Schema validation, sanitize outputs
+- Authentication/Authorization: Implement where relevant
+- Secret Hygiene: No secrets in code, use `.env` and secret stores
+- Dependency Audits: Regular security checks
+- OWASP Basics: Apply security fundamentals
 
-When asked for help
+#### Session Hygiene:
+- Scope: One prompt = ~3-7 tasks; avoid scope creep
+- Responses: Prefer JSON-only for machine-consumed outputs
+- Secrets: Never hardcode; use `.env` and secret stores
+- Error Handling: Handle errors cleanly; avoid leaky abstractions
+
+#### When asked for help:
 - Provide a short analysis, then update the trio, then code edits with tests, then run instructions.
 
-Copilot behavior
+#### Copilot behavior:
 - Keep chat replies compact. Prefer bullet lists and fenced code for commands when needed. Cite files you change.
 - Use `.github/instructions/*.instructions.md` for role-specific rules, and `.github/prompts/*.prompt.md` for reusable tasks.
+
+#### Error Log Management:
+If user proposes incorrect/unsafe/illogical ideas:
+- Append entry to `hata.md` with: date/time, mistaken idea (verbatim), diagnosis (why wrong), recommended solution
+
+#### Teach/Coach Mode:
+- Kullanıcının yanlış varsayımlarını nazikçe işaretle
+- Kısa nedenini açıkla ve güvenli/uygulanabilir 2–3 alternatif yol öner
+- Alternatifler için beklenen fayda/riski ve karmaşıklığı belirt
+- Bir "önerilen yol" seç
 
 Semantic Versioning (SemVer)
 - Use SemVer: MAJOR.MINOR.PATCH (e.g., 1.4.2).
@@ -181,7 +250,7 @@ Semantic Versioning (SemVer)
 This policy is mandatory and overrides any conflicting older statements:
 
 - Code and identifiers: English
-- In-code comments and log messages: Turkish
+- In-code comments and log messages: English
 - UI text: English by default via i18n/locale files (Turkish translation optional); never hardcode in components
 - Chat responses to the user: Turkish, concise and actionable
 
@@ -243,7 +312,7 @@ Minimal schemas:
 ```
 
 ### Versioning cadence (local policy)
-- Update version.md at the end of every 2 prompts (development cycle).
+- Update version.md after every 1 prompt (development cycle).
 - Use PowerShell to stamp the date/time: `Get-Date -Format 'yyyy-MM-dd HH:mm:ss'`.
 - Each entry must summarize key changes, new features, or bug fixes. Do not delete previous entries.
 

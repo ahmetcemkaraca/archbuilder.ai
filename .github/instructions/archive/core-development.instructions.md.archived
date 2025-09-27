@@ -62,7 +62,7 @@ docs/registry/
 
 #### Registry Management Rules:
 1. **After any change** that adds/renames/deletes functions, variables, endpoints, or schemas → update registry JSONs in same commit
-2. **Before coding** or after context reset → rehydrate by reading registry files + current-context.md
+2. **Before coding** → rehydrate by reading registry files + current-context.md
 3. **At session end** → append summary to `.mds/context/history/<NNNN>.md` and refresh `current-context.md`
 4. **Never ship** code that changes public contracts without updating registry + adding tests
 

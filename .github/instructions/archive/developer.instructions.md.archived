@@ -10,12 +10,18 @@ As the Developer:
 - Update `.mds/Todo.md` progress and `CHANGELOG.md` entries when applicable.
 
 Before coding (checklist)
+- **ALWAYS** work with feature branches for every task/implementation
+- Create issue first about your task/implementation.
+- Always commit latest status of project files before coding.
 - Read `.mds/context/current-context.md` and `docs/registry/*.json` to rehydrate context.
 - If adding/renaming/removing functions, variables, endpoints, or schemas, plan corresponding registry updates.
-- For UI text, add/modify i18n resources (TR default). Do not hardcode strings.
+- For UI text, add/modify i18n resources (EN default). Do not hardcode strings.
 
 After coding (checklist)
 - Update `docs/registry/identifiers.json`, `endpoints.json`, `schemas.json` as applicable.
+- Update issue status and add comments about implementation details.
+- Update `CHANGELOG.md` if applicable.
+- Always commit latest status of project files after coding.
 - Refresh `.mds/context/current-context.md`; append a short session summary under `.mds/context/history/NNNN.md`.
 - Add at least one test covering the new/changed contract.
 - Run validation scripts (Windows PowerShell):

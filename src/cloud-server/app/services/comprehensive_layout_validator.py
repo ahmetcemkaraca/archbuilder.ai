@@ -12,22 +12,23 @@ Date: 2025-09-26
 """
 
 import math
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Any
 from enum import Enum
 
-import numpy as np
-from pydantic import BaseModel
-from structlog import get_logger
+# Import logging (fallback if structlog not available)
+try:
+    from structlog import get_logger
+    logger = get_logger(__name__)
+except ImportError:
+    import logging
+    logger = logging.getLogger(__name__)
 
-from ..schemas.layout_schemas import (
-    LayoutData, ValidationResult, ValidationError, ValidationStatus,
-    WallElement, DoorElement, WindowElement, RoomBoundary, Point2D
-)
-from ..core.exceptions import ValidationError as ValidationException
-from ..utils.geometry import GeometryUtils
-from ..utils.building_codes import TurkishBuildingCodeValidator
-
-logger = get_logger(__name__)
+# Placeholder imports - adjust based on actual package structure
+# from ..schemas.layout_schemas import (
+#     LayoutData, ValidationResult, ValidationError, ValidationStatus
+# )
+# from ..utils.geometry import GeometryUtils 
+# from ..utils.building_codes import TurkishBuildingCodeValidator
 
 
 class ErrorSeverity(str, Enum):
@@ -51,15 +52,15 @@ class ComprehensiveLayoutValidator:
     """
     
     def __init__(self):
-        self.geometry_utils = GeometryUtils()
-        self.building_code_validator = TurkishBuildingCodeValidator()
+        # self.geometry_utils = GeometryUtils()  # Will be available when imported
+        # self.building_code_validator = TurkishBuildingCodeValidator()  # Will be available when imported
         self.min_room_area = 5.0  # m²
         self.min_corridor_width = 1200  # mm
         self.min_door_width = 800  # mm 
         self.max_door_width = 1200  # mm
         self.min_window_area_ratio = 0.125  # 1/8 of floor area
 
-    async def validate_layout(self, layout_data: Dict[str, Any]) -> ValidationResult:
+    async def validate_layout(self, layout_data: Dict[str, Any]) -> Any:  # ValidationResult
         """
         Ana validation metodu - tüm katmanları uygular
         
@@ -158,7 +159,10 @@ class ComprehensiveLayoutValidator:
         # Wall validation
         for i, wall in enumerate(layout.walls):
             # Check wall length
-            length = self.geometry_utils.distance(wall.start, wall.end)
+            # Calculate distance using simple math
+            dx = wall['end']['x'] - wall['start']['x']
+            dy = wall['end']['y'] - wall['start']['y']
+            length = math.sqrt(dx*dx + dy*dy)
             if length < 100:  # 10cm minimum
                 errors.append(ValidationError(
                     code="WALL_TOO_SHORT",

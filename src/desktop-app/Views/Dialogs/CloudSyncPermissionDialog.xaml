@@ -1,0 +1,139 @@
+<Window x:Class="ArchBuilder.Desktop.Views.Dialogs.CloudSyncPermissionDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Bulut Sync İzni" 
+        Height="400" 
+        Width="500"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Icon="pack://application:,,,/ArchBuilder.Desktop;component/Assets/Icons/cloud-sync.ico">
+    
+    <Window.Resources>
+        <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+        
+        <Style x:Key="BodyTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="LineHeight" Value="18"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+        
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#3498DB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Border" Value="None"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#BDC3C7"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Border" Value="None"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+            <Image Source="pack://application:,,,/ArchBuilder.Desktop;component/Assets/Icons/cloud-upload.png" 
+                   Width="32" Height="32" 
+                   Margin="0,0,10,0"/>
+            <TextBlock Text="Bulut Depolama İzni" 
+                       Style="{StaticResource HeaderTextStyle}" 
+                       VerticalAlignment="Center"/>
+        </StackPanel>
+        
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Style="{StaticResource BodyTextStyle}">
+                    <Run Text="ArchBuilder.AI uygulaması, Revit projelerinizdeki verileri bulut depolamada saklamak istiyor."/>
+                </TextBlock>
+                
+                <TextBlock Style="{StaticResource HeaderTextStyle}" 
+                           FontSize="14" 
+                           Text="Ne yapılacak?"/>
+                
+                <TextBlock Style="{StaticResource BodyTextStyle}">
+                    <Run Text="• Revit'ten çıkarılan veriler önce lokal JSON formatında kaydedilecek"/>
+                    <LineBreak/>
+                    <Run Text="• Veriler sıkıştırılarak (GZip) boyutu küçültülecek"/>
+                    <LineBreak/>
+                    <Run Text="• Sizin seçtiğiniz bulut depolama sağlayıcısına güvenli şekilde yüklenecek"/>
+                    <LineBreak/>
+                    <Run Text="• Veri bütünlüğü SHA-256 hash ile kontrol edilecek"/>
+                </TextBlock>
+                
+                <TextBlock Style="{StaticResource HeaderTextStyle}" 
+                           FontSize="14" 
+                           Text="Güvenlik ve Gizlilik"/>
+                
+                <TextBlock Style="{StaticResource BodyTextStyle}">
+                    <Run Text="• Tüm veriler şifrelenerek iletilir (HTTPS/TLS)"/>
+                    <LineBreak/>
+                    <Run Text="• Verileriniz sadece sizin seçtiğiniz bulut hesabında saklanır"/>
+                    <LineBreak/>
+                    <Run Text="• ArchBuilder.AI verilerinize erişim sağlamaz"/>
+                    <LineBreak/>
+                    <Run Text="• İstediğiniz zaman bulut sync'i devre dışı bırakabilirsiniz"/>
+                </TextBlock>
+                
+                <TextBlock Style="{StaticResource HeaderTextStyle}" 
+                           FontSize="14" 
+                           Text="Desteklenen Bulut Sağlayıcıları"/>
+                
+                <TextBlock Style="{StaticResource BodyTextStyle}">
+                    <Run Text="• Google Cloud Storage"/>
+                    <LineBreak/>
+                    <Run Text="• Oracle Cloud Infrastructure"/>
+                    <LineBreak/>
+                    <Run Text="• Azure Blob Storage (yakında)"/>
+                    <LineBreak/>
+                    <Run Text="• Amazon S3 (yakında)"/>
+                </TextBlock>
+                
+                <Border Background="#F8F9FA" 
+                        Padding="15" 
+                        Margin="0,10,0,0"
+                        CornerRadius="5">
+                    <TextBlock Style="{StaticResource BodyTextStyle}" 
+                               Margin="0"
+                               Foreground="#6C757D">
+                        <Run Text="Not: Bu izin 30 gün süreyle geçerlidir. Süre sonunda tekrar izin isteyeceğiz."/>
+                    </TextBlock>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+        
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,20,0,0">
+            <Button Content="Reddediyorum" 
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    Click="RejectButton_Click"/>
+            <Button Content="İzin Veriyorum" 
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Click="AcceptButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

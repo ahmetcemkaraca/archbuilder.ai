@@ -421,9 +421,42 @@ class AdvancedModelSelector:
     
     # Legacy compatibility
     def select(self, language: str, complexity: str = "simple") -> Dict[str, str]:
-        lang = (language or "").lower()
-        if lang == "tr" and complexity != "high":
-            return {"provider": "vertex", "model": "gemini-2.5-flash-lite"}
-        if complexity == "high":
-            return {"provider": "openai", "model": "gpt-4.1"}
-        return {"provider": "openai", "model": "gpt-4.1"}
+        """Legacy method for backward compatibility"""
+        
+        # Map old complexity values
+        complexity_map = {
+            "simple": TaskComplexity.SIMPLE,
+            "medium": TaskComplexity.MEDIUM, 
+            "high": TaskComplexity.HIGH,
+            "critical": TaskComplexity.CRITICAL
+        }
+        
+        mapped_complexity = complexity_map.get(complexity.lower(), TaskComplexity.SIMPLE)
+        
+        result = self.select_optimal_model(
+            language=language,
+            complexity=mapped_complexity
+        )
+        
+        # Return legacy format
+        return {
+            "provider": result["provider"],
+            "model": result["model"]
+        }
+
+
+# Global instance
+model_selector = AdvancedModelSelector()
+
+
+# Backward compatibility
+class ModelSelector(AdvancedModelSelector):
+    """Legacy ModelSelector class for compatibility"""
+    def __init__(self):
+        import warnings
+        warnings.warn(
+            "Using legacy ModelSelector. Use AdvancedModelSelector or the global model_selector instance instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        super().__init__()

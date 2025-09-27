@@ -1,4 +1,4 @@
-<!-- 
+<!--
 ArchBuilder.AI Pull Request Template
 Please fill out this template to help reviewers understand your changes.
 -->
@@ -82,7 +82,7 @@ Please fill out this template to help reviewers understand your changes.
 ## 🎯 Review Focus Areas
 <!-- Highlight specific areas where you'd like reviewer attention -->
 - [ ] Security implications
-- [ ] Performance considerations  
+- [ ] Performance considerations
 - [ ] Error handling
 - [ ] Test coverage
 - [ ] Documentation completeness

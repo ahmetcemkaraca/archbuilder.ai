@@ -2,212 +2,369 @@
   "modules": [
     {
       "name": "app.ai.ragflow.client",
-      "exports": ["RAGFlowClient"]
+      "exports": [
+        "RAGFlowClient"
+      ]
     },
     {
       "name": "app.services.rag_service",
-      "exports": ["RAGService"]
+      "exports": [
+        "RAGService"
+      ]
     },
     {
       "name": "app.routers.v1.rag",
-      "exports": ["router", "RAGQueryRequest", "RAGQueryResponse"]
+      "exports": [
+        "router",
+        "RAGQueryRequest",
+        "RAGQueryResponse"
+      ]
     },
     {
       "name": "app.routers.v1.documents",
-      "exports": ["router", "EnsureDatasetRequest", "EnsureDatasetResponse", "UploadParseResponse"]
+      "exports": [
+        "router",
+        "EnsureDatasetRequest",
+        "EnsureDatasetResponse",
+        "UploadParseResponse"
+      ]
     },
     {
       "name": "app.routers.v1.storage",
-      "exports": ["router", "UploadInitResponse"]
+      "exports": [
+        "router",
+        "UploadInitResponse"
+      ]
     },
     {
       "name": "app.ai.chunking",
-      "exports": ["chunk_text", "chunk_documents"]
+      "exports": [
+        "chunk_text",
+        "chunk_documents"
+      ]
     },
     {
       "name": "app.routers.v1.ai",
-      "exports": ["router"]
+      "exports": [
+        "router"
+      ]
     },
     {
       "name": "app.routers.v1.websocket",
-      "exports": ["router"]
+      "exports": [
+        "router"
+      ]
     },
     {
       "name": "app.services.ai_service",
-      "exports": ["AIService"]
+      "exports": [
+        "AIService"
+      ]
     },
     {
       "name": "app.ai.model_selector",
-      "exports": ["ModelSelector"]
+      "exports": [
+        "ModelSelector"
+      ]
     },
     {
       "name": "app.ai.prompts.templates.prompt_versioning",
-      "exports": ["PromptTemplate", "PromptRegistry", "registry"]
+      "exports": [
+        "PromptTemplate",
+        "PromptRegistry",
+        "registry"
+      ]
     },
     {
       "name": "app.ai.interfaces",
-      "exports": ["AIClient", "BaseAIClient"]
+      "exports": [
+        "AIClient",
+        "BaseAIClient"
+      ]
     },
     {
       "name": "revit.addin.services.phase_manager",
-      "exports": ["PhaseManager"]
+      "exports": [
+        "PhaseManager"
+      ]
     },
     {
       "name": "revit.addin.commands.initialize_phase_nine",
-      "exports": ["InitializePhaseNineCommand"]
+      "exports": [
+        "InitializePhaseNineCommand"
+      ]
     },
     {
       "name": "app.services.validation_service",
-      "exports": ["ValidationService"]
+      "exports": [
+        "ValidationService"
+      ]
     },
     {
       "name": "app.services.geometric_validator",
-      "exports": ["GeometricValidator"]
+      "exports": [
+        "GeometricValidator"
+      ]
     },
     {
       "name": "app.services.code_validator",
-      "exports": ["CodeValidator"]
+      "exports": [
+        "CodeValidator"
+      ]
     },
     {
       "name": "app.services.review_queue_service",
-      "exports": ["ReviewQueueService", "ReviewStatus", "ReviewPriority"]
+      "exports": [
+        "ReviewQueueService",
+        "ReviewStatus",
+        "ReviewPriority"
+      ]
     },
     {
       "name": "app.services.rag_metrics_service",
-      "exports": ["RAGMetricsService", "RAGMetrics", "RAGTestScenario"]
+      "exports": [
+        "RAGMetricsService",
+        "RAGMetrics",
+        "RAGTestScenario"
+      ]
     },
     {
       "name": "app.services.regional_config_service",
-      "exports": ["RegionalConfigService"]
+      "exports": [
+        "RegionalConfigService"
+      ]
     },
     {
       "name": "app.routers.v1.validation",
-      "exports": ["router"]
+      "exports": [
+        "router"
+      ]
     },
     {
       "name": "app.database.models.validation_result",
-      "exports": ["ValidationResult"]
+      "exports": [
+        "ValidationResult"
+      ]
     },
     {
       "name": "app.database.models.review_item",
-      "exports": ["ReviewItem"]
+      "exports": [
+        "ReviewItem"
+      ]
     },
     {
       "name": "app.routers.v1.websocket",
-      "exports": ["router"]
+      "exports": [
+        "router"
+      ]
     },
     {
       "name": "app.database.models.project",
-      "exports": ["Project", "RAGDatasetLink"]
+      "exports": [
+        "Project",
+        "RAGDatasetLink"
+      ]
     },
     {
-      "name": "app.database.models.subscription", 
-      "exports": ["Subscription"]
+      "name": "app.database.models.subscription",
+      "exports": [
+        "Subscription"
+      ]
     },
     {
       "name": "app.database.models.user",
-      "exports": ["User"]
+      "exports": [
+        "User"
+      ]
     },
     {
       "name": "app.services.layout_generation_service",
-      "exports": ["LayoutGenerationService", "LayoutGenerationRequest", "LayoutGenerationResult"]
+      "exports": [
+        "LayoutGenerationService",
+        "LayoutGenerationRequest",
+        "LayoutGenerationResult"
+      ]
     },
     {
       "name": "app.services.cad_processing_service",
-      "exports": ["CADProcessingService", "CADFormat", "CADElement", "CADAnalysisResult"]
+      "exports": [
+        "CADProcessingService",
+        "CADFormat",
+        "CADElement",
+        "CADAnalysisResult"
+      ]
     },
     {
       "name": "app.services.human_review_service",
-      "exports": ["HumanReviewService", "ReviewRequest", "ReviewResult", "ReviewStatus", "ReviewPriority"]
+      "exports": [
+        "HumanReviewService",
+        "ReviewRequest",
+        "ReviewResult",
+        "ReviewStatus",
+        "ReviewPriority"
+      ]
     },
     {
       "name": "app.services.layout_integration_service",
-      "exports": ["LayoutIntegrationService", "IntegrationRequest", "IntegrationResult"]
+      "exports": [
+        "LayoutIntegrationService",
+        "IntegrationRequest",
+        "IntegrationResult"
+      ]
     },
     {
       "name": "app.services.simple_layout_validator",
-      "exports": ["SimpleLayoutValidator", "ValidationRule", "ValidationResult"]
+      "exports": [
+        "SimpleLayoutValidator",
+        "ValidationRule",
+        "ValidationResult"
+      ]
     },
     {
       "name": "app.services.notification_service",
-      "exports": ["NotificationService", "NotificationChannel", "NotificationTemplate"]
+      "exports": [
+        "NotificationService",
+        "NotificationChannel",
+        "NotificationTemplate"
+      ]
     },
     {
       "name": "src.desktop-app.services.local_data_manager",
-      "exports": ["LocalDataManager", "ILocalDataManager"]
+      "exports": [
+        "LocalDataManager",
+        "ILocalDataManager"
+      ]
     },
     {
       "name": "src.desktop-app.services.cloud_storage_manager",
-      "exports": ["CloudStorageManager", "ICloudStorageManager"]
+      "exports": [
+        "CloudStorageManager",
+        "ICloudStorageManager"
+      ]
     },
     {
       "name": "src.desktop-app.services.user_permission_service",
-      "exports": ["UserPermissionService", "IUserPermissionService"]
+      "exports": [
+        "UserPermissionService",
+        "IUserPermissionService"
+      ]
     },
     {
       "name": "src.desktop-app.services.cloud_providers.google_cloud_storage_provider",
-      "exports": ["GoogleCloudStorageProvider"]
+      "exports": [
+        "GoogleCloudStorageProvider"
+      ]
     },
     {
       "name": "src.desktop-app.services.cloud_providers.oracle_cloud_storage_provider",
-      "exports": ["OracleCloudStorageProvider"]
+      "exports": [
+        "OracleCloudStorageProvider"
+      ]
     },
     {
       "name": "src.desktop-app.models.data_models",
-      "exports": ["RevitModelData", "LocalRevitData", "WallData", "DoorData", "WindowData"]
+      "exports": [
+        "RevitModelData",
+        "LocalRevitData",
+        "WallData",
+        "DoorData",
+        "WindowData"
+      ]
     },
     {
       "name": "src.revit-plugin.commands.extract_and_sync_data_command",
-      "exports": ["ExtractAndSyncDataCommand"]
+      "exports": [
+        "ExtractAndSyncDataCommand"
+      ]
     },
     {
       "name": "app.database.models.ai_command",
-      "exports": ["AICommand"]
+      "exports": [
+        "AICommand"
+      ]
     },
     {
       "name": "app.database.models.usage",
-      "exports": ["Usage"]
+      "exports": [
+        "Usage"
+      ]
     },
     {
       "name": "app.database.models.rag",
-      "exports": ["RAGJob", "RAGDocumentLink"]
+      "exports": [
+        "RAGJob",
+        "RAGDocumentLink"
+      ]
     },
     {
       "name": "app.routers.v1.database",
-      "exports": ["router", "DatabaseHealthResponse", "MigrationStatusResponse", "BackupResponse"]
+      "exports": [
+        "router",
+        "DatabaseHealthResponse",
+        "MigrationStatusResponse",
+        "BackupResponse"
+      ]
     },
     {
       "name": "app.services.database_monitoring_service",
-      "exports": ["DatabaseMonitoringService", "get_database_monitoring_service", "ConnectionHealth", "SlowQuery"]
+      "exports": [
+        "DatabaseMonitoringService",
+        "get_database_monitoring_service",
+        "ConnectionHealth",
+        "SlowQuery"
+      ]
     },
     {
       "name": "app.services.database_optimization_service",
-      "exports": ["DatabaseOptimizationService", "get_database_optimization_service", "QueryPerformanceMetrics"]
+      "exports": [
+        "DatabaseOptimizationService",
+        "get_database_optimization_service",
+        "QueryPerformanceMetrics"
+      ]
     },
     {
       "name": "app.services.database_migration_service",
-      "exports": ["DatabaseMigrationService", "BackupService"]
+      "exports": [
+        "DatabaseMigrationService",
+        "BackupService"
+      ]
     },
     {
       "name": "app.utils.pagination",
-      "exports": ["PaginationHelper", "PaginatedResult"]
+      "exports": [
+        "PaginationHelper",
+        "PaginatedResult"
+      ]
     },
     {
       "name": "app.core.security.enhanced_security",
-      "exports": ["EnhancedSecurityValidator", "get_enhanced_security"]
+      "exports": [
+        "EnhancedSecurityValidator",
+        "get_enhanced_security"
+      ]
     },
     {
       "name": "app.core.security.distributed_threat_tracker",
-      "exports": ["DistributedThreatTracker", "get_threat_tracker", "initialize_threat_tracker"]
+      "exports": [
+        "DistributedThreatTracker",
+        "get_threat_tracker",
+        "initialize_threat_tracker"
+      ]
     },
     {
       "name": "app.core.security.comprehensive_middleware",
-      "exports": ["ComprehensiveSecurityMiddleware", "SecurityViolation", "create_comprehensive_security_middleware"]
+      "exports": [
+        "ComprehensiveSecurityMiddleware",
+        "SecurityViolation",
+        "create_comprehensive_security_middleware"
+      ]
     },
     {
       "name": "app.ai.legacy_stubs",
-      "exports": ["OpenAIClient", "VertexClient"]
+      "exports": [
+        "OpenAIClient",
+        "VertexClient"
+      ]
     }
   ]
 }
-

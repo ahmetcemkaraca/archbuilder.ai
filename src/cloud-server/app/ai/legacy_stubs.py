@@ -1,9 +1,9 @@
 """
 Legacy AI Client Stubs for ArchBuilder.AI
 
-These are deprecated stub implementations. 
+These are deprecated stub implementations.
 Use the real implementations instead:
-- app.ai.openai.client.OpenAIClient  
+- app.ai.openai.client.OpenAIClient
 - app.ai.vertex.client.VertexAIClient
 """
 
@@ -23,9 +23,9 @@ class OpenAIClient:
 
     async def generate(self, prompt: str, **kwargs: Any) -> Dict[str, Any]:
         return {
-            "provider": "openai-stub", 
+            "provider": "openai-stub",
             "model": "legacy-stub",
-            "output": {"message": "Legacy stub - use real OpenAI client", "input_preview": prompt[:50]}, 
+            "output": {"message": "Legacy stub - use real OpenAI client", "input_preview": prompt[:50]},
             "metadata": {"is_stub": True, **kwargs}
         }
 
@@ -42,8 +42,8 @@ class VertexClient:
 
     async def generate(self, prompt: str, **kwargs: Any) -> Dict[str, Any]:
         return {
-            "provider": "vertex-stub", 
+            "provider": "vertex-stub",
             "model": "legacy-stub",
-            "output": {"message": "Legacy stub - use real Vertex AI client", "input_preview": prompt[:50]}, 
+            "output": {"message": "Legacy stub - use real Vertex AI client", "input_preview": prompt[:50]},
             "metadata": {"is_stub": True, **kwargs}
         }

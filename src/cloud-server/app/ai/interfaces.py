@@ -13,7 +13,7 @@ from typing import Any, Dict, Protocol, Optional
 
 class AIClient(Protocol):
     """Protocol defining the interface for AI client implementations."""
-    
+
     async def generate(self, prompt: str, **kwargs: Any) -> Dict[str, Any]:
         """Generate AI response from a textual prompt."""
         ...

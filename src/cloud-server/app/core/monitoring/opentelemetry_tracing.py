@@ -451,5 +451,3 @@ def setup_auto_instrumentation(app=None):
         
         logger.info("OpenTelemetry auto-instrumentation enabled")
 
-
-

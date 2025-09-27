@@ -13,9 +13,16 @@ class Settings(BaseSettings):
 
     # Core
     app_name: str = Field(default="ArchBuilder Cloud Server")
-    log_level: str = Field(default="INFO")
+    environment: str = Field(default="development")
+    log_level: str = Field(default="INFO") 
     auth_dev_mode: bool = Field(default=False)
     jwt_secret: str | None = Field(default=None)
+    
+    # Security
+    security_headers_enabled: bool = Field(default=True)
+    enhanced_security_enabled: bool = Field(default=True)
+    max_file_upload_size: int = Field(default=100 * 1024 * 1024)  # 100MB
+    rate_limit_enabled: bool = Field(default=True)
 
     # Database Configuration
     database_url: str | None = Field(default=None)

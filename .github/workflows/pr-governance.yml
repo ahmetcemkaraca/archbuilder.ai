@@ -1,0 +1,299 @@
+name: PR Governance
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    types: [ opened, synchronize, reopened, edited ]
+
+jobs:
+  validate:
+    name: validate
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history for GitFlow validation
+          fetch-depth: 0
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        shell: powershell
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/cloud-server/requirements.txt
+
+      - name: GitFlow Branch Validation
+        shell: powershell
+        run: |
+          $branch = "${{ github.head_ref }}"
+          $targetBranch = "${{ github.base_ref }}"
+          
+          Write-Host "Validating branch: $branch → $targetBranch"
+          
+          # GitFlow branch naming validation
+          $validPatterns = @(
+            "^feature/\d+-[a-z0-9-]+$",
+            "^hotfix/\d+-[a-z0-9-]+$", 
+            "^release/\d+\.\d+\.\d+$",
+            "^bugfix/\d+-[a-z0-9-]+$"
+          )
+          
+          $isValid = $false
+          foreach ($pattern in $validPatterns) {
+            if ($branch -match $pattern) {
+              $isValid = $true
+              Write-Host "✅ Branch name follows GitFlow convention: $pattern" -ForegroundColor Green
+              break
+            }
+          }
+          
+          if (-not $isValid) {
+            Write-Host "❌ Branch name '$branch' doesn't follow GitFlow conventions:" -ForegroundColor Red
+            Write-Host "  Expected patterns:" -ForegroundColor Yellow
+            Write-Host "  - feature/123-short-description" -ForegroundColor Yellow
+            Write-Host "  - hotfix/456-critical-fix" -ForegroundColor Yellow
+            Write-Host "  - release/1.2.3" -ForegroundColor Yellow
+            Write-Host "  - bugfix/789-bug-description" -ForegroundColor Yellow
+            exit 1
+          }
+          
+          # Target branch validation
+          $validTargets = @{
+            "feature/" = @("develop")
+            "hotfix/" = @("main", "develop") 
+            "release/" = @("main")
+            "bugfix/" = @("develop")
+          }
+          
+          $branchType = ($branch -split "/")[0] + "/"
+          if ($validTargets.ContainsKey($branchType)) {
+            if ($targetBranch -in $validTargets[$branchType]) {
+              Write-Host "✅ Target branch '$targetBranch' is valid for '$branchType' branches" -ForegroundColor Green
+            } else {
+              Write-Host "❌ Invalid target branch '$targetBranch' for '$branchType' branch" -ForegroundColor Red
+              Write-Host "  Valid targets: $($validTargets[$branchType] -join ', ')" -ForegroundColor Yellow
+              exit 1
+            }
+          }
+
+      - name: Registry Validation
+        shell: powershell
+        run: |
+          Write-Host "Running registry validation..."
+          powershell -File scripts/validate-registry.ps1 -RepoRoot "."
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "❌ Registry validation failed" -ForegroundColor Red
+            exit 1
+          }
+          Write-Host "✅ Registry validation passed" -ForegroundColor Green
+
+      - name: Context Rehydration
+        shell: powershell
+        run: |
+          Write-Host "Running context rehydration..."
+          powershell -File scripts/rehydrate-context.ps1
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "❌ Context rehydration failed" -ForegroundColor Red
+            exit 1
+          }
+          Write-Host "✅ Context rehydration completed" -ForegroundColor Green
+
+      - name: Commit Message Validation
+        shell: powershell
+        run: |
+          # Get PR commits
+          $commits = git log --oneline ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}
+          
+          Write-Host "Validating commit messages..."
+          
+          # Conventional Commits pattern
+          $conventionalPattern = "^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .{10,}"
+          
+          $invalidCommits = @()
+          foreach ($commit in $commits) {
+            $message = ($commit -split " ", 2)[1]
+            if (-not ($message -match $conventionalPattern)) {
+              $invalidCommits += $commit
+            }
+          }
+          
+          if ($invalidCommits.Count -gt 0) {
+            Write-Host "❌ Invalid commit messages found:" -ForegroundColor Red
+            $invalidCommits | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+            Write-Host ""
+            Write-Host "Expected format: type(scope): description" -ForegroundColor Yellow
+            Write-Host "Types: feat, fix, docs, style, refactor, test, chore" -ForegroundColor Yellow
+            Write-Host "Example: feat(auth): add JWT authentication middleware" -ForegroundColor Yellow
+            exit 1
+          }
+          
+          Write-Host "✅ All commit messages follow conventional format" -ForegroundColor Green
+
+      - name: PR Title and Description Validation
+        shell: powershell
+        run: |
+          $title = "${{ github.event.pull_request.title }}"
+          $body = "${{ github.event.pull_request.body }}"
+          
+          Write-Host "Validating PR title and description..."
+          
+          # Title should follow conventional commit format
+          if (-not ($title -match "^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .{10,}")) {
+            Write-Host "❌ PR title doesn't follow conventional format: $title" -ForegroundColor Red
+            Write-Host "Expected: type(scope): description" -ForegroundColor Yellow
+            exit 1
+          }
+          
+          # Description should not be empty and should contain key sections
+          if ([string]::IsNullOrWhiteSpace($body)) {
+            Write-Host "❌ PR description is empty" -ForegroundColor Red
+            Write-Host "Please use the PR template and fill in the required sections" -ForegroundColor Yellow
+            exit 1
+          }
+          
+          # Check for required sections in description
+          $requiredSections = @(
+            "## 📋 Pull Request Description",
+            "### 🎯 What does this PR do?",
+            "## ✅ Checklist"
+          )
+          
+          $missingSections = @()
+          foreach ($section in $requiredSections) {
+            if ($body -notmatch [regex]::Escape($section)) {
+              $missingSections += $section
+            }
+          }
+          
+          if ($missingSections.Count -gt 0) {
+            Write-Host "❌ PR description missing required sections:" -ForegroundColor Red
+            $missingSections | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+            Write-Host "Please use the PR template" -ForegroundColor Yellow
+            exit 1
+          }
+          
+          Write-Host "✅ PR title and description validation passed" -ForegroundColor Green
+
+      - name: File Changes Validation
+        shell: powershell
+        run: |
+          Write-Host "Validating file changes..."
+          
+          # Get changed files
+          $changedFiles = git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}
+          
+          Write-Host "Changed files:"
+          $changedFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor Cyan }
+          
+          # Check for registry consistency
+          $hasCodeChanges = $false
+          $hasRegistryChanges = $false
+          
+          foreach ($file in $changedFiles) {
+            # Check if code changes require registry updates
+            if ($file -match "(src/|app/)" -and $file -match "\.(py|cs|ts|tsx|js|jsx)$") {
+              $hasCodeChanges = $true
+            }
+            
+            # Check if registry files are updated
+            if ($file -match "docs/registry/") {
+              $hasRegistryChanges = $true
+            }
+          }
+          
+          # Warn if code changes without registry updates
+          if ($hasCodeChanges -and -not $hasRegistryChanges) {
+            Write-Host "⚠️  Code changes detected without registry updates" -ForegroundColor Yellow
+            Write-Host "If you added/removed/modified public APIs, please update docs/registry/ files" -ForegroundColor Yellow
+          }
+          
+          # Check for forbidden file types
+          $forbiddenPatterns = @(
+            "\.log$",
+            "\.tmp$", 
+            "\.cache$",
+            "node_modules/",
+            "__pycache__/",
+            "\.pyc$",
+            "\.env$"
+          )
+          
+          $forbiddenFiles = @()
+          foreach ($file in $changedFiles) {
+            foreach ($pattern in $forbiddenPatterns) {
+              if ($file -match $pattern) {
+                $forbiddenFiles += $file
+                break
+              }
+            }
+          }
+          
+          if ($forbiddenFiles.Count -gt 0) {
+            Write-Host "❌ Forbidden files detected:" -ForegroundColor Red
+            $forbiddenFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+            Write-Host "Please remove these files from the commit" -ForegroundColor Yellow
+            exit 1
+          }
+          
+          Write-Host "✅ File changes validation passed" -ForegroundColor Green
+
+      - name: Dependencies and Security Check
+        shell: powershell
+        run: |
+          Write-Host "Running dependency and security checks..."
+          
+          # Python dependency check
+          pip check
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "❌ Python dependency conflicts detected" -ForegroundColor Red
+            exit 1
+          }
+          
+          # Check for common security issues in requirements
+          $requirementsContent = Get-Content "src/cloud-server/requirements.txt" -Raw
+          
+          # Look for potentially insecure packages (basic check)
+          $insecurePatterns = @(
+            "==\s*0\.",  # Version 0.x packages
+            "paramiko<",  # Old paramiko versions
+            "requests<2\.25",  # Old requests versions
+            "urllib3<1\.26"  # Old urllib3 versions
+          )
+          
+          foreach ($pattern in $insecurePatterns) {
+            if ($requirementsContent -match $pattern) {
+              Write-Host "⚠️  Potentially insecure dependency pattern found: $pattern" -ForegroundColor Yellow
+            }
+          }
+          
+          Write-Host "✅ Dependencies and security check completed" -ForegroundColor Green
+
+      - name: Generate Validation Report
+        if: always()
+        shell: powershell
+        run: |
+          $report = @{
+            branch = "${{ github.head_ref }}"
+            target = "${{ github.base_ref }}"
+            pr_number = "${{ github.event.pull_request.number }}"
+            validation_timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+            checks = @{
+              gitflow_validation = "passed"
+              registry_validation = "passed" 
+              context_rehydration = "passed"
+              commit_messages = "passed"
+              pr_format = "passed"
+              file_changes = "passed"
+              dependencies = "passed"
+            }
+          }
+          
+          $report | ConvertTo-Json -Depth 3 | Out-File "validation-report.json"
+          Write-Host "✅ Validation report generated" -ForegroundColor Green

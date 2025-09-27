@@ -15,8 +15,38 @@ class AIClient(Protocol):
     """Protocol defining the interface for AI client implementations."""
 
     async def generate(self, prompt: str, **kwargs: Any) -> Dict[str, Any]:
-        """Generate AI response from a textual prompt."""
-        ...
+        """
+        AI response üretimi
+        
+        Args:
+            prompt: Input prompt text
+            **kwargs: Model-specific parameters
+            
+        Returns:
+            Dict containing model response and metadata
+        """
+        raise NotImplementedError("Subclasses must implement generate method")
+    
+    async def generate_streaming(self, prompt: str, **kwargs: Any) -> AsyncGenerator[Dict[str, Any], None]:
+        """
+        Streaming AI response üretimi
+        
+        Args:
+            prompt: Input prompt text  
+            **kwargs: Model-specific parameters
+            
+        Yields:
+            Dict chunks of streaming response
+        """
+        raise NotImplementedError("Subclasses must implement generate_streaming method")
+    
+    async def validate_credentials(self) -> bool:
+        """API credentials geçerliliğini kontrol et"""
+        raise NotImplementedError("Subclasses must implement validate_credentials method")
+    
+    async def get_model_info(self) -> Dict[str, Any]:
+        """Model bilgileri ve capabilities"""
+        raise NotImplementedError("Subclasses must implement get_model_info method")
 
     async def analyze_project(self, project_data: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze project data and provide insights."""

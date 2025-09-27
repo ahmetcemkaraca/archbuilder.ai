@@ -1,11 +1,13 @@
 # Development Dependencies
 # Install with: pip install -r requirements-dev.txt
 
-# Code Quality
+# Code Quality & Formatting
 black==24.8.0
 flake8==7.1.1
 isort==5.13.2
 mypy==1.11.2
+autopep8==2.3.1
+yapf==0.40.2
 
 # Testing
 pytest==8.3.3

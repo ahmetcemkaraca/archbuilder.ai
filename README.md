@@ -33,7 +33,7 @@ ArchBuilder.AI is a hybrid system featuring:
    JWT_SECRET=your_secure_jwt_secret_here
    
    # Database Configuration - Production PostgreSQL
-   DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/archbuilder
+   DATABASE_URL=postgresql+asyncpg://your_user:your_password@localhost:5432/archbuilder
    DB_POOL_SIZE=20
    DB_MAX_OVERFLOW=30
    DB_POOL_TIMEOUT=30
@@ -41,7 +41,7 @@ ArchBuilder.AI is a hybrid system featuring:
    DB_ECHO=false
    
    # Optional read replica for scaling
-   DATABASE_REPLICA_URL=postgresql+asyncpg://user:pass@replica:5432/archbuilder
+   DATABASE_REPLICA_URL=postgresql+asyncpg://your_user:your_password@replica:5432/archbuilder
    
    # RAG Service Configuration
    RAGFLOW_BASE_URL=http://localhost:12345

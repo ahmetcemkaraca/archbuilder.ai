@@ -1,9 +1,9 @@
 Project-wide Copilot instructions for ArchBuilder.AI autonomous development across desktop/cloud/Revit. Keep answers concise; code complete and runnable.
 
-## 🔧 MANDATORY DEVELOPMENT WORKFLOW
+## MANDATORY DEVELOPMENT WORKFLOW
 **Always** use **Context7** MCP server tools when I need code generation, setup or configuration steps, or library/API documentation. This means you should automatically use the Context7 MCP tools to resolve library id and get library docs without me having to explicitly ask.
 
-### 🌟 GIT BRANCH WORKFLOW
+### GIT BRANCH WORKFLOW
 **ALWAYS** work with feature branches for every task/implementation:
 
 #### Git Branch Strategy:
@@ -45,6 +45,7 @@ Project-wide Copilot instructions for ArchBuilder.AI autonomous development acro
    
    # Continue until task complete, then wait for merge approval
    ```
+6. **Remote Repository**: Ensure remote `origin` is set to `https://github.com/ahmetcemkaraca/archbuilder.ai.git`. All pushes (branches and tags) must target this remote.
 
 ### Before ANY Function Implementation or Code Fix:
 **ALWAYS** read the relevant `*.instructions.md` files from `.github/instructions/` directory before writing or modifying any code. This is **NON-NEGOTIABLE** and ensures consistency, security, and quality across the entire codebase.
@@ -327,3 +328,4 @@ Minimal schemas:
 
 ### AI client gaps
 - Implement analyze_project in AI clients; define input/output schemas and add tests.
+````

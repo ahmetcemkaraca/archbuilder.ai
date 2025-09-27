@@ -240,6 +240,206 @@ class RegionalConfigService:
                         "confidence_score": "Confidence Score",
                         "compliance_score": "Compliance Score"
                     }
+                },
+                "de": {
+                    "common": {
+                        "save": "Speichern",
+                        "cancel": "Abbrechen",
+                        "delete": "Löschen",
+                        "edit": "Bearbeiten",
+                        "create": "Erstellen",
+                        "search": "Suchen",
+                        "filter": "Filtern",
+                        "sort": "Sortieren",
+                        "loading": "Lädt...",
+                        "error": "Fehler",
+                        "success": "Erfolg",
+                        "warning": "Warnung",
+                        "info": "Info"
+                    },
+                    "building_types": {
+                        "residential": "Wohngebäude",
+                        "commercial": "Gewerblich",
+                        "industrial": "Industriell",
+                        "public": "Öffentlich",
+                        "mixed_use": "Gemischte Nutzung"
+                    },
+                    "room_types": {
+                        "bedroom": "Schlafzimmer",
+                        "bathroom": "Badezimmer",
+                        "kitchen": "Küche",
+                        "living_room": "Wohnzimmer",
+                        "office": "Büro",
+                        "meeting_room": "Besprechungsraum",
+                        "corridor": "Korridor",
+                        "staircase": "Treppe"
+                    },
+                    "validation": {
+                        "area_too_small": "Fläche zu klein",
+                        "area_too_large": "Fläche zu groß",
+                        "height_too_low": "Höhe zu niedrig",
+                        "height_too_high": "Höhe zu hoch",
+                        "window_area_insufficient": "Fensterfläche unzureichend",
+                        "fire_safety_required": "Brandschutz erforderlich",
+                        "accessibility_required": "Barrierefreiheit erforderlich"
+                    },
+                    "analysis": {
+                        "geometry_analysis": "Geometrie-Analyse",
+                        "code_analysis": "Code-Analyse",
+                        "recommendations": "Empfehlungen",
+                        "confidence_score": "Vertrauenswert",
+                        "compliance_score": "Compliance-Wert"
+                    }
+                },
+                "fr": {
+                    "common": {
+                        "save": "Enregistrer",
+                        "cancel": "Annuler",
+                        "delete": "Supprimer",
+                        "edit": "Modifier",
+                        "create": "Créer",
+                        "search": "Rechercher",
+                        "filter": "Filtrer",
+                        "sort": "Trier",
+                        "loading": "Chargement...",
+                        "error": "Erreur",
+                        "success": "Succès",
+                        "warning": "Avertissement",
+                        "info": "Info"
+                    },
+                    "building_types": {
+                        "residential": "Résidentiel",
+                        "commercial": "Commercial",
+                        "industrial": "Industriel",
+                        "public": "Public",
+                        "mixed_use": "Usage Mixte"
+                    },
+                    "room_types": {
+                        "bedroom": "Chambre",
+                        "bathroom": "Salle de bain",
+                        "kitchen": "Cuisine",
+                        "living_room": "Salon",
+                        "office": "Bureau",
+                        "meeting_room": "Salle de réunion",
+                        "corridor": "Couloir",
+                        "staircase": "Escalier"
+                    },
+                    "validation": {
+                        "area_too_small": "Surface trop petite",
+                        "area_too_large": "Surface trop grande",
+                        "height_too_low": "Hauteur trop basse",
+                        "height_too_high": "Hauteur trop élevée",
+                        "window_area_insufficient": "Surface de fenêtre insuffisante",
+                        "fire_safety_required": "Sécurité incendie requise",
+                        "accessibility_required": "Accessibilité requise"
+                    },
+                    "analysis": {
+                        "geometry_analysis": "Analyse Géométrique",
+                        "code_analysis": "Analyse de Code",
+                        "recommendations": "Recommandations",
+                        "confidence_score": "Score de Confiance",
+                        "compliance_score": "Score de Conformité"
+                    }
+                },
+                "es": {
+                    "common": {
+                        "save": "Guardar",
+                        "cancel": "Cancelar",
+                        "delete": "Eliminar",
+                        "edit": "Editar",
+                        "create": "Crear",
+                        "search": "Buscar",
+                        "filter": "Filtrar",
+                        "sort": "Ordenar",
+                        "loading": "Cargando...",
+                        "error": "Error",
+                        "success": "Éxito",
+                        "warning": "Advertencia",
+                        "info": "Info"
+                    },
+                    "building_types": {
+                        "residential": "Residencial",
+                        "commercial": "Comercial",
+                        "industrial": "Industrial",
+                        "public": "Público",
+                        "mixed_use": "Uso Mixto"
+                    },
+                    "room_types": {
+                        "bedroom": "Dormitorio",
+                        "bathroom": "Baño",
+                        "kitchen": "Cocina",
+                        "living_room": "Sala de estar",
+                        "office": "Oficina",
+                        "meeting_room": "Sala de reuniones",
+                        "corridor": "Pasillo",
+                        "staircase": "Escalera"
+                    },
+                    "validation": {
+                        "area_too_small": "Área demasiado pequeña",
+                        "area_too_large": "Área demasiado grande",
+                        "height_too_low": "Altura demasiado baja",
+                        "height_too_high": "Altura demasiado alta",
+                        "window_area_insufficient": "Área de ventana insuficiente",
+                        "fire_safety_required": "Seguridad contra incendios requerida",
+                        "accessibility_required": "Accesibilidad requerida"
+                    },
+                    "analysis": {
+                        "geometry_analysis": "Análisis Geométrico",
+                        "code_analysis": "Análisis de Código",
+                        "recommendations": "Recomendaciones",
+                        "confidence_score": "Puntuación de Confianza",
+                        "compliance_score": "Puntuación de Cumplimiento"
+                    }
+                },
+                "it": {
+                    "common": {
+                        "save": "Salva",
+                        "cancel": "Annulla",
+                        "delete": "Elimina",
+                        "edit": "Modifica",
+                        "create": "Crea",
+                        "search": "Cerca",
+                        "filter": "Filtra",
+                        "sort": "Ordina",
+                        "loading": "Caricamento...",
+                        "error": "Errore",
+                        "success": "Successo",
+                        "warning": "Avviso",
+                        "info": "Info"
+                    },
+                    "building_types": {
+                        "residential": "Residenziale",
+                        "commercial": "Commerciale",
+                        "industrial": "Industriale",
+                        "public": "Pubblico",
+                        "mixed_use": "Uso Misto"
+                    },
+                    "room_types": {
+                        "bedroom": "Camera da letto",
+                        "bathroom": "Bagno",
+                        "kitchen": "Cucina",
+                        "living_room": "Soggiorno",
+                        "office": "Ufficio",
+                        "meeting_room": "Sala riunioni",
+                        "corridor": "Corridoio",
+                        "staircase": "Scala"
+                    },
+                    "validation": {
+                        "area_too_small": "Area troppo piccola",
+                        "area_too_large": "Area troppo grande",
+                        "height_too_low": "Altezza troppo bassa",
+                        "height_too_high": "Altezza troppo alta",
+                        "window_area_insufficient": "Area finestra insufficiente",
+                        "fire_safety_required": "Sicurezza antincendio richiesta",
+                        "accessibility_required": "Accessibilità richiesta"
+                    },
+                    "analysis": {
+                        "geometry_analysis": "Analisi Geometrica",
+                        "code_analysis": "Analisi Codice",
+                        "recommendations": "Raccomandazioni",
+                        "confidence_score": "Punteggio Affidabilità",
+                        "compliance_score": "Punteggio Conformità"
+                    }
                 }
             }
             

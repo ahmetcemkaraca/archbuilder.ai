@@ -76,14 +76,14 @@ class SecretPatterns:
     )
 
     # Credit card numbers (basic pattern)
-    CREDIT_CARD_PATTERN = r'\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3[0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\b'
+    CREDIT_CARD_PATTERN = r"\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3[0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\b"
 
     # SSN pattern (US)
-    SSN_PATTERN = r'\b(?:[0-9]{3}-[0-9]{2}-[0-9]{4}|[0-9]{9})\b'
+    SSN_PATTERN = r"\b(?:[0-9]{3}-[0-9]{2}-[0-9]{4}|[0-9]{9})\b"
 
     # Phone numbers
     PHONE_PATTERN = (
-        r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b'
+        r"\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b"
     )
 
 
@@ -99,85 +99,85 @@ class LogSanitizer:
         return [
             SanitizationRule(
                 pattern=SecretPatterns.API_KEY_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="API Key sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.JWT_TOKEN_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="JWT Token sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.ACCESS_TOKEN_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="Access Token sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.DB_PASSWORD_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="Database password sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.DB_CONNECTION_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="Database connection string sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.AWS_ACCESS_KEY_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="AWS Access Key sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.AWS_SECRET_KEY_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="AWS Secret Key sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.AZURE_KEY_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="Azure Key sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.OPENAI_KEY_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="OpenAI API Key sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.AZURE_OPENAI_KEY_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="Azure OpenAI Key sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.VERTEX_AI_KEY_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="Vertex AI Key sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.STRIPE_KEY_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="Stripe Key sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.EMAIL_PASSWORD_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="Email password sanitization",
                 severity="high",
             ),
             SanitizationRule(
                 pattern=SecretPatterns.SECRET_PATTERN,
-                replacement=r'\1=***REDACTED***',
+                replacement=r"\1=***REDACTED***",
                 description="Generic secret sanitization",
                 severity="medium",
             ),

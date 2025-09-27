@@ -212,14 +212,14 @@ class LicenseService:
 
             # Check if adding usage would exceed limits
             new_usage = current_usage + amount
-            if new_usage > limits['limit']:
+            if new_usage > limits["limit"]:
                 raise UsageLimitExceededError(
                     f"Usage limit exceeded for {usage_type.value}. "
                     f"Current: {current_usage}, Limit: {limits['limit']}"
                 )
 
             # Update usage
-            await self._update_usage(usage_key, new_usage, limits['reset_period'])
+            await self._update_usage(usage_key, new_usage, limits["reset_period"])
 
             # Log usage
             await self._log_usage(user_id, usage_type, amount, metadata)
@@ -228,9 +228,9 @@ class LicenseService:
             return UsageStats(
                 usage_type=usage_type,
                 current_usage=new_usage,
-                limit=limits['limit'],
-                reset_period=limits['reset_period'],
-                reset_date=limits['reset_date'],
+                limit=limits["limit"],
+                reset_period=limits["reset_period"],
+                reset_date=limits["reset_date"],
                 is_over_limit=False,
             )
 
@@ -263,10 +263,10 @@ class LicenseService:
                     UsageStats(
                         usage_type=usage_type,
                         current_usage=current_usage,
-                        limit=limits['limit'],
-                        reset_period=limits['reset_period'],
-                        reset_date=limits['reset_date'],
-                        is_over_limit=current_usage >= limits['limit'],
+                        limit=limits["limit"],
+                        reset_period=limits["reset_period"],
+                        reset_date=limits["reset_date"],
+                        is_over_limit=current_usage >= limits["limit"],
                     )
                 )
 

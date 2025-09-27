@@ -217,7 +217,7 @@ class CADProcessingService:
 
         try:
             # Create temporary file for ezdxf
-            with tempfile.NamedTemporaryFile(suffix='.dxf', delete=False) as temp_file:
+            with tempfile.NamedTemporaryFile(suffix=".dxf", delete=False) as temp_file:
                 temp_file.write(file_data)
                 temp_path = temp_file.name
 
@@ -265,7 +265,7 @@ class CADProcessingService:
 
         try:
             # Create temporary file for ifcopenshell
-            with tempfile.NamedTemporaryFile(suffix='.ifc', delete=False) as temp_file:
+            with tempfile.NamedTemporaryFile(suffix=".ifc", delete=False) as temp_file:
                 temp_file.write(file_data)
                 temp_path = temp_file.name
 
@@ -327,7 +327,7 @@ class CADProcessingService:
 
         try:
             # Create temporary file
-            suffix = f'.{format.value}'
+            suffix = f".{format.value}"
             with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as temp_file:
                 temp_file.write(file_data)
                 temp_path = temp_file.name
@@ -415,10 +415,10 @@ class CADProcessingService:
                 return CADElement(
                     id=element_id,
                     type=ElementType.WALL,  # Assume lines are walls
-                    layer=getattr(entity, 'layer', None),
+                    layer=getattr(entity, "layer", None),
                     properties={
                         "length": entity.dxf.start.distance(entity.dxf.end),
-                        "color": getattr(entity.dxf, 'color', 0),
+                        "color": getattr(entity.dxf, "color", 0),
                     },
                     geometry={
                         "type": "line",
@@ -432,7 +432,7 @@ class CADProcessingService:
                 return CADElement(
                     id=element_id,
                     type=ElementType.WALL,
-                    layer=getattr(entity, 'layer', None),
+                    layer=getattr(entity, "layer", None),
                     properties={"point_count": len(points), "closed": entity.closed},
                     geometry={
                         "type": "polyline",
@@ -444,7 +444,7 @@ class CADProcessingService:
                 return CADElement(
                     id=element_id,
                     type=ElementType.FURNITURE,
-                    layer=getattr(entity, 'layer', None),
+                    layer=getattr(entity, "layer", None),
                     properties={
                         "radius": entity.dxf.radius,
                         "area": 3.14159 * entity.dxf.radius**2,
@@ -460,10 +460,10 @@ class CADProcessingService:
                 return CADElement(
                     id=element_id,
                     type=ElementType.ANNOTATION,
-                    layer=getattr(entity, 'layer', None),
+                    layer=getattr(entity, "layer", None),
                     properties={
-                        "text": getattr(entity.dxf, 'text', ''),
-                        "height": getattr(entity.dxf, 'height', 0),
+                        "text": getattr(entity.dxf, "text", ""),
+                        "height": getattr(entity.dxf, "height", 0),
                     },
                     geometry={
                         "type": "text",
@@ -488,25 +488,25 @@ class CADProcessingService:
 
             # Get wall properties
             properties = {
-                "name": getattr(wall, 'Name', '') or '',
-                "tag": getattr(wall, 'Tag', '') or '',
-                "predefined_type": getattr(wall, 'PredefinedType', '') or '',
+                "name": getattr(wall, "Name", "") or "",
+                "tag": getattr(wall, "Tag", "") or "",
+                "predefined_type": getattr(wall, "PredefinedType", "") or "",
             }
 
             # Try to get geometry
             geometry = {"type": "wall"}
 
             # Get wall type properties if available
-            wall_type = getattr(wall, 'IsTypedBy', None)
+            wall_type = getattr(wall, "IsTypedBy", None)
             if wall_type and len(wall_type) > 0:
                 type_obj = wall_type[0].RelatingType
-                if hasattr(type_obj, 'HasPropertySets'):
+                if hasattr(type_obj, "HasPropertySets"):
                     # Extract properties from property sets
                     for prop_set in type_obj.HasPropertySets:
-                        if hasattr(prop_set, 'HasProperties'):
+                        if hasattr(prop_set, "HasProperties"):
                             for prop in prop_set.HasProperties:
-                                if hasattr(prop, 'Name') and hasattr(
-                                    prop, 'NominalValue'
+                                if hasattr(prop, "Name") and hasattr(
+                                    prop, "NominalValue"
                                 ):
                                     properties[prop.Name] = str(prop.NominalValue)
 
@@ -528,9 +528,9 @@ class CADProcessingService:
             element_id = str(uuid.uuid4())
 
             properties = {
-                "name": getattr(door, 'Name', '') or '',
-                "tag": getattr(door, 'Tag', '') or '',
-                "predefined_type": getattr(door, 'PredefinedType', '') or '',
+                "name": getattr(door, "Name", "") or "",
+                "tag": getattr(door, "Tag", "") or "",
+                "predefined_type": getattr(door, "PredefinedType", "") or "",
             }
 
             return CADElement(
@@ -551,9 +551,9 @@ class CADProcessingService:
             element_id = str(uuid.uuid4())
 
             properties = {
-                "name": getattr(window, 'Name', '') or '',
-                "tag": getattr(window, 'Tag', '') or '',
-                "predefined_type": getattr(window, 'PredefinedType', '') or '',
+                "name": getattr(window, "Name", "") or "",
+                "tag": getattr(window, "Tag", "") or "",
+                "predefined_type": getattr(window, "PredefinedType", "") or "",
             }
 
             return CADElement(
@@ -574,9 +574,9 @@ class CADProcessingService:
             element_id = str(uuid.uuid4())
 
             properties = {
-                "name": getattr(space, 'Name', '') or '',
-                "long_name": getattr(space, 'LongName', '') or '',
-                "description": getattr(space, 'Description', '') or '',
+                "name": getattr(space, "Name", "") or "",
+                "long_name": getattr(space, "LongName", "") or "",
+                "description": getattr(space, "Description", "") or "",
             }
 
             return CADElement(
@@ -596,11 +596,11 @@ class CADProcessingService:
         try:
             projects = model.by_type("IfcProject")
             if projects:
-                return getattr(projects[0], 'Name', '') or 'Unnamed Project'
+                return getattr(projects[0], "Name", "") or "Unnamed Project"
         except:
             pass
 
-        return 'Unknown Project'
+        return "Unknown Project"
 
     def _get_mesh_bounds(self, mesh) -> Dict[str, float]:
         """3D mesh sınırlarını hesapla"""
@@ -635,20 +635,20 @@ class CADProcessingService:
 
         try:
             # Create new DXF document
-            doc = ezdxf.new('R2010')  # Modern DXF version
+            doc = ezdxf.new("R2010")  # Modern DXF version
             msp = doc.modelspace()
 
             # Create layers
-            doc.layers.new(name='WALLS', dxfattribs={'color': 1})  # Red
-            doc.layers.new(name='DOORS', dxfattribs={'color': 3})  # Green
-            doc.layers.new(name='WINDOWS', dxfattribs={'color': 4})  # Cyan
+            doc.layers.new(name="WALLS", dxfattribs={"color": 1})  # Red
+            doc.layers.new(name="DOORS", dxfattribs={"color": 3})  # Green
+            doc.layers.new(name="WINDOWS", dxfattribs={"color": 4})  # Cyan
 
             # Add walls
             for wall in walls:
                 msp.add_line(
                     (wall.start.x, wall.start.y),
                     (wall.end.x, wall.end.y),
-                    dxfattribs={'layer': 'WALLS'},
+                    dxfattribs={"layer": "WALLS"},
                 )
 
             # Add doors (as blocks or simple representations)
@@ -683,7 +683,7 @@ class CADProcessingService:
                             door_pos[1] + unit_vec[1] * door_half,
                         )
 
-                        msp.add_line(door_p1, door_p2, dxfattribs={'layer': 'DOORS'})
+                        msp.add_line(door_p1, door_p2, dxfattribs={"layer": "DOORS"})
 
             # Add windows (similar to doors)
             for window in windows:
@@ -717,15 +717,15 @@ class CADProcessingService:
                         )
 
                         msp.add_line(
-                            window_p1, window_p2, dxfattribs={'layer': 'WINDOWS'}
+                            window_p1, window_p2, dxfattribs={"layer": "WINDOWS"}
                         )
 
             # Save to memory
-            with tempfile.NamedTemporaryFile(suffix='.dxf', delete=False) as temp_file:
+            with tempfile.NamedTemporaryFile(suffix=".dxf", delete=False) as temp_file:
                 doc.saveas(temp_file.name)
 
                 # Read back as bytes
-                with open(temp_file.name, 'rb') as f:
+                with open(temp_file.name, "rb") as f:
                     dxf_data = f.read()
 
                 # Clean up

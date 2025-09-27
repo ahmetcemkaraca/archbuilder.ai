@@ -38,7 +38,7 @@ class AIInferenceTask(ArchBuilderTask):
             "Starting AI inference task",
             task_id=task_request.task_id,
             correlation_id=task_request.correlation_id,
-            model=task_request.payload.get('model'),
+            model=task_request.payload.get("model"),
             user_id=task_request.user_id,
         )
 
@@ -50,19 +50,19 @@ class AIInferenceTask(ArchBuilderTask):
 
             # Select appropriate model
             model_config = model_selector.select_model(
-                language=task_request.payload.get('context', {}).get('language', 'en'),
-                document_type=task_request.payload.get('context', {}).get(
-                    'document_type', 'general'
+                language=task_request.payload.get("context", {}).get("language", "en"),
+                document_type=task_request.payload.get("context", {}).get(
+                    "document_type", "general"
                 ),
-                complexity=task_request.payload.get('context', {}).get(
-                    'complexity', 'medium'
+                complexity=task_request.payload.get("context", {}).get(
+                    "complexity", "medium"
                 ),
-                file_format=task_request.payload.get('context', {}).get('file_format'),
-                analysis_type=task_request.payload.get('context', {}).get(
-                    'analysis_type', 'creation'
+                file_format=task_request.payload.get("context", {}).get("file_format"),
+                analysis_type=task_request.payload.get("context", {}).get(
+                    "analysis_type", "creation"
                 ),
-                user_preference=task_request.payload.get('context', {}).get(
-                    'user_preference'
+                user_preference=task_request.payload.get("context", {}).get(
+                    "user_preference"
                 ),
             )
 
@@ -73,7 +73,7 @@ class AIInferenceTask(ArchBuilderTask):
             )
             cached_result = asyncio.run(
                 cache_service.get_ai_response(
-                    task_request.correlation_id, model_config['model']
+                    task_request.correlation_id, model_config["model"]
                 )
             )
 
@@ -83,11 +83,11 @@ class AIInferenceTask(ArchBuilderTask):
                     correlation_id=task_request.correlation_id,
                 )
                 return {
-                    'status': 'success',
-                    'result': cached_result,
-                    'cached': True,
-                    'model_used': model_config['model'],
-                    'execution_time': time.time() - start_time,
+                    "status": "success",
+                    "result": cached_result,
+                    "cached": True,
+                    "model_used": model_config["model"],
+                    "execution_time": time.time() - start_time,
                 }
 
             # Process AI inference
@@ -97,7 +97,7 @@ class AIInferenceTask(ArchBuilderTask):
             asyncio.run(
                 cache_service.cache_ai_response(
                     task_request.correlation_id,
-                    model_config['model'],
+                    model_config["model"],
                     result,
                     ttl=3600,  # 1 hour
                 )
@@ -110,15 +110,15 @@ class AIInferenceTask(ArchBuilderTask):
                 task_id=task_request.task_id,
                 correlation_id=task_request.correlation_id,
                 execution_time=execution_time,
-                model_used=model_config['model'],
+                model_used=model_config["model"],
             )
 
             return {
-                'status': 'success',
-                'result': result,
-                'cached': False,
-                'model_used': model_config['model'],
-                'execution_time': execution_time,
+                "status": "success",
+                "result": result,
+                "cached": False,
+                "model_used": model_config["model"],
+                "execution_time": execution_time,
             }
 
         except Exception as e:
@@ -138,15 +138,15 @@ class AIInferenceTask(ArchBuilderTask):
         self, task_request: TaskRequest, model_config: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Process AI inference with model-specific logic"""
-        prompt = task_request.payload.get('prompt', '')
-        context = task_request.payload.get('context', {})
+        prompt = task_request.payload.get("prompt", "")
+        context = task_request.payload.get("context", {})
 
         # Create AI client based on model configuration
-        if model_config['provider'] == 'openai':
+        if model_config["provider"] == "openai":
             from app.ai.openai.client import OpenAIClient
 
             client = OpenAIClient()
-        elif model_config['provider'] == 'vertex_ai':
+        elif model_config["provider"] == "vertex_ai":
             from app.ai.vertex.client import VertexAIClient
 
             client = VertexAIClient()
@@ -156,7 +156,7 @@ class AIInferenceTask(ArchBuilderTask):
         # Generate AI response
         response = client.generate_response(
             prompt=prompt,
-            model=model_config['model'],
+            model=model_config["model"],
             context=context,
             correlation_id=task_request.correlation_id,
         )
@@ -175,11 +175,11 @@ class AIInferenceTask(ArchBuilderTask):
             )
 
         return {
-            'response': response,
-            'validation': validation_result.dict(),
-            'model_config': model_config,
-            'confidence': response.get('confidence', 0.0),
-            'requires_human_review': validation_result.requires_human_review,
+            "response": response,
+            "validation": validation_result.dict(),
+            "model_config": model_config,
+            "confidence": response.get("confidence", 0.0),
+            "requires_human_review": validation_result.requires_human_review,
         }
 
 
@@ -208,15 +208,15 @@ def batch_ai_inference(
             logger.error("Batch AI inference task failed", error=str(e))
             results.append(
                 {
-                    'status': 'error',
-                    'error': str(e),
-                    'task_id': task_request_dict.get('task_id'),
+                    "status": "error",
+                    "error": str(e),
+                    "task_id": task_request_dict.get("task_id"),
                 }
             )
 
     logger.info(
         "Batch AI inference completed",
-        success_count=len([r for r in results if r.get('status') == 'success']),
+        success_count=len([r for r in results if r.get("status") == "success"]),
     )
     return results
 
@@ -246,8 +246,8 @@ def validate_ai_responses(self, correlation_ids: List[str]) -> Dict[str, Any]:
                 validation_results[correlation_id] = validation_result.dict()
             else:
                 validation_results[correlation_id] = {
-                    'status': 'error',
-                    'error': 'Response not found in cache',
+                    "status": "error",
+                    "error": "Response not found in cache",
                 }
 
         except Exception as e:
@@ -256,13 +256,13 @@ def validate_ai_responses(self, correlation_ids: List[str]) -> Dict[str, Any]:
                 correlation_id=correlation_id,
                 error=str(e),
             )
-            validation_results[correlation_id] = {'status': 'error', 'error': str(e)}
+            validation_results[correlation_id] = {"status": "error", "error": str(e)}
 
     return {
-        'validation_results': validation_results,
-        'total_validated': len(correlation_ids),
-        'successful_validations': len(
-            [r for r in validation_results.values() if r.get('status') == 'success']
+        "validation_results": validation_results,
+        "total_validated": len(correlation_ids),
+        "successful_validations": len(
+            [r for r in validation_results.values() if r.get("status") == "success"]
         ),
     }
 
@@ -285,11 +285,11 @@ def cleanup_ai_cache(self, older_than_hours: int = 24) -> Dict[str, Any]:
         logger.info("AI cache cleanup completed", deleted_count=deleted_count)
 
         return {
-            'status': 'success',
-            'deleted_count': deleted_count,
-            'older_than_hours': older_than_hours,
+            "status": "success",
+            "deleted_count": deleted_count,
+            "older_than_hours": older_than_hours,
         }
 
     except Exception as e:
         logger.error("AI cache cleanup failed", error=str(e))
-        return {'status': 'error', 'error': str(e)}
+        return {"status": "error", "error": str(e)}

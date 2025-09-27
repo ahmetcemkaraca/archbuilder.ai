@@ -179,8 +179,8 @@ class ComprehensiveLayoutValidator:
         for i, wall in enumerate(layout.walls):
             # Check wall length
             # Calculate distance using simple math
-            dx = wall['end']['x'] - wall['start']['x']
-            dy = wall['end']['y'] - wall['start']['y']
+            dx = wall["end"]["x"] - wall["start"]["x"]
+            dy = wall["end"]["y"] - wall["start"]["y"]
             length = math.sqrt(dx * dx + dy * dy)
             if length < 100:  # 10cm minimum
                 errors.append(

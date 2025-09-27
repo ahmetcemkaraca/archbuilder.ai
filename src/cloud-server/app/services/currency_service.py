@@ -199,11 +199,11 @@ class CurrencyService:
             decimal_places = config.get("decimal_places", 2)
             if decimal_places > 0:
                 amount_decimal = Decimal(str(amount)).quantize(
-                    Decimal('0.' + '0' * decimal_places), rounding=ROUND_HALF_UP
+                    Decimal("0." + "0" * decimal_places), rounding=ROUND_HALF_UP
                 )
             else:
                 amount_decimal = Decimal(str(amount)).quantize(
-                    Decimal('1'), rounding=ROUND_HALF_UP
+                    Decimal("1"), rounding=ROUND_HALF_UP
                 )
 
             # TR: Thousands separator ve decimal separator

@@ -64,24 +64,24 @@ class ContentSafetyFilter:
     def __init__(self):
         self.harmful_patterns = [
             # Violence and harm
-            r'\b(kill|murder|assassinate|destroy|harm|hurt|violence|violent)\b',
-            r'\b(weapon|gun|knife|bomb|explosive|poison)\b',
-            r'\b(death|die|dying|suicide|self-harm)\b',
+            r"\b(kill|murder|assassinate|destroy|harm|hurt|violence|violent)\b",
+            r"\b(weapon|gun|knife|bomb|explosive|poison)\b",
+            r"\b(death|die|dying|suicide|self-harm)\b",
             # Hate speech and discrimination
-            r'\b(hate|racist|sexist|homophobic|discriminatory)\b',
-            r'\b(superior|inferior|master|slave)\b',
-            r'\b(genocide|ethnic cleansing|holocaust)\b',
+            r"\b(hate|racist|sexist|homophobic|discriminatory)\b",
+            r"\b(superior|inferior|master|slave)\b",
+            r"\b(genocide|ethnic cleansing|holocaust)\b",
             # Illegal activities
-            r'\b(illegal|unlawful|criminal|fraud|scam|theft|robbery)\b',
-            r'\b(drug|narcotic|addiction|overdose)\b',
-            r'\b(terrorism|terrorist|extremist)\b',
+            r"\b(illegal|unlawful|criminal|fraud|scam|theft|robbery)\b",
+            r"\b(drug|narcotic|addiction|overdose)\b",
+            r"\b(terrorism|terrorist|extremist)\b",
             # Inappropriate content
-            r'\b(sexual|pornographic|explicit|adult)\b',
-            r'\b(harassment|stalking|abuse|molestation)\b',
+            r"\b(sexual|pornographic|explicit|adult)\b",
+            r"\b(harassment|stalking|abuse|molestation)\b",
             # Dangerous instructions
-            r'\b(how to (kill|murder|harm|hurt|poison))\b',
-            r'\b(make (bomb|explosive|weapon|poison))\b',
-            r'\b(instructions for (violence|harm|illegal))\b',
+            r"\b(how to (kill|murder|harm|hurt|poison))\b",
+            r"\b(make (bomb|explosive|weapon|poison))\b",
+            r"\b(instructions for (violence|harm|illegal))\b",
         ]
 
         self.compiled_patterns = [
@@ -143,15 +143,15 @@ class AccuracyValidationFilter:
     def __init__(self):
         self.accuracy_indicators = [
             # Confidence indicators
-            r'\b(confident|certain|definitely|absolutely|100%)\b',
-            r'\b(guaranteed|assured|confirmed|verified)\b',
+            r"\b(confident|certain|definitely|absolutely|100%)\b",
+            r"\b(guaranteed|assured|confirmed|verified)\b",
             # Uncertainty indicators
-            r'\b(might|maybe|possibly|perhaps|likely|probably)\b',
-            r'\b(uncertain|unclear|unknown|unverified)\b',
-            r'\b(according to|based on|sources suggest)\b',
+            r"\b(might|maybe|possibly|perhaps|likely|probably)\b",
+            r"\b(uncertain|unclear|unknown|unverified)\b",
+            r"\b(according to|based on|sources suggest)\b",
             # Factual claims
-            r'\b(studies show|research indicates|data proves)\b',
-            r'\b(statistics|percentages|numbers|figures)\b',
+            r"\b(studies show|research indicates|data proves)\b",
+            r"\b(statistics|percentages|numbers|figures)\b",
         ]
 
         self.compiled_patterns = [
@@ -169,7 +169,7 @@ class AccuracyValidationFilter:
         for pattern in self.compiled_patterns:
             matches = pattern.findall(content)
             for match in matches:
-                if 'confident' in match.lower() or 'certain' in match.lower():
+                if "confident" in match.lower() or "certain" in match.lower():
                     # High confidence claims need strong sources
                     if not self._has_strong_sources(sources):
                         unsupported_claims.append(match)
@@ -215,13 +215,13 @@ class AccuracyValidationFilter:
             return False
 
         strong_source_indicators = [
-            'peer-reviewed',
-            'academic',
-            'scholarly',
-            'research',
-            'official',
-            'government',
-            'institutional',
+            "peer-reviewed",
+            "academic",
+            "scholarly",
+            "research",
+            "official",
+            "government",
+            "institutional",
         ]
 
         for source in sources:
@@ -245,7 +245,7 @@ class AccuracyValidationFilter:
                 continue
 
             # Check for required fields
-            required_fields = ['title', 'url', 'author', 'date']
+            required_fields = ["title", "url", "author", "date"]
             missing_fields = [field for field in required_fields if field not in source]
             if missing_fields:
                 issues.append(f"Source {i} missing fields: {missing_fields}")
@@ -258,11 +258,11 @@ class AccuracyValidationFilter:
 
         # Simple contradiction patterns
         contradiction_pairs = [
-            (r'\b(always|never|all|none)\b', r'\b(sometimes|often|some|many)\b'),
-            (r'\b(increase|rise|grow)\b', r'\b(decrease|fall|decline)\b'),
+            (r"\b(always|never|all|none)\b", r"\b(sometimes|often|some|many)\b"),
+            (r"\b(increase|rise|grow)\b", r"\b(decrease|fall|decline)\b"),
             (
-                r'\b(proven|confirmed|verified)\b',
-                r'\b(unproven|unconfirmed|disputed)\b',
+                r"\b(proven|confirmed|verified)\b",
+                r"\b(unproven|unconfirmed|disputed)\b",
             ),
         ]
 
@@ -281,20 +281,20 @@ class BiasDetectionFilter:
     def __init__(self):
         self.bias_indicators = [
             # Gender bias
-            r'\b(he should|she should|men are|women are)\b',
-            r'\b(typical (man|woman|male|female))\b',
+            r"\b(he should|she should|men are|women are)\b",
+            r"\b(typical (man|woman|male|female))\b",
             # Racial bias
-            r'\b(race|ethnicity|skin color|nationality)\b',
-            r'\b(stereotypical|typical (black|white|asian|hispanic))\b',
+            r"\b(race|ethnicity|skin color|nationality)\b",
+            r"\b(stereotypical|typical (black|white|asian|hispanic))\b",
             # Age bias
-            r'\b(too old|too young|elderly|youth)\b',
-            r'\b(age-appropriate|age-inappropriate)\b',
+            r"\b(too old|too young|elderly|youth)\b",
+            r"\b(age-appropriate|age-inappropriate)\b",
             # Socioeconomic bias
-            r'\b(poor|rich|wealthy|poverty|affluent)\b',
-            r'\b(educated|uneducated|intelligent|stupid)\b',
+            r"\b(poor|rich|wealthy|poverty|affluent)\b",
+            r"\b(educated|uneducated|intelligent|stupid)\b",
             # Political bias
-            r'\b(liberal|conservative|left|right|political)\b',
-            r'\b(government|politics|policy|political)\b',
+            r"\b(liberal|conservative|left|right|political)\b",
+            r"\b(government|politics|policy|political)\b",
         ]
 
         self.compiled_patterns = [
@@ -348,10 +348,10 @@ class BiasDetectionFilter:
 
         # Check gender balance
         male_pronouns = len(
-            re.findall(r'\b(he|him|his|himself)\b', content, re.IGNORECASE)
+            re.findall(r"\b(he|him|his|himself)\b", content, re.IGNORECASE)
         )
         female_pronouns = len(
-            re.findall(r'\b(she|her|hers|herself)\b', content, re.IGNORECASE)
+            re.findall(r"\b(she|her|hers|herself)\b", content, re.IGNORECASE)
         )
 
         if male_pronouns > 0 and female_pronouns == 0:
@@ -368,14 +368,14 @@ class HallucinationPreventionFilter:
     def __init__(self):
         self.hallucination_indicators = [
             # Overly specific claims
-            r'\b(exactly|precisely|specifically)\s+\d+\b',
-            r'\b(studies show|research proves|data confirms)\b',
+            r"\b(exactly|precisely|specifically)\s+\d+\b",
+            r"\b(studies show|research proves|data confirms)\b",
             # Made-up statistics
-            r'\b\d+%\s+(of|in|for|with)\b',
-            r'\b(according to|based on)\s+(studies|research|data)\b',
+            r"\b\d+%\s+(of|in|for|with)\b",
+            r"\b(according to|based on)\s+(studies|research|data)\b",
             # Unverifiable claims
-            r'\b(experts say|scientists agree|studies confirm)\b',
-            r'\b(widely known|commonly accepted|universally recognized)\b',
+            r"\b(experts say|scientists agree|studies confirm)\b",
+            r"\b(widely known|commonly accepted|universally recognized)\b",
         ]
 
         self.compiled_patterns = [
@@ -438,9 +438,9 @@ class HallucinationPreventionFilter:
     def _find_specific_claims(self, content: str) -> List[str]:
         """Find specific claims that need verification"""
         specific_patterns = [
-            r'\b\d+\s+(percent|%)\s+(of|in|for)\b',
-            r'\b(studies show|research indicates|data reveals)\b',
-            r'\b(according to|based on)\s+(studies|research|data)\b',
+            r"\b\d+\s+(percent|%)\s+(of|in|for)\b",
+            r"\b(studies show|research indicates|data reveals)\b",
+            r"\b(according to|based on)\s+(studies|research|data)\b",
         ]
 
         claims = []
@@ -458,7 +458,7 @@ class HallucinationPreventionFilter:
             return False
 
         # Simple verification - check if sources contain relevant information
-        source_text = ' '.join(str(source) for source in sources).lower()
+        source_text = " ".join(str(source) for source in sources).lower()
 
         for claim in claims:
             claim_words = claim.lower().split()
@@ -470,9 +470,9 @@ class HallucinationPreventionFilter:
     def _extract_statistics(self, content: str) -> List[str]:
         """Extract statistics from content"""
         stat_patterns = [
-            r'\b\d+%\b',
-            r'\b\d+\s+(percent|percentage)\b',
-            r'\b\d+\s+(of|in|for)\s+\d+\b',
+            r"\b\d+%\b",
+            r"\b\d+\s+(percent|percentage)\b",
+            r"\b\d+\s+(of|in|for)\s+\d+\b",
         ]
 
         statistics = []
@@ -489,7 +489,7 @@ class HallucinationPreventionFilter:
         if not sources:
             return False
 
-        source_text = ' '.join(str(source) for source in sources)
+        source_text = " ".join(str(source) for source in sources)
 
         for stat in statistics:
             if stat not in source_text:
@@ -566,23 +566,23 @@ class RAGResultFilter:
             )
 
         return {
-            'passed': overall_passed,
-            'confidence': overall_confidence,
-            'risk_level': overall_risk.value,
-            'filter_results': [
+            "passed": overall_passed,
+            "confidence": overall_confidence,
+            "risk_level": overall_risk.value,
+            "filter_results": [
                 {
-                    'filter_type': result.filter_type.value,
-                    'passed': result.passed,
-                    'confidence': result.confidence,
-                    'risk_level': result.risk_level.value,
-                    'issues': result.issues,
-                    'recommendations': result.recommendations,
+                    "filter_type": result.filter_type.value,
+                    "passed": result.passed,
+                    "confidence": result.confidence,
+                    "risk_level": result.risk_level.value,
+                    "issues": result.issues,
+                    "recommendations": result.recommendations,
                 }
                 for result in filter_results
             ],
-            'issues': all_issues,
-            'recommendations': all_recommendations,
-            'filtered_content': filtered_content,
+            "issues": all_issues,
+            "recommendations": all_recommendations,
+            "filtered_content": filtered_content,
         }
 
     def _create_filtered_content(

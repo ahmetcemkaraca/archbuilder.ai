@@ -519,14 +519,14 @@ class HumanReviewService:
         priority_score += error_count * 2 + warning_count
 
         # Project size factor (use rooms from requirements if available)
-        room_count = len(getattr(request, 'rooms', []))
+        room_count = len(getattr(request, "rooms", []))
         if room_count > 10:
             priority_score += 2
         elif room_count > 5:
             priority_score += 1
 
         # Budget factor (if high budget, higher priority)
-        budget = getattr(request, 'budget', None)
+        budget = getattr(request, "budget", None)
         if budget and budget > 1000000:
             priority_score += 1
 
@@ -554,7 +554,7 @@ class HumanReviewService:
 
         # Find reviewer with lowest workload
         best_reviewer = None
-        min_workload = float('inf')
+        min_workload = float("inf")
 
         for reviewer_id in available_reviewers:
             current_workload = self.reviewer_workload.get(reviewer_id, 0)
@@ -581,21 +581,21 @@ class HumanReviewService:
         score = 0.0
 
         # Room count factor (use rooms from request if available)
-        room_count = len(getattr(request, 'rooms', []))
+        room_count = len(getattr(request, "rooms", []))
         score += min(room_count * 0.1, 1.0)  # Max 1.0 for rooms
 
         # Element count factor from layout_data if available
         if result.layout_data:
             layout_data = result.layout_data
             total_elements = (
-                len(getattr(layout_data, 'walls', []))
-                + len(getattr(layout_data, 'doors', []))
-                + len(getattr(layout_data, 'windows', []))
+                len(getattr(layout_data, "walls", []))
+                + len(getattr(layout_data, "doors", []))
+                + len(getattr(layout_data, "windows", []))
             )
             score += min(total_elements * 0.02, 1.0)  # Max 1.0 for elements
 
         # Special requirements factor (check for special_requirements attribute)
-        special_reqs = getattr(request, 'special_requirements', [])
+        special_reqs = getattr(request, "special_requirements", [])
         special_requirements = sum(
             1
             for req in special_reqs

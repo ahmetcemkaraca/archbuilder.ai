@@ -13,7 +13,7 @@ try:
 except ImportError:
     SQLALCHEMY_AVAILABLE = False
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 @dataclass

@@ -31,39 +31,39 @@ class SanitizationConfig(BaseModel):
     max_file_size_mb: int = 100
     allowed_file_types: List[str] = Field(
         default_factory=lambda: [
-            'pdf',
-            'dwg',
-            'dxf',
-            'ifc',
-            'rvt',
-            'jpg',
-            'jpeg',
-            'png',
-            'gif',
-            'txt',
-            'doc',
-            'docx',
+            "pdf",
+            "dwg",
+            "dxf",
+            "ifc",
+            "rvt",
+            "jpg",
+            "jpeg",
+            "png",
+            "gif",
+            "txt",
+            "doc",
+            "docx",
         ]
     )
     allowed_html_tags: List[str] = Field(
         default_factory=lambda: [
-            'p',
-            'br',
-            'strong',
-            'em',
-            'ul',
-            'ol',
-            'li',
-            'h1',
-            'h2',
-            'h3',
-            'h4',
-            'h5',
-            'h6',
+            "p",
+            "br",
+            "strong",
+            "em",
+            "ul",
+            "ol",
+            "li",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
         ]
     )
     allowed_html_attributes: List[str] = Field(
-        default_factory=lambda: ['class', 'id', 'title']
+        default_factory=lambda: ["class", "id", "title"]
     )
     max_url_length: int = 2048
     max_json_depth: int = 10
@@ -89,19 +89,19 @@ class InputSanitizer:
 
         # Compile regex patterns for performance
         self._email_pattern = re.compile(
-            r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         )
         self._uuid_pattern = re.compile(
-            r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+            r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
             re.IGNORECASE,
         )
-        self._correlation_id_pattern = re.compile(r'^[A-Z]{2,3}_\d{14}_[a-f0-9]{32}$')
+        self._correlation_id_pattern = re.compile(r"^[A-Z]{2,3}_\d{14}_[a-f0-9]{32}$")
         self._sql_injection_pattern = re.compile(
-            r'(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)',
+            r"(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)",
             re.IGNORECASE,
         )
         self._xss_pattern = re.compile(
-            r'<script[^>]*>.*?</script>', re.IGNORECASE | re.DOTALL
+            r"<script[^>]*>.*?</script>", re.IGNORECASE | re.DOTALL
         )
 
     def sanitize_string(
@@ -136,8 +136,8 @@ class InputSanitizer:
             )
 
         # Remove null bytes
-        if '\x00' in value:
-            sanitized_value = sanitized_value.replace('\x00', '')
+        if "\x00" in value:
+            sanitized_value = sanitized_value.replace("\x00", "")
             sanitization_applied.append("null_bytes_removed")
 
         # Check for SQL injection patterns
@@ -152,12 +152,12 @@ class InputSanitizer:
 
         # Check for XSS patterns
         if self._xss_pattern.search(value):
-            sanitized_value = self._xss_pattern.sub('', sanitized_value)
+            sanitized_value = self._xss_pattern.sub("", sanitized_value)
             sanitization_applied.append("xss_removed")
             warnings.append(f"{field_name} contained potential XSS, content removed")
 
         # HTML encode special characters
-        if any(char in value for char in ['<', '>', '&', '"', "'"]):
+        if any(char in value for char in ["<", ">", "&", '"', "'"]):
             sanitized_value = html.escape(sanitized_value)
             sanitization_applied.append("html_encoded")
 
@@ -322,7 +322,7 @@ class InputSanitizer:
             return filename_result
 
         # Check file extension
-        file_extension = filename_result.sanitized_value.split('.')[-1].lower()
+        file_extension = filename_result.sanitized_value.split(".")[-1].lower()
         if file_extension not in self.config.allowed_file_types:
             errors.append(f"File type '{file_extension}' not allowed")
 
@@ -335,15 +335,15 @@ class InputSanitizer:
 
         # Check content type
         allowed_content_types = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/png',
-            'image/gif',
-            'text/plain',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/octet-stream',  # For CAD files
+            "application/pdf",
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/gif",
+            "text/plain",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/octet-stream",  # For CAD files
         ]
 
         if content_type not in allowed_content_types:
@@ -351,12 +351,12 @@ class InputSanitizer:
 
         # Remove path traversal attempts
         if (
-            '..' in filename_result.sanitized_value
-            or '/' in filename_result.sanitized_value
+            ".." in filename_result.sanitized_value
+            or "/" in filename_result.sanitized_value
         ):
             sanitized_filename = filename_result.sanitized_value.replace(
-                '..', ''
-            ).replace('/', '_')
+                "..", ""
+            ).replace("/", "_")
             sanitization_applied.append("path_traversal_removed")
             warnings.append("Path traversal characters removed from filename")
         else:
@@ -365,14 +365,14 @@ class InputSanitizer:
         return SanitizationResult(
             is_valid=len(errors) == 0,
             sanitized_value={
-                'filename': sanitized_filename,
-                'file_size': file_size,
-                'content_type': content_type,
+                "filename": sanitized_filename,
+                "file_size": file_size,
+                "content_type": content_type,
             },
             original_value={
-                'filename': filename,
-                'file_size': file_size,
-                'content_type': content_type,
+                "filename": filename,
+                "file_size": file_size,
+                "content_type": content_type,
             },
             warnings=warnings,
             errors=errors,
@@ -403,20 +403,20 @@ class OutputSanitizer:
         """Sanitize error messages to prevent information leakage"""
         # Remove sensitive information patterns
         sensitive_patterns = [
-            r'password[=:]\s*\S+',
-            r'token[=:]\s*\S+',
-            r'key[=:]\s*\S+',
-            r'secret[=:]\s*\S+',
-            r'file://.*',
-            r'C:\\\\.*',
-            r'/etc/.*',
-            r'/home/.*',
+            r"password[=:]\s*\S+",
+            r"token[=:]\s*\S+",
+            r"key[=:]\s*\S+",
+            r"secret[=:]\s*\S+",
+            r"file://.*",
+            r"C:\\\\.*",
+            r"/etc/.*",
+            r"/home/.*",
         ]
 
         sanitized_error = error
         for pattern in sensitive_patterns:
             sanitized_error = re.sub(
-                pattern, '[REDACTED]', sanitized_error, flags=re.IGNORECASE
+                pattern, "[REDACTED]", sanitized_error, flags=re.IGNORECASE
             )
 
         return sanitized_error

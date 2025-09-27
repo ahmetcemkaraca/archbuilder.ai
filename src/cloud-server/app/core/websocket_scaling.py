@@ -87,11 +87,11 @@ class WebSocketManager:
         self._cleanup_task: Optional[asyncio.Task] = None
         self._heartbeat_task: Optional[asyncio.Task] = None
         self._stats = {
-            'total_connections': 0,
-            'active_connections': 0,
-            'messages_sent': 0,
-            'messages_received': 0,
-            'errors': 0,
+            "total_connections": 0,
+            "active_connections": 0,
+            "messages_sent": 0,
+            "messages_received": 0,
+            "errors": 0,
         }
 
     async def start(self):
@@ -156,8 +156,8 @@ class WebSocketManager:
                     self.correlation_connections[correlation_id] = set()
                 self.correlation_connections[correlation_id].add(connection_id)
 
-            self._stats['total_connections'] += 1
-            self._stats['active_connections'] = len(self.connections)
+            self._stats["total_connections"] += 1
+            self._stats["active_connections"] = len(self.connections)
 
             logger.info(
                 "WebSocket connection established",
@@ -213,7 +213,7 @@ class WebSocketManager:
                 del self.correlation_connections[connection_info.correlation_id]
 
         del self.connections[connection_id]
-        self._stats['active_connections'] = len(self.connections)
+        self._stats["active_connections"] = len(self.connections)
 
         logger.info(
             "WebSocket connection closed",
@@ -235,7 +235,7 @@ class WebSocketManager:
             await connection_info.websocket.send_text(message.json())
             connection_info.message_count += 1
             connection_info.last_activity = datetime.utcnow()
-            self._stats['messages_sent'] += 1
+            self._stats["messages_sent"] += 1
 
             return True
 
@@ -246,7 +246,7 @@ class WebSocketManager:
                 error=str(e),
             )
             connection_info.error_count += 1
-            self._stats['errors'] += 1
+            self._stats["errors"] += 1
             return False
 
     async def broadcast_to_user(self, user_id: str, message: WebSocketMessage) -> int:
@@ -418,10 +418,10 @@ class WebSocketManager:
         """Get WebSocket manager statistics"""
         return {
             **self._stats,
-            'connections_by_user': len(self.user_connections),
-            'connections_by_correlation': len(self.correlation_connections),
-            'max_connections': self.max_connections,
-            'utilization_percentage': (len(self.connections) / self.max_connections)
+            "connections_by_user": len(self.user_connections),
+            "connections_by_correlation": len(self.correlation_connections),
+            "max_connections": self.max_connections,
+            "utilization_percentage": (len(self.connections) / self.max_connections)
             * 100,
         }
 
@@ -490,16 +490,16 @@ class WebSocketLoadBalancer:
         all_stats = []
         for i, manager in enumerate(self.managers):
             stats = manager.get_stats()
-            stats['manager_id'] = i
+            stats["manager_id"] = i
             all_stats.append(stats)
 
         return {
-            'managers': all_stats,
-            'total_connections': sum(
-                stats['active_connections'] for stats in all_stats
+            "managers": all_stats,
+            "total_connections": sum(
+                stats["active_connections"] for stats in all_stats
             ),
-            'total_messages_sent': sum(stats['messages_sent'] for stats in all_stats),
-            'total_errors': sum(stats['errors'] for stats in all_stats),
+            "total_messages_sent": sum(stats["messages_sent"] for stats in all_stats),
+            "total_errors": sum(stats["errors"] for stats in all_stats),
         }
 
 

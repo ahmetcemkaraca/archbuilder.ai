@@ -284,7 +284,7 @@ class LayoutIntegrationService:
                     "filename": filename,
                     "processing_result": (
                         processing_result.__dict__
-                        if hasattr(processing_result, '__dict__')
+                        if hasattr(processing_result, "__dict__")
                         else processing_result
                     ),
                 }
@@ -328,10 +328,10 @@ class LayoutIntegrationService:
 
                 dashboard = {
                     "system_stats": (
-                        stats.__dict__ if hasattr(stats, '__dict__') else stats
+                        stats.__dict__ if hasattr(stats, "__dict__") else stats
                     ),
                     "recent_queue": [
-                        item.__dict__ if hasattr(item, '__dict__') else item
+                        item.__dict__ if hasattr(item, "__dict__") else item
                         for item in queue
                     ],
                 }
@@ -425,7 +425,7 @@ class LayoutIntegrationService:
             return True
 
         # Check validation errors
-        total_errors = sum(len(getattr(vr, 'errors', [])) for vr in validation_results)
+        total_errors = sum(len(getattr(vr, "errors", [])) for vr in validation_results)
         if total_errors > 0:
             return True
 

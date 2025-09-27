@@ -106,7 +106,7 @@ class LicenseMiddleware(BaseHTTPMiddleware):
                                 "method": request.method,
                                 "timestamp": (
                                     str(request.state.start_time)
-                                    if hasattr(request.state, 'start_time')
+                                    if hasattr(request.state, "start_time")
                                     else None
                                 ),
                             },
@@ -299,7 +299,7 @@ class LicenseDecorator:
                         )
 
                     # Add license info to kwargs
-                    kwargs['license_info'] = license_info
+                    kwargs["license_info"] = license_info
 
                 except (LicenseInvalidError, LicenseExpiredError) as e:
                     raise HTTPException(status_code=403, detail=str(e))
@@ -336,7 +336,7 @@ class LicenseDecorator:
                         )
 
                     # Add subscription info to kwargs
-                    kwargs['subscription_info'] = subscription_info
+                    kwargs["subscription_info"] = subscription_info
 
                 except SubscriptionInactiveError as e:
                     raise HTTPException(status_code=403, detail=str(e))
@@ -367,7 +367,7 @@ class LicenseDecorator:
                         amount=amount,
                         metadata={
                             "endpoint": func.__name__,
-                            "timestamp": str(kwargs.get('timestamp', '')),
+                            "timestamp": str(kwargs.get("timestamp", "")),
                         },
                     )
                 except UsageLimitExceededError as e:
@@ -384,23 +384,23 @@ class LicenseDecorator:
         # Try to get user_id from various sources
 
         # 1. From kwargs
-        if 'user_id' in kwargs:
-            return kwargs['user_id']
+        if "user_id" in kwargs:
+            return kwargs["user_id"]
 
         # 2. From request object
         for arg in args:
-            if hasattr(arg, 'user_id'):
+            if hasattr(arg, "user_id"):
                 return arg.user_id
-            if hasattr(arg, 'headers') and 'X-User-ID' in arg.headers:
-                return arg.headers['X-User-ID']
+            if hasattr(arg, "headers") and "X-User-ID" in arg.headers:
+                return arg.headers["X-User-ID"]
 
         # 3. From kwargs request object
-        if 'request' in kwargs:
-            request = kwargs['request']
-            if hasattr(request, 'user_id'):
+        if "request" in kwargs:
+            request = kwargs["request"]
+            if hasattr(request, "user_id"):
                 return request.user_id
-            if hasattr(request, 'headers') and 'X-User-ID' in request.headers:
-                return request.headers['X-User-ID']
+            if hasattr(request, "headers") and "X-User-ID" in request.headers:
+                return request.headers["X-User-ID"]
 
         return None
 

@@ -140,7 +140,7 @@ class TestRAGMockResponses:
 
     async def test_rag_query_mock_success(self, app: FastAPI, mock_ragflow_responses):
         """RAG query mock başarılı test"""
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.hybrid_search = AsyncMock(
                 return_value=mock_ragflow_responses["retrieval_success"]
@@ -171,7 +171,7 @@ class TestRAGMockResponses:
             "data": {"results": [], "total_results": 0, "query_time_ms": 50},
         }
 
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.hybrid_search = AsyncMock(return_value=empty_response)
             mock_service_class.return_value = mock_service
@@ -196,7 +196,7 @@ class TestRAGMockResponses:
         self, app: FastAPI, mock_ragflow_responses
     ):
         """Hybrid search mock başarılı test"""
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.hybrid_search = AsyncMock(
                 return_value=mock_ragflow_responses["hybrid_search"]
@@ -226,7 +226,7 @@ class TestRAGMockResponses:
         self, app: FastAPI, mock_ragflow_responses
     ):
         """Ensure dataset mock başarılı test"""
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.ensure_dataset = AsyncMock(
                 return_value=mock_ragflow_responses["dataset_creation"]
@@ -253,7 +253,7 @@ class TestRAGMockResponses:
         self, app: FastAPI, mock_ragflow_responses
     ):
         """Upload parse async mock başarılı test"""
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.upload_and_parse = AsyncMock(
                 return_value=mock_ragflow_responses["document_parse"]
@@ -276,7 +276,7 @@ class TestRAGMockResponses:
         self, app: FastAPI, mock_ragflow_responses
     ):
         """Job status mock tamamlanmış test"""
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.get_job_status = AsyncMock(
                 return_value=mock_ragflow_responses["job_status_completed"]
@@ -299,7 +299,7 @@ class TestRAGMockResponses:
         self, app: FastAPI, mock_ragflow_responses
     ):
         """Job status mock işleniyor test"""
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.get_job_status = AsyncMock(
                 return_value=mock_ragflow_responses["job_status_processing"]
@@ -339,7 +339,7 @@ class TestRAGMockResponses:
             },
         }
 
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.hybrid_search = AsyncMock(return_value=filtered_response)
             mock_service_class.return_value = mock_service
@@ -384,7 +384,7 @@ class TestRAGMockResponses:
             },
         }
 
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.hybrid_search = AsyncMock(return_value=paginated_response)
             mock_service_class.return_value = mock_service
@@ -418,7 +418,7 @@ class TestRAGMockResponses:
             },
         }
 
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.hybrid_search = AsyncMock(return_value=error_response)
             mock_service_class.return_value = mock_service
@@ -440,7 +440,7 @@ class TestRAGMockResponses:
 
     async def test_rag_query_mock_timeout(self, app: FastAPI):
         """RAG query mock timeout testi"""
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.hybrid_search = AsyncMock(
                 side_effect=TimeoutError("Request timeout")
@@ -500,7 +500,7 @@ class TestRAGMockResponses:
             },
         }
 
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.hybrid_search = AsyncMock(return_value=rate_limit_response)
             mock_service_class.return_value = mock_service
@@ -542,7 +542,7 @@ class TestRAGMockPerformance:
             },
         }
 
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.hybrid_search = AsyncMock(return_value=performance_response)
             mock_service_class.return_value = mock_service
@@ -575,7 +575,7 @@ class TestRAGMockPerformance:
             "data": {"results": [], "total_results": 0, "query_time_ms": 100},
         }
 
-        with patch('app.services.rag_service.RAGService') as mock_service_class:
+        with patch("app.services.rag_service.RAGService") as mock_service_class:
             mock_service = MagicMock()
             mock_service.hybrid_search = AsyncMock(return_value=concurrent_response)
             mock_service_class.return_value = mock_service

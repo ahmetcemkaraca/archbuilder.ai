@@ -336,7 +336,7 @@ class TurkishBuildingCodeValidator:
 
         # Kapı eşik yüksekliği (engelli erişim)
         for i, door in enumerate(layout.doors):
-            if hasattr(door, 'threshold_height') and door.threshold_height > 20:
+            if hasattr(door, "threshold_height") and door.threshold_height > 20:
                 warnings.append(
                     ValidationError(
                         code="DOOR_THRESHOLD_HIGH",
@@ -617,7 +617,7 @@ class TurkishBuildingCodeValidator:
 
         # Basitleştirilmiş - room boundaries'e bakarak pencere bul
         for window in layout.windows:
-            if window.wall_index in getattr(room, 'boundaries', []):
+            if window.wall_index in getattr(room, "boundaries", []):
                 window_area = window.width * window.height
                 total_area += window_area
 
@@ -664,7 +664,7 @@ class TurkishBuildingCodeValidator:
         for door in layout.doors:
             # Bu basitleştirilmiş - gerçekte geometric analysis gerekir
             for room in layout.rooms:
-                if door.wall_index in getattr(room, 'boundaries', []):
+                if door.wall_index in getattr(room, "boundaries", []):
                     room_door_count[room.name] += 1
 
         # Tek kapısı olan ve büyük olan odalar (>6m²) dead-end riski taşır

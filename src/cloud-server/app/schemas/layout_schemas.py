@@ -110,7 +110,7 @@ class RoomProgram(BaseModel):
         0.15, ge=0.1, le=0.3, description="Sirkülasyon faktörü (%)"
     )
 
-    @validator('rooms')
+    @validator("rooms")
     def validate_room_names_unique(cls, v):
         names = [room.name for room in v]
         if len(names) != len(set(names)):

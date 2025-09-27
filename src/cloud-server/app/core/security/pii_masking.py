@@ -80,44 +80,44 @@ class PIIMasker:
         # Compile regex patterns for PII detection
         self._patterns = {
             PIIType.EMAIL: re.compile(
-                r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', re.IGNORECASE
+                r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", re.IGNORECASE
             ),
             PIIType.PHONE: re.compile(
-                r'(\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})',
+                r"(\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})",
                 re.IGNORECASE,
             ),
             PIIType.CREDIT_CARD: re.compile(
-                r'\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3[0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\b'
+                r"\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3[0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\b"
             ),
-            PIIType.SSN: re.compile(r'\b\d{3}-?\d{2}-?\d{4}\b'),
-            PIIType.IP_ADDRESS: re.compile(r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'),
+            PIIType.SSN: re.compile(r"\b\d{3}-?\d{2}-?\d{4}\b"),
+            PIIType.IP_ADDRESS: re.compile(r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b"),
             PIIType.MAC_ADDRESS: re.compile(
-                r'\b([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})\b'
+                r"\b([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})\b"
             ),
             PIIType.DATE_OF_BIRTH: re.compile(
-                r'\b(?:0[1-9]|1[0-2])[-/](?:0[1-9]|[12][0-9]|3[01])[-/](?:19|20)\d{2}\b'
+                r"\b(?:0[1-9]|1[0-2])[-/](?:0[1-9]|[12][0-9]|3[01])[-/](?:19|20)\d{2}\b"
             ),
             PIIType.USER_ID: re.compile(
-                r'\buser[_-]?id[=:]\s*[a-zA-Z0-9_-]+\b', re.IGNORECASE
+                r"\buser[_-]?id[=:]\s*[a-zA-Z0-9_-]+\b", re.IGNORECASE
             ),
-            PIIType.CORRELATION_ID: re.compile(r'\b[A-Z]{2,3}_\d{14}_[a-f0-9]{32}\b'),
+            PIIType.CORRELATION_ID: re.compile(r"\b[A-Z]{2,3}_\d{14}_[a-f0-9]{32}\b"),
         }
 
         # Name patterns (basic detection)
         self._name_patterns = [
             re.compile(
-                r'\b(?:Mr|Mrs|Ms|Dr|Prof)\.?\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b'
+                r"\b(?:Mr|Mrs|Ms|Dr|Prof)\.?\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b"
             ),
-            re.compile(r'\b[A-Z][a-z]+\s+[A-Z][a-z]+\b'),
+            re.compile(r"\b[A-Z][a-z]+\s+[A-Z][a-z]+\b"),
         ]
 
         # Address patterns
         self._address_patterns = [
             re.compile(
-                r'\b\d+\s+[A-Za-z0-9\s,.-]+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln)\b'
+                r"\b\d+\s+[A-Za-z0-9\s,.-]+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln)\b"
             ),
             re.compile(
-                r'\b[A-Za-z0-9\s,.-]+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln)\b'
+                r"\b[A-Za-z0-9\s,.-]+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln)\b"
             ),
         ]
 
@@ -214,13 +214,13 @@ class PIIMasker:
             # Update audit trail
             audit_trail.append(
                 {
-                    'timestamp': datetime.utcnow().isoformat(),
-                    'pii_type': match.pii_type.value,
-                    'original_value': match.original_value,
-                    'masked_value': masked_value,
-                    'strategy': strategy.value,
-                    'confidence': match.confidence,
-                    'position': f"{match.start_position}-{match.end_position}",
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "pii_type": match.pii_type.value,
+                    "original_value": match.original_value,
+                    "masked_value": masked_value,
+                    "strategy": strategy.value,
+                    "confidence": match.confidence,
+                    "position": f"{match.start_position}-{match.end_position}",
                 }
             )
 
@@ -253,7 +253,7 @@ class PIIMasker:
 
         # Adjust confidence based on value characteristics
         if pii_type == PIIType.EMAIL:
-            if '@' in value and '.' in value.split('@')[1]:
+            if "@" in value and "." in value.split("@")[1]:
                 return min(base_confidence + 0.05, 1.0)
 
         elif pii_type == PIIType.PHONE:
@@ -321,7 +321,7 @@ class PIIMasker:
         elif strategy == MaskingStrategy.ANONYMIZE:
             if pii_type == PIIType.IP_ADDRESS:
                 # Anonymize IP address (remove last octet)
-                parts = value.split('.')
+                parts = value.split(".")
                 if len(parts) == 4:
                     return f"{parts[0]}.{parts[1]}.{parts[2]}.xxx"
 
@@ -360,12 +360,12 @@ class DataAnonymizer:
                 if any(
                     pii_indicator in key.lower()
                     for pii_indicator in [
-                        'email',
-                        'phone',
-                        'name',
-                        'address',
-                        'ssn',
-                        'id',
+                        "email",
+                        "phone",
+                        "name",
+                        "address",
+                        "ssn",
+                        "id",
                     ]
                 ):
                     masking_result = self.pii_masker.mask_pii(value)
@@ -390,13 +390,13 @@ class DataAnonymizer:
 
         # Fields that commonly contain PII
         pii_fields = [
-            'user_id',
-            'email',
-            'username',
-            'ip_address',
-            'user_agent',
-            'request_data',
-            'response_data',
+            "user_id",
+            "email",
+            "username",
+            "ip_address",
+            "user_agent",
+            "request_data",
+            "response_data",
         ]
 
         for field in pii_fields:

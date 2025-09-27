@@ -92,7 +92,7 @@ class QueryProfiler:
         def receive_after_cursor_execute(
             conn, cursor, statement, parameters, context, executemany
         ):
-            if hasattr(context, '_query_start_time'):
+            if hasattr(context, "_query_start_time"):
                 execution_time = (time.time() - context._query_start_time) * 1000
 
                 # Classify query type
@@ -104,7 +104,7 @@ class QueryProfiler:
                     query_text=statement,
                     query_type=query_type,
                     execution_time_ms=execution_time,
-                    rows_affected=cursor.rowcount if hasattr(cursor, 'rowcount') else 0,
+                    rows_affected=cursor.rowcount if hasattr(cursor, "rowcount") else 0,
                     connection_id=str(id(conn)),
                     timestamp=datetime.utcnow(),
                     parameters=parameters,
@@ -134,17 +134,17 @@ class QueryProfiler:
         """Classify query type"""
         query_upper = query_text.upper().strip()
 
-        if query_upper.startswith('SELECT'):
+        if query_upper.startswith("SELECT"):
             return QueryType.SELECT
-        elif query_upper.startswith('INSERT'):
+        elif query_upper.startswith("INSERT"):
             return QueryType.INSERT
-        elif query_upper.startswith('UPDATE'):
+        elif query_upper.startswith("UPDATE"):
             return QueryType.UPDATE
-        elif query_upper.startswith('DELETE'):
+        elif query_upper.startswith("DELETE"):
             return QueryType.DELETE
         elif any(
             query_upper.startswith(ddl)
-            for ddl in ['CREATE', 'ALTER', 'DROP', 'TRUNCATE']
+            for ddl in ["CREATE", "ALTER", "DROP", "TRUNCATE"]
         ):
             return QueryType.DDL
         else:
@@ -156,35 +156,35 @@ class QueryProfiler:
         query_upper = query_text.upper()
 
         # Look for WHERE clauses with potential index candidates
-        if 'WHERE' in query_upper:
+        if "WHERE" in query_upper:
             # Extract column names from WHERE clause
-            where_start = query_upper.find('WHERE')
+            where_start = query_upper.find("WHERE")
             where_clause = query_text[where_start:]
 
             # Common patterns that benefit from indexes
             patterns = [
-                'user_id =',
-                'correlation_id =',
-                'created_at >',
-                'created_at <',
-                'status =',
-                'region =',
-                'building_type =',
+                "user_id =",
+                "correlation_id =",
+                "created_at >",
+                "created_at <",
+                "status =",
+                "region =",
+                "building_type =",
             ]
 
             for pattern in patterns:
                 if pattern in where_clause:
-                    column = pattern.split(' =')[0]
+                    column = pattern.split(" =")[0]
                     recommendations.append(
                         f"CREATE INDEX idx_{column} ON table_name ({column})"
                     )
 
         # Look for JOIN conditions
-        if 'JOIN' in query_upper:
+        if "JOIN" in query_upper:
             recommendations.append("Consider foreign key indexes for JOIN columns")
 
         # Look for ORDER BY clauses
-        if 'ORDER BY' in query_upper:
+        if "ORDER BY" in query_upper:
             recommendations.append("Consider composite indexes for ORDER BY columns")
 
         return recommendations
@@ -195,24 +195,24 @@ class QueryProfiler:
 
         if query_key not in self.query_stats:
             self.query_stats[query_key] = {
-                'count': 0,
-                'total_time_ms': 0.0,
-                'max_time_ms': 0.0,
-                'slow_count': 0,
-                'query_text': (
-                    profile.query_text[:100] + '...'
+                "count": 0,
+                "total_time_ms": 0.0,
+                "max_time_ms": 0.0,
+                "slow_count": 0,
+                "query_text": (
+                    profile.query_text[:100] + "..."
                     if len(profile.query_text) > 100
                     else profile.query_text
                 ),
             }
 
         stats = self.query_stats[query_key]
-        stats['count'] += 1
-        stats['total_time_ms'] += profile.execution_time_ms
-        stats['max_time_ms'] = max(stats['max_time_ms'], profile.execution_time_ms)
+        stats["count"] += 1
+        stats["total_time_ms"] += profile.execution_time_ms
+        stats["max_time_ms"] = max(stats["max_time_ms"], profile.execution_time_ms)
 
         if profile.is_slow:
-            stats['slow_count'] += 1
+            stats["slow_count"] += 1
 
     def get_slow_queries(self, limit: int = 50) -> List[QueryProfile]:
         """Get slow queries sorted by execution time"""
@@ -237,36 +237,36 @@ class QueryProfiler:
             query_type = profile.query_type.value
             if query_type not in type_stats:
                 type_stats[query_type] = {
-                    'count': 0,
-                    'avg_time_ms': 0.0,
-                    'max_time_ms': 0.0,
+                    "count": 0,
+                    "avg_time_ms": 0.0,
+                    "max_time_ms": 0.0,
                 }
 
-            type_stats[query_type]['count'] += 1
-            type_stats[query_type]['avg_time_ms'] += profile.execution_time_ms
-            type_stats[query_type]['max_time_ms'] = max(
-                type_stats[query_type]['max_time_ms'], profile.execution_time_ms
+            type_stats[query_type]["count"] += 1
+            type_stats[query_type]["avg_time_ms"] += profile.execution_time_ms
+            type_stats[query_type]["max_time_ms"] = max(
+                type_stats[query_type]["max_time_ms"], profile.execution_time_ms
             )
 
         # Calculate averages
         for stats in type_stats.values():
-            stats['avg_time_ms'] /= stats['count']
+            stats["avg_time_ms"] /= stats["count"]
 
         return {
-            'total_queries': total_queries,
-            'slow_queries': slow_queries,
-            'slow_query_percentage': (
+            "total_queries": total_queries,
+            "slow_queries": slow_queries,
+            "slow_query_percentage": (
                 (slow_queries / total_queries) * 100 if total_queries > 0 else 0
             ),
-            'avg_execution_time_ms': avg_time,
-            'max_execution_time_ms': max_time,
-            'query_type_stats': type_stats,
-            'top_slow_queries': [
+            "avg_execution_time_ms": avg_time,
+            "max_execution_time_ms": max_time,
+            "query_type_stats": type_stats,
+            "top_slow_queries": [
                 {
-                    'query_id': q.query_id,
-                    'execution_time_ms': q.execution_time_ms,
-                    'query_type': q.query_type.value,
-                    'recommended_indexes': q.recommended_indexes or [],
+                    "query_id": q.query_id,
+                    "execution_time_ms": q.execution_time_ms,
+                    "query_type": q.query_type.value,
+                    "recommended_indexes": q.recommended_indexes or [],
                 }
                 for q in self.get_slow_queries(10)
             ],
@@ -323,11 +323,11 @@ class DatabaseOptimizer:
                 pool = self.engine.pool
                 if isinstance(pool, QueuePool):
                     pool_stats = {
-                        'size': pool.size(),
-                        'checked_in': pool.checkedin(),
-                        'checked_out': pool.checkedout(),
-                        'overflow': pool.overflow(),
-                        'invalid': pool.invalid(),
+                        "size": pool.size(),
+                        "checked_in": pool.checkedin(),
+                        "checked_out": pool.checkedout(),
+                        "overflow": pool.overflow(),
+                        "invalid": pool.invalid(),
                     }
                 else:
                     pool_stats = {}
@@ -383,12 +383,12 @@ class DatabaseOptimizer:
                         (q.execution_time_ms for q in self.profiler.query_profiles),
                         default=0.0,
                     ),
-                    connection_pool_size=pool_stats.get('size', 0),
-                    active_connections=pool_stats.get('checked_out', 0),
-                    idle_connections=pool_stats.get('checked_in', 0),
+                    connection_pool_size=pool_stats.get("size", 0),
+                    active_connections=pool_stats.get("checked_out", 0),
+                    idle_connections=pool_stats.get("checked_in", 0),
                     cache_hit_ratio=0.0,  # Would need additional queries to calculate
                     index_usage_stats={
-                        row['indexname']: row['idx_scan'] for row in index_stats
+                        row["indexname"]: row["idx_scan"] for row in index_stats
                     },
                 )
 

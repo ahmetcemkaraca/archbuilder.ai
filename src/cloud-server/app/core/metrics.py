@@ -51,212 +51,212 @@ class ArchBuilderMetrics:
 
         # Request metrics
         self.http_requests_total = Counter(
-            'archbuilder_http_requests_total',
-            'Total HTTP requests',
-            ['method', 'endpoint', 'status_code'],
+            "archbuilder_http_requests_total",
+            "Total HTTP requests",
+            ["method", "endpoint", "status_code"],
             registry=self.registry,
         )
 
         self.http_request_duration_seconds = Histogram(
-            'archbuilder_http_request_duration_seconds',
-            'HTTP request duration in seconds',
-            ['method', 'endpoint'],
+            "archbuilder_http_request_duration_seconds",
+            "HTTP request duration in seconds",
+            ["method", "endpoint"],
             registry=self.registry,
         )
 
         # AI inference metrics
         self.ai_requests_total = Counter(
-            'archbuilder_ai_requests_total',
-            'Total AI inference requests',
-            ['model', 'provider', 'status'],
+            "archbuilder_ai_requests_total",
+            "Total AI inference requests",
+            ["model", "provider", "status"],
             registry=self.registry,
         )
 
         self.ai_request_duration_seconds = Histogram(
-            'archbuilder_ai_request_duration_seconds',
-            'AI inference duration in seconds',
-            ['model', 'provider'],
+            "archbuilder_ai_request_duration_seconds",
+            "AI inference duration in seconds",
+            ["model", "provider"],
             registry=self.registry,
         )
 
         self.ai_tokens_used_total = Counter(
-            'archbuilder_ai_tokens_used_total',
-            'Total AI tokens used',
-            ['model', 'provider', 'token_type'],
+            "archbuilder_ai_tokens_used_total",
+            "Total AI tokens used",
+            ["model", "provider", "token_type"],
             registry=self.registry,
         )
 
         self.ai_confidence_score = Histogram(
-            'archbuilder_ai_confidence_score',
-            'AI response confidence scores',
-            ['model', 'provider'],
+            "archbuilder_ai_confidence_score",
+            "AI response confidence scores",
+            ["model", "provider"],
             registry=self.registry,
         )
 
         # Document processing metrics
         self.document_uploads_total = Counter(
-            'archbuilder_document_uploads_total',
-            'Total document uploads',
-            ['file_type', 'status'],
+            "archbuilder_document_uploads_total",
+            "Total document uploads",
+            ["file_type", "status"],
             registry=self.registry,
         )
 
         self.document_processing_duration_seconds = Histogram(
-            'archbuilder_document_processing_duration_seconds',
-            'Document processing duration in seconds',
-            ['file_type', 'processing_type'],
+            "archbuilder_document_processing_duration_seconds",
+            "Document processing duration in seconds",
+            ["file_type", "processing_type"],
             registry=self.registry,
         )
 
         self.document_size_bytes = Histogram(
-            'archbuilder_document_size_bytes',
-            'Document file sizes in bytes',
-            ['file_type'],
+            "archbuilder_document_size_bytes",
+            "Document file sizes in bytes",
+            ["file_type"],
             registry=self.registry,
         )
 
         # Cache metrics
         self.cache_operations_total = Counter(
-            'archbuilder_cache_operations_total',
-            'Total cache operations',
-            ['operation', 'status'],
+            "archbuilder_cache_operations_total",
+            "Total cache operations",
+            ["operation", "status"],
             registry=self.registry,
         )
 
         self.cache_hit_ratio = Gauge(
-            'archbuilder_cache_hit_ratio', 'Cache hit ratio', registry=self.registry
+            "archbuilder_cache_hit_ratio", "Cache hit ratio", registry=self.registry
         )
 
         self.cache_size_bytes = Gauge(
-            'archbuilder_cache_size_bytes',
-            'Cache size in bytes',
+            "archbuilder_cache_size_bytes",
+            "Cache size in bytes",
             registry=self.registry,
         )
 
         # Database metrics
         self.database_connections_active = Gauge(
-            'archbuilder_database_connections_active',
-            'Active database connections',
+            "archbuilder_database_connections_active",
+            "Active database connections",
             registry=self.registry,
         )
 
         self.database_connections_idle = Gauge(
-            'archbuilder_database_connections_idle',
-            'Idle database connections',
+            "archbuilder_database_connections_idle",
+            "Idle database connections",
             registry=self.registry,
         )
 
         self.database_query_duration_seconds = Histogram(
-            'archbuilder_database_query_duration_seconds',
-            'Database query duration in seconds',
-            ['query_type'],
+            "archbuilder_database_query_duration_seconds",
+            "Database query duration in seconds",
+            ["query_type"],
             registry=self.registry,
         )
 
         self.database_queries_total = Counter(
-            'archbuilder_database_queries_total',
-            'Total database queries',
-            ['query_type', 'status'],
+            "archbuilder_database_queries_total",
+            "Total database queries",
+            ["query_type", "status"],
             registry=self.registry,
         )
 
         # Task queue metrics
         self.celery_tasks_total = Counter(
-            'archbuilder_celery_tasks_total',
-            'Total Celery tasks',
-            ['task_name', 'status'],
+            "archbuilder_celery_tasks_total",
+            "Total Celery tasks",
+            ["task_name", "status"],
             registry=self.registry,
         )
 
         self.celery_task_duration_seconds = Histogram(
-            'archbuilder_celery_task_duration_seconds',
-            'Celery task duration in seconds',
-            ['task_name'],
+            "archbuilder_celery_task_duration_seconds",
+            "Celery task duration in seconds",
+            ["task_name"],
             registry=self.registry,
         )
 
         self.celery_queue_length = Gauge(
-            'archbuilder_celery_queue_length',
-            'Celery queue length',
-            ['queue_name'],
+            "archbuilder_celery_queue_length",
+            "Celery queue length",
+            ["queue_name"],
             registry=self.registry,
         )
 
         # Business metrics
         self.user_sessions_active = Gauge(
-            'archbuilder_user_sessions_active',
-            'Active user sessions',
+            "archbuilder_user_sessions_active",
+            "Active user sessions",
             registry=self.registry,
         )
 
         self.projects_created_total = Counter(
-            'archbuilder_projects_created_total',
-            'Total projects created',
-            ['user_tier'],
+            "archbuilder_projects_created_total",
+            "Total projects created",
+            ["user_tier"],
             registry=self.registry,
         )
 
         self.layouts_generated_total = Counter(
-            'archbuilder_layouts_generated_total',
-            'Total layouts generated',
-            ['building_type', 'complexity'],
+            "archbuilder_layouts_generated_total",
+            "Total layouts generated",
+            ["building_type", "complexity"],
             registry=self.registry,
         )
 
         self.validations_performed_total = Counter(
-            'archbuilder_validations_performed_total',
-            'Total validations performed',
-            ['validation_type', 'status'],
+            "archbuilder_validations_performed_total",
+            "Total validations performed",
+            ["validation_type", "status"],
             registry=self.registry,
         )
 
         # Security metrics
         self.security_events_total = Counter(
-            'archbuilder_security_events_total',
-            'Total security events',
-            ['event_type', 'severity'],
+            "archbuilder_security_events_total",
+            "Total security events",
+            ["event_type", "severity"],
             registry=self.registry,
         )
 
         self.authentication_attempts_total = Counter(
-            'archbuilder_authentication_attempts_total',
-            'Total authentication attempts',
-            ['status'],
+            "archbuilder_authentication_attempts_total",
+            "Total authentication attempts",
+            ["status"],
             registry=self.registry,
         )
 
         self.rate_limit_hits_total = Counter(
-            'archbuilder_rate_limit_hits_total',
-            'Total rate limit hits',
-            ['endpoint', 'user_tier'],
+            "archbuilder_rate_limit_hits_total",
+            "Total rate limit hits",
+            ["endpoint", "user_tier"],
             registry=self.registry,
         )
 
         # System metrics
         self.system_memory_usage_bytes = Gauge(
-            'archbuilder_system_memory_usage_bytes',
-            'System memory usage in bytes',
+            "archbuilder_system_memory_usage_bytes",
+            "System memory usage in bytes",
             registry=self.registry,
         )
 
         self.system_cpu_usage_percent = Gauge(
-            'archbuilder_system_cpu_usage_percent',
-            'System CPU usage percentage',
+            "archbuilder_system_cpu_usage_percent",
+            "System CPU usage percentage",
             registry=self.registry,
         )
 
         self.application_info = Info(
-            'archbuilder_application_info',
-            'Application information',
+            "archbuilder_application_info",
+            "Application information",
             registry=self.registry,
         )
 
         # Set application info
         self.application_info.info(
             {
-                'version': '1.0.0',
-                'environment': 'production',
-                'build_date': datetime.utcnow().isoformat(),
+                "version": "1.0.0",
+                "environment": "production",
+                "build_date": datetime.utcnow().isoformat(),
             }
         )
 
@@ -292,7 +292,7 @@ class ArchBuilderMetrics:
 
         if tokens_used > 0:
             self.ai_tokens_used_total.labels(
-                model=model, provider=provider, token_type='total'
+                model=model, provider=provider, token_type="total"
             ).inc(tokens_used)
 
         if confidence > 0:
@@ -309,7 +309,7 @@ class ArchBuilderMetrics:
         self.document_size_bytes.labels(file_type=file_type).observe(file_size)
 
         self.document_processing_duration_seconds.labels(
-            file_type=file_type, processing_type='upload'
+            file_type=file_type, processing_type="upload"
         ).observe(duration)
 
     def record_cache_operation(self, operation: str, status: str):
@@ -350,13 +350,13 @@ class ArchBuilderMetrics:
         """Record business metric"""
         labels = labels or {}
 
-        if metric_name == 'user_sessions_active':
+        if metric_name == "user_sessions_active":
             self.user_sessions_active.set(value)
-        elif metric_name == 'projects_created':
+        elif metric_name == "projects_created":
             self.projects_created_total.labels(**labels).inc(value)
-        elif metric_name == 'layouts_generated':
+        elif metric_name == "layouts_generated":
             self.layouts_generated_total.labels(**labels).inc(value)
-        elif metric_name == 'validations_performed':
+        elif metric_name == "validations_performed":
             self.validations_performed_total.labels(**labels).inc(value)
 
     def record_security_event(self, event_type: str, severity: str):
@@ -419,13 +419,13 @@ class MetricsCollector:
 
             if stats:
                 # Calculate hit ratio
-                hits = stats.get('keyspace_hits', 0)
-                misses = stats.get('keyspace_misses', 0)
+                hits = stats.get("keyspace_hits", 0)
+                misses = stats.get("keyspace_misses", 0)
                 total = hits + misses
                 hit_ratio = hits / total if total > 0 else 0.0
 
                 # Cache size
-                cache_size = stats.get('used_memory', 0)
+                cache_size = stats.get("used_memory", 0)
 
                 self.metrics.update_cache_metrics(hit_ratio, cache_size)
 
@@ -457,11 +457,11 @@ class MetricsCollector:
             queue_stats = await task_manager.get_queue_stats()
 
             if queue_stats:
-                for queue_name, queue_data in queue_stats.get('queues', {}).items():
+                for queue_name, queue_data in queue_stats.get("queues", {}).items():
                     total_tasks = (
-                        queue_data.get('active', 0)
-                        + queue_data.get('scheduled', 0)
-                        + queue_data.get('reserved', 0)
+                        queue_data.get("active", 0)
+                        + queue_data.get("scheduled", 0)
+                        + queue_data.get("reserved", 0)
                     )
                     self.metrics.update_celery_queue_length(queue_name, total_tasks)
 

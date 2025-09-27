@@ -95,38 +95,38 @@ class ConnectionPoolManager:
         connect_args = self.config.connect_args or {}
         connect_args.update(
             {
-                'command_timeout': self.config.statement_timeout,
-                'connect_timeout': self.config.connection_timeout,
-                'server_settings': {
-                    'statement_timeout': f'{self.config.statement_timeout}ms',
-                    'idle_in_transaction_session_timeout': f'{self.config.statement_timeout}ms',
+                "command_timeout": self.config.statement_timeout,
+                "connect_timeout": self.config.connection_timeout,
+                "server_settings": {
+                    "statement_timeout": f"{self.config.statement_timeout}ms",
+                    "idle_in_transaction_session_timeout": f"{self.config.statement_timeout}ms",
                 },
             }
         )
 
         # Configure pool based on type
         pool_kwargs = {
-            'pool_recycle': self.config.pool_recycle,
-            'pool_pre_ping': self.config.pool_pre_ping,
-            'pool_reset_on_return': self.config.pool_reset_on_return,
-            'connect_args': connect_args,
+            "pool_recycle": self.config.pool_recycle,
+            "pool_pre_ping": self.config.pool_pre_ping,
+            "pool_reset_on_return": self.config.pool_reset_on_return,
+            "connect_args": connect_args,
         }
 
         if self.config.pool_type == PoolType.QUEUE:
             pool_kwargs.update(
                 {
-                    'poolclass': QueuePool,
-                    'pool_size': self.config.pool_size,
-                    'max_overflow': self.config.max_overflow,
-                    'pool_timeout': self.config.pool_timeout,
+                    "poolclass": QueuePool,
+                    "pool_size": self.config.pool_size,
+                    "max_overflow": self.config.max_overflow,
+                    "pool_timeout": self.config.pool_timeout,
                 }
             )
         elif self.config.pool_type == PoolType.STATIC:
             pool_kwargs.update(
-                {'poolclass': StaticPool, 'pool_size': self.config.pool_size}
+                {"poolclass": StaticPool, "pool_size": self.config.pool_size}
             )
         elif self.config.pool_type == PoolType.NULL:
-            pool_kwargs.update({'poolclass': NullPool})
+            pool_kwargs.update({"poolclass": NullPool})
 
         # Create engine
         self.engine = create_engine(
@@ -159,14 +159,14 @@ class ConnectionPoolManager:
         @event.listens_for(self.engine, "checkout")
         def receive_checkout(dbapi_connection, connection_record, connection_proxy):
             connection_record._checkout_time = time.time()
-            if hasattr(connection_record, '_start_time'):
+            if hasattr(connection_record, "_start_time"):
                 connection_time = time.time() - connection_record._start_time
                 self._connection_times.append(connection_time)
                 logger.debug("Connection checked out", connection_time=connection_time)
 
         @event.listens_for(self.engine, "checkin")
         def receive_checkin(dbapi_connection, connection_record):
-            if hasattr(connection_record, '_checkout_time'):
+            if hasattr(connection_record, "_checkout_time"):
                 checkout_duration = time.time() - connection_record._checkout_time
                 logger.debug(
                     "Connection checked in", checkout_duration=checkout_duration
@@ -218,7 +218,7 @@ class ConnectionPoolManager:
 
             # Get pool metrics
             pool = self.engine.pool
-            if hasattr(pool, 'size'):
+            if hasattr(pool, "size"):
                 metrics = PoolMetrics(
                     pool_size=pool.size(),
                     checked_in=pool.checkedin(),
@@ -277,7 +277,7 @@ class ConnectionPoolManager:
             return None
 
         pool = self.engine.pool
-        if not hasattr(pool, 'size'):
+        if not hasattr(pool, "size"):
             return None
 
         return PoolMetrics(

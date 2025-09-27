@@ -85,10 +85,10 @@ class SimpleLayoutValidator:
 
         try:
             # Get layout components
-            walls = layout_data.get('walls', [])
-            doors = layout_data.get('doors', [])
-            windows = layout_data.get('windows', [])
-            rooms = layout_data.get('rooms', [])
+            walls = layout_data.get("walls", [])
+            doors = layout_data.get("doors", [])
+            windows = layout_data.get("windows", [])
+            rooms = layout_data.get("rooms", [])
 
             # Basic validation checks
             await self._validate_walls(walls, result)
@@ -142,7 +142,7 @@ class SimpleLayoutValidator:
 
         for i, wall in enumerate(walls):
             # Check wall structure
-            if 'start' not in wall or 'end' not in wall:
+            if "start" not in wall or "end" not in wall:
                 result.errors.append(
                     SimpleValidationError(
                         code="INVALID_WALL_STRUCTURE",
@@ -154,10 +154,10 @@ class SimpleLayoutValidator:
                 continue
 
             # Check wall dimensions
-            start = wall['start']
-            end = wall['end']
+            start = wall["start"]
+            end = wall["end"]
 
-            if 'x' not in start or 'y' not in start or 'x' not in end or 'y' not in end:
+            if "x" not in start or "y" not in start or "x" not in end or "y" not in end:
                 result.errors.append(
                     SimpleValidationError(
                         code="INVALID_COORDINATES",
@@ -169,8 +169,8 @@ class SimpleLayoutValidator:
                 continue
 
             # Calculate wall length
-            dx = end['x'] - start['x']
-            dy = end['y'] - start['y']
+            dx = end["x"] - start["x"]
+            dy = end["y"] - start["y"]
             length = math.sqrt(dx * dx + dy * dy)
 
             if length < 100:  # Minimum 10cm
@@ -205,7 +205,7 @@ class SimpleLayoutValidator:
 
         for i, door in enumerate(doors):
             # Check door structure
-            required_fields = ['wall_index', 'position', 'width']
+            required_fields = ["wall_index", "position", "width"]
             for field in required_fields:
                 if field not in door:
                     result.errors.append(
@@ -219,7 +219,7 @@ class SimpleLayoutValidator:
                     continue
 
             # Check wall index
-            wall_index = door.get('wall_index', -1)
+            wall_index = door.get("wall_index", -1)
             if wall_index < 0 or wall_index >= len(walls):
                 result.errors.append(
                     SimpleValidationError(
@@ -232,7 +232,7 @@ class SimpleLayoutValidator:
                 continue
 
             # Check door width
-            door_width = door.get('width', 0)
+            door_width = door.get("width", 0)
             if door_width < 600:
                 result.errors.append(
                     SimpleValidationError(
@@ -265,7 +265,7 @@ class SimpleLayoutValidator:
 
         for i, window in enumerate(windows):
             # Check window structure
-            required_fields = ['wall_index', 'position', 'width', 'height']
+            required_fields = ["wall_index", "position", "width", "height"]
             for field in required_fields:
                 if field not in window:
                     result.errors.append(
@@ -279,7 +279,7 @@ class SimpleLayoutValidator:
                     continue
 
             # Check wall index
-            wall_index = window.get('wall_index', -1)
+            wall_index = window.get("wall_index", -1)
             if wall_index < 0 or wall_index >= len(walls):
                 result.errors.append(
                     SimpleValidationError(
@@ -292,8 +292,8 @@ class SimpleLayoutValidator:
                 continue
 
             # Check window dimensions
-            window_width = window.get('width', 0)
-            window_height = window.get('height', 0)
+            window_width = window.get("width", 0)
+            window_height = window.get("height", 0)
 
             if window_width < 400:
                 result.warnings.append(
@@ -335,7 +335,7 @@ class SimpleLayoutValidator:
 
         for i, room in enumerate(rooms):
             # Check room structure
-            if 'name' not in room:
+            if "name" not in room:
                 result.warnings.append(
                     SimpleValidationError(
                         code="ROOM_NO_NAME",
@@ -346,7 +346,7 @@ class SimpleLayoutValidator:
                 )
 
             # Check room area
-            room_area = room.get('area', 0)
+            room_area = room.get("area", 0)
             if room_area < 5.0:  # Minimum 5m²
                 result.warnings.append(
                     SimpleValidationError(

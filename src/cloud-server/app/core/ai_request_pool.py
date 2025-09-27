@@ -107,12 +107,12 @@ class AIRequestPool:
 
         # Statistics
         self.stats = {
-            'total_requests': 0,
-            'completed_requests': 0,
-            'failed_requests': 0,
-            'rate_limited_requests': 0,
-            'total_cost': 0.0,
-            'avg_response_time': 0.0,
+            "total_requests": 0,
+            "completed_requests": 0,
+            "failed_requests": 0,
+            "rate_limited_requests": 0,
+            "total_cost": 0.0,
+            "avg_response_time": 0.0,
         }
 
         # Processing task
@@ -148,7 +148,7 @@ class AIRequestPool:
 
         # Check rate limits
         if not await self._check_rate_limits(user_id, model, provider):
-            self.stats['rate_limited_requests'] += 1
+            self.stats["rate_limited_requests"] += 1
             raise Exception("Rate limit exceeded")
 
         # Create request
@@ -171,7 +171,7 @@ class AIRequestPool:
 
         # Add to queue
         self.request_queue.append(request)
-        self.stats['total_requests'] += 1
+        self.stats["total_requests"] += 1
 
         logger.info(
             "AI request submitted",
@@ -241,7 +241,7 @@ class AIRequestPool:
                 ):
                     request.status = RequestStatus.RATE_LIMITED
                     self.completed_requests[request.request_id] = request
-                    self.stats['rate_limited_requests'] += 1
+                    self.stats["rate_limited_requests"] += 1
                     continue
 
                 # Process request
@@ -272,11 +272,11 @@ class AIRequestPool:
             request.actual_cost = self._calculate_actual_cost(request, result)
 
             # Update statistics
-            self.stats['completed_requests'] += 1
-            self.stats['total_cost'] += request.actual_cost
+            self.stats["completed_requests"] += 1
+            self.stats["total_cost"] += request.actual_cost
 
             # Update user costs
-            self.user_costs[request.user_id]['total'] += request.actual_cost
+            self.user_costs[request.user_id]["total"] += request.actual_cost
             self.user_costs[request.user_id][request.model] += request.actual_cost
             self.model_costs[request.model] += request.actual_cost
 
@@ -303,7 +303,7 @@ class AIRequestPool:
             request.completed_at = datetime.utcnow()
             request.error = str(e)
 
-            self.stats['failed_requests'] += 1
+            self.stats["failed_requests"] += 1
 
             # Move to completed
             self.completed_requests[request.request_id] = request
@@ -333,7 +333,7 @@ class AIRequestPool:
         user_config = self.rate_limit_configs.get(user_id, RateLimitConfig())
 
         # Check user rate limits
-        user_requests = self.user_rate_limits[user_id]['requests']
+        user_requests = self.user_rate_limits[user_id]["requests"]
         user_requests = [
             req_time
             for req_time in user_requests
@@ -355,7 +355,7 @@ class AIRequestPool:
             return False
 
         # Check cost limits
-        user_hourly_cost = self.user_costs[user_id]['total']
+        user_hourly_cost = self.user_costs[user_id]["total"]
         if user_hourly_cost >= user_config.cost_per_hour:
             return False
 
@@ -366,16 +366,16 @@ class AIRequestPool:
         now = datetime.utcnow()
 
         # Update user rate limits
-        self.user_rate_limits[request.user_id]['requests'].append(now)
+        self.user_rate_limits[request.user_id]["requests"].append(now)
 
         # Update model rate limits
         self.model_rate_limits[request.model].append(now)
 
         # Clean old entries
         cutoff_time = now - timedelta(hours=1)
-        self.user_rate_limits[request.user_id]['requests'] = [
+        self.user_rate_limits[request.user_id]["requests"] = [
             req_time
-            for req_time in self.user_rate_limits[request.user_id]['requests']
+            for req_time in self.user_rate_limits[request.user_id]["requests"]
             if req_time > cutoff_time
         ]
         self.model_rate_limits[request.model] = [
@@ -404,21 +404,21 @@ class AIRequestPool:
         self, request: AIRequest, result: Dict[str, Any]
     ) -> float:
         """Calculate actual request cost"""
-        tokens_used = result.get('tokens_used', request.max_tokens)
+        tokens_used = result.get("tokens_used", request.max_tokens)
         cost_per_token = 0.0001
         return tokens_used * cost_per_token
 
     def _update_avg_response_time(self, response_time: float):
         """Update average response time"""
         total_requests = (
-            self.stats['completed_requests'] + self.stats['failed_requests']
+            self.stats["completed_requests"] + self.stats["failed_requests"]
         )
         if total_requests > 0:
-            current_avg = self.stats['avg_response_time']
+            current_avg = self.stats["avg_response_time"]
             new_avg = (
                 (current_avg * (total_requests - 1)) + response_time
             ) / total_requests
-            self.stats['avg_response_time'] = new_avg
+            self.stats["avg_response_time"] = new_avg
 
     async def _cleanup_completed_requests(self):
         """Cleanup old completed requests"""
@@ -449,17 +449,17 @@ class AIRequestPool:
     def get_pool_stats(self) -> Dict[str, Any]:
         """Get AI request pool statistics"""
         return {
-            'active_requests': len(self.active_requests),
-            'queued_requests': len(self.request_queue),
-            'completed_requests': len(self.completed_requests),
-            'max_concurrent_requests': self.max_concurrent_requests,
-            'utilization_percentage': (
+            "active_requests": len(self.active_requests),
+            "queued_requests": len(self.request_queue),
+            "completed_requests": len(self.completed_requests),
+            "max_concurrent_requests": self.max_concurrent_requests,
+            "utilization_percentage": (
                 len(self.active_requests) / self.max_concurrent_requests
             )
             * 100,
-            'stats': self.stats.copy(),
-            'user_costs': dict(self.user_costs),
-            'model_costs': dict(self.model_costs),
+            "stats": self.stats.copy(),
+            "user_costs": dict(self.user_costs),
+            "model_costs": dict(self.model_costs),
         }
 
     def get_user_stats(self, user_id: str) -> Dict[str, Any]:
@@ -469,15 +469,15 @@ class AIRequestPool:
         ]
 
         return {
-            'total_requests': len(user_requests),
-            'completed_requests': len(
+            "total_requests": len(user_requests),
+            "completed_requests": len(
                 [req for req in user_requests if req.status == RequestStatus.COMPLETED]
             ),
-            'failed_requests': len(
+            "failed_requests": len(
                 [req for req in user_requests if req.status == RequestStatus.FAILED]
             ),
-            'total_cost': self.user_costs[user_id]['total'],
-            'cost_by_model': dict(self.user_costs[user_id]),
+            "total_cost": self.user_costs[user_id]["total"],
+            "cost_by_model": dict(self.user_costs[user_id]),
         }
 
     def set_user_rate_limit(self, user_id: str, config: RateLimitConfig):

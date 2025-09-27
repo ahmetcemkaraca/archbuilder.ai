@@ -55,7 +55,9 @@ async def ensure_dataset(
         )
         return EnsureDatasetResponse(success=True, data={"dataset_id": dataset_id})
     except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=502, detail=f"RAG ensure dataset failed: {exc}") from exc
+        raise HTTPException(
+            status_code=502, detail=f"RAG ensure dataset failed: {exc}"
+        ) from exc
 
 
 class UploadParseResponse(BaseModel):
@@ -76,15 +78,21 @@ async def upload_and_parse(
     try:
         file_bytes: List[bytes] = [await f.read() for f in files]
         filenames: List[str] = [f.filename or "document" for f in files]
-        parse_options: Dict[str, Any] = {"strategy": parse_strategy} if parse_strategy else {}
+        parse_options: Dict[str, Any] = (
+            {"strategy": parse_strategy} if parse_strategy else {}
+        )
         cid = None
         if request is not None:
             headers = request.headers
             cid = headers.get("x-correlation-id") or headers.get("x-request-id")
-        res = await svc.upload_and_parse(dataset_id, file_bytes, filenames, parse_options or None, correlation_id=cid)
+        res = await svc.upload_and_parse(
+            dataset_id, file_bytes, filenames, parse_options or None, correlation_id=cid
+        )
         return UploadParseResponse(success=True, data=res)
     except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=502, detail=f"RAG upload/parse failed: {exc}") from exc
+        raise HTTPException(
+            status_code=502, detail=f"RAG upload/parse failed: {exc}"
+        ) from exc
 
 
 class JobAcceptedResponse(BaseModel):
@@ -92,7 +100,11 @@ class JobAcceptedResponse(BaseModel):
     data: Dict[str, Any]
 
 
-@router.post("/rag/{dataset_id}/upload-parse/async", status_code=202, response_model=JobAcceptedResponse)
+@router.post(
+    "/rag/{dataset_id}/upload-parse/async",
+    status_code=202,
+    response_model=JobAcceptedResponse,
+)
 async def upload_and_parse_async(
     dataset_id: str,
     files: List[UploadFile] = File(...),
@@ -116,12 +128,16 @@ async def upload_and_parse_async(
     try:
         file_bytes: List[bytes] = [await f.read() for f in files]
         filenames: List[str] = [f.filename or "document" for f in files]
-        parse_options: Dict[str, Any] = {"strategy": parse_strategy} if parse_strategy else {}
+        parse_options: Dict[str, Any] = (
+            {"strategy": parse_strategy} if parse_strategy else {}
+        )
         cid = None
         if request is not None:
             headers = request.headers
             cid = headers.get("x-correlation-id") or headers.get("x-request-id")
-        res = await svc.upload_and_parse(dataset_id, file_bytes, filenames, parse_options or None, correlation_id=cid)
+        res = await svc.upload_and_parse(
+            dataset_id, file_bytes, filenames, parse_options or None, correlation_id=cid
+        )
 
         # Document id eşlemeleri
         docs = res.get("data") or res
@@ -132,7 +148,14 @@ async def upload_and_parse_async(
             except Exception:  # noqa: BLE001
                 pass
             if doc_id:
-                db.add(RAGDocumentLink(id=str(uuid4()), dataset_id=dataset_id, document_id=doc_id, filename=fname))
+                db.add(
+                    RAGDocumentLink(
+                        id=str(uuid4()),
+                        dataset_id=dataset_id,
+                        document_id=doc_id,
+                        filename=fname,
+                    )
+                )
 
         job.status = "succeeded"
         job.result_json = "{}"
@@ -141,6 +164,7 @@ async def upload_and_parse_async(
         job.error_message = str(exc)
     finally:
         from datetime import datetime
+
         job.updated_at = datetime.utcnow()
         await db.flush()
 
@@ -166,5 +190,3 @@ async def get_job_status(job_id: str, db: AsyncSession = Depends(get_db)):
             "error": job.error_message,
         },
     )
-
-

@@ -23,12 +23,18 @@ class RequestIdMiddleware:
             return
 
         request = Request(scope, receive=receive)
-        request_id = request.headers.get("X-Correlation-ID") or request.headers.get("X-Request-ID") or str(uuid.uuid4())
+        request_id = (
+            request.headers.get("X-Correlation-ID")
+            or request.headers.get("X-Request-ID")
+            or str(uuid.uuid4())
+        )
 
         # TR: Correlation ID'yi global log context'ine bağla
         bind_correlation_id(request_id)
         start = time.perf_counter()
-        logger = get_logger().bind(request_id=request_id, path=request.url.path, method=request.method)
+        logger = get_logger().bind(
+            request_id=request_id, path=request.url.path, method=request.method
+        )
 
         async def send_wrapper(message):  # type: ignore[no-untyped-def]
             if message.get("type") == "http.response.start":
@@ -52,5 +58,3 @@ class RequestIdMiddleware:
         finally:
             # TR: Context temizliği
             clear_correlation_context()
-
-

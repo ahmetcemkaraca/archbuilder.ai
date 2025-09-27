@@ -15,5 +15,3 @@ def preprocess_cad(path: Path) -> Dict[str, Any]:
         "format": path.suffix.lower().lstrip('.'),
         "notes": "Integrate ifcopenshell or ezdxf for detailed parsing later",
     }
-
-

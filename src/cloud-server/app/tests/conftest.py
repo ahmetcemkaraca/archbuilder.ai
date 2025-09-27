@@ -17,5 +17,3 @@ def event_loop():
 @pytest.fixture()
 def app() -> FastAPI:
     return create_app()
-
-

@@ -13,8 +13,13 @@ from fastapi.responses import JSONResponse
 # Custom Exception Classes
 class ArchBuilderError(Exception):
     """Base exception class for ArchBuilder.AI"""
-    
-    def __init__(self, message: str, code: Optional[str] = None, details: Optional[Dict[str, Any]] = None):
+
+    def __init__(
+        self,
+        message: str,
+        code: Optional[str] = None,
+        details: Optional[Dict[str, Any]] = None,
+    ):
         super().__init__(message)
         self.message = message
         self.code = code or self.__class__.__name__
@@ -69,17 +74,26 @@ class LayoutGenerationError(ArchBuilderError):
     """Layout generation hatası"""
 
 
-def envelope(success: bool, data: Any | None = None, error: Dict[str, Any] | None = None) -> Dict[str, Any]:
+def envelope(
+    success: bool, data: Any | None = None, error: Dict[str, Any] | None = None
+) -> Dict[str, Any]:
     return {"success": success, "data": data, "error": error}
 
 
 def install_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(HTTPException)
-    async def http_exc_handler(_: Request, exc: HTTPException) -> JSONResponse:  # noqa: D401
-        return JSONResponse(status_code=exc.status_code, content=envelope(False, None, {"message": exc.detail}))
+    async def http_exc_handler(
+        _: Request, exc: HTTPException
+    ) -> JSONResponse:  # noqa: D401
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=envelope(False, None, {"message": exc.detail}),
+        )
 
     @app.exception_handler(Exception)
-    async def unhandled_exc_handler(_: Request, exc: Exception) -> JSONResponse:  # noqa: D401
-        return JSONResponse(status_code=500, content=envelope(False, None, {"message": str(exc)}))
-
-
+    async def unhandled_exc_handler(
+        _: Request, exc: Exception
+    ) -> JSONResponse:  # noqa: D401
+        return JSONResponse(
+            status_code=500, content=envelope(False, None, {"message": str(exc)})
+        )

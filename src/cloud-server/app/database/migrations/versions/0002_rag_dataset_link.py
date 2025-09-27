@@ -15,8 +15,18 @@ def upgrade() -> None:
     op.create_table(
         "rag_dataset_links",
         sa.Column("id", sa.String(length=36), primary_key=True),
-        sa.Column("owner_id", sa.String(length=36), sa.ForeignKey("users.id", ondelete="CASCADE"), index=True),
-        sa.Column("project_id", sa.String(length=36), sa.ForeignKey("projects.id", ondelete="CASCADE"), index=True),
+        sa.Column(
+            "owner_id",
+            sa.String(length=36),
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            index=True,
+        ),
+        sa.Column(
+            "project_id",
+            sa.String(length=36),
+            sa.ForeignKey("projects.id", ondelete="CASCADE"),
+            index=True,
+        ),
         sa.Column("dataset_id", sa.String(length=64), index=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
     )
@@ -24,5 +34,3 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("rag_dataset_links")
-
-

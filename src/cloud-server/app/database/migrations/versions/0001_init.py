@@ -18,7 +18,9 @@ def upgrade() -> None:
         sa.Column('email', sa.String(length=256), nullable=False, unique=True),
         sa.Column('password_hash', sa.String(length=256), nullable=False),
         sa.Column('role', sa.String(length=32), nullable=False),
-        sa.Column('is_active', sa.Boolean(), nullable=False, server_default=sa.text('1')),
+        sa.Column(
+            'is_active', sa.Boolean(), nullable=False, server_default=sa.text('1')
+        ),
         sa.Column('created_at', sa.DateTime(), nullable=False),
     )
     op.create_index('ix_users_email', 'users', ['email'])
@@ -27,7 +29,12 @@ def upgrade() -> None:
     op.create_table(
         'projects',
         sa.Column('id', sa.String(length=36), primary_key=True),
-        sa.Column('owner_id', sa.String(length=36), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=False),
+        sa.Column(
+            'owner_id',
+            sa.String(length=36),
+            sa.ForeignKey('users.id', ondelete='CASCADE'),
+            nullable=False,
+        ),
         sa.Column('name', sa.String(length=200), nullable=False),
         sa.Column('description', sa.Text(), nullable=True),
         sa.Column('created_at', sa.DateTime(), nullable=False),
@@ -38,8 +45,18 @@ def upgrade() -> None:
     op.create_table(
         'ai_commands',
         sa.Column('id', sa.String(length=36), primary_key=True),
-        sa.Column('user_id', sa.String(length=36), sa.ForeignKey('users.id', ondelete='SET NULL'), nullable=True),
-        sa.Column('project_id', sa.String(length=36), sa.ForeignKey('projects.id', ondelete='SET NULL'), nullable=True),
+        sa.Column(
+            'user_id',
+            sa.String(length=36),
+            sa.ForeignKey('users.id', ondelete='SET NULL'),
+            nullable=True,
+        ),
+        sa.Column(
+            'project_id',
+            sa.String(length=36),
+            sa.ForeignKey('projects.id', ondelete='SET NULL'),
+            nullable=True,
+        ),
         sa.Column('command', sa.String(length=100), nullable=False),
         sa.Column('input', sa.JSON(), nullable=False),
         sa.Column('output', sa.JSON(), nullable=True),
@@ -51,7 +68,12 @@ def upgrade() -> None:
     op.create_table(
         'subscriptions',
         sa.Column('id', sa.String(length=36), primary_key=True),
-        sa.Column('user_id', sa.String(length=36), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=False),
+        sa.Column(
+            'user_id',
+            sa.String(length=36),
+            sa.ForeignKey('users.id', ondelete='CASCADE'),
+            nullable=False,
+        ),
         sa.Column('plan', sa.String(length=50), nullable=False),
         sa.Column('started_at', sa.DateTime(), nullable=False),
         sa.Column('ends_at', sa.DateTime(), nullable=True),
@@ -61,7 +83,12 @@ def upgrade() -> None:
     op.create_table(
         'usage',
         sa.Column('id', sa.String(length=36), primary_key=True),
-        sa.Column('user_id', sa.String(length=36), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=False),
+        sa.Column(
+            'user_id',
+            sa.String(length=36),
+            sa.ForeignKey('users.id', ondelete='CASCADE'),
+            nullable=False,
+        ),
         sa.Column('usage_type', sa.String(length=50), nullable=False),
         sa.Column('units', sa.Integer(), nullable=False, server_default=sa.text('0')),
         sa.Column('date', sa.Date(), nullable=False),
@@ -92,5 +119,3 @@ def downgrade() -> None:
     op.drop_index('ix_users_role', table_name='users')
     op.drop_index('ix_users_email', table_name='users')
     op.drop_table('users')
-
-

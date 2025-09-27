@@ -22,7 +22,9 @@ def configure_logging(level: str = "INFO") -> None:
             merge_contextvars,
             structlog.processors.JSONRenderer(),
         ],
-        wrapper_class=structlog.make_filtering_bound_logger(logging.getLevelName(level.upper())),
+        wrapper_class=structlog.make_filtering_bound_logger(
+            logging.getLevelName(level.upper())
+        ),
         context_class=dict,
         logger_factory=structlog.stdlib.LoggerFactory(),
         cache_logger_on_first_use=True,
@@ -48,5 +50,3 @@ def bind_correlation_id(correlation_id: str | None) -> None:
 def clear_correlation_context() -> None:
     """TR: İstek bitiminde context temizliği."""
     clear_contextvars()
-
-

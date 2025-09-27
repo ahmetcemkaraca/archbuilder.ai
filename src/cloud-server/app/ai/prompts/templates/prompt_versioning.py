@@ -47,5 +47,3 @@ layout_v1 = PromptTemplate(
 
 registry = PromptRegistry()
 registry.register("layout_generation", layout_v1)
-
-

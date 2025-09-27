@@ -17,7 +17,9 @@ from app.services.preprocess.cad_preprocess import preprocess_cad
 from fastapi import Depends
 
 
-router = APIRouter(prefix="/v1/storage", tags=["storage"], dependencies=[Depends(require_api_key)])
+router = APIRouter(
+    prefix="/v1/storage", tags=["storage"], dependencies=[Depends(require_api_key)]
+)
 storage = StorageService()
 scanner = VirusScanner()
 
@@ -35,21 +37,27 @@ async def upload_init() -> Dict[str, Any]:
 
 
 @router.post("/upload/chunk")
-async def upload_chunk(upload_id: str = Form(...), index: int = Form(...), file: UploadFile = File(...)) -> Dict[str, Any]:
+async def upload_chunk(
+    upload_id: str = Form(...), index: int = Form(...), file: UploadFile = File(...)
+) -> Dict[str, Any]:
     content = await file.read()
     storage.write_chunk(upload_id, index, content)
     return envelope(True, {"received": index})
 
 
 @router.post("/upload/complete")
-async def upload_complete(upload_id: str = Form(...), filename: str = Form(...)) -> Dict[str, Any]:
+async def upload_complete(
+    upload_id: str = Form(...), filename: str = Form(...)
+) -> Dict[str, Any]:
     try:
         path = storage.assemble(upload_id, filename)
         # Virus scan
         result = await scanner.scan_bytes(path.read_bytes())
         if result.infected:
             path.unlink(missing_ok=True)
-            raise HTTPException(status_code=400, detail=f"Infected file: {result.reason or 'unknown'}")
+            raise HTTPException(
+                status_code=400, detail=f"Infected file: {result.reason or 'unknown'}"
+            )
         # Metadata extract
         meta = extract_basic_metadata(path)
     except FileNotFoundError as exc:
@@ -63,5 +71,3 @@ async def upload_complete(upload_id: str = Form(...), filename: str = Form(...))
     elif meta.get("extension") in {".dxf", ".ifc"}:
         extra["preprocess"] = preprocess_cad(path)
     return envelope(True, {"path": str(path), "metadata": meta, **extra})
-
-

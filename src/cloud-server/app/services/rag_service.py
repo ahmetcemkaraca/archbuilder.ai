@@ -25,7 +25,9 @@ class RAGService:
             timeout_seconds=settings.ragflow_timeout_seconds,
         )
 
-    async def ensure_dataset(self, name: str, correlation_id: Optional[str] = None) -> str:
+    async def ensure_dataset(
+        self, name: str, correlation_id: Optional[str] = None
+    ) -> str:
         return await self._client.ensure_dataset(name, correlation_id=correlation_id)
 
     async def ensure_project_dataset(
@@ -52,7 +54,9 @@ class RAGService:
         if link:
             return link.dataset_id
 
-        dataset_id = await self.ensure_dataset(preferred_name, correlation_id=correlation_id)
+        dataset_id = await self.ensure_dataset(
+            preferred_name, correlation_id=correlation_id
+        )
         link = RAGDatasetLink(
             id=str(uuid4()),
             owner_id=owner_id,
@@ -73,8 +77,14 @@ class RAGService:
     ) -> Dict[str, Any]:
         """Belge yükle ve RAGFlow içinde parse/index işlemini başlat."""
 
-        upload_res = await self._client.upload_documents(dataset_id, files, filenames, correlation_id=correlation_id)
-        document_ids = [d["id"] for d in upload_res.get("data", []) if isinstance(d, dict) and "id" in d]
+        upload_res = await self._client.upload_documents(
+            dataset_id, files, filenames, correlation_id=correlation_id
+        )
+        document_ids = [
+            d["id"]
+            for d in upload_res.get("data", [])
+            if isinstance(d, dict) and "id" in d
+        ]
         return await self._client.parse_documents(
             dataset_id,
             document_ids=document_ids,
@@ -102,7 +112,12 @@ class RAGService:
             correlation_id=correlation_id,
         )
 
-    async def build_index(self, dataset_id: str, rebuild: bool = False, correlation_id: Optional[str] = None) -> Dict[str, Any]:
+    async def build_index(
+        self,
+        dataset_id: str,
+        rebuild: bool = False,
+        correlation_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """RAGFlow tarafında index build/update tetikle.
 
         Notlar (TR): RAGFlow `parse_documents` endpointi dataset bazında yeniden
@@ -110,7 +125,12 @@ class RAGService:
         beklentisini işaretleriz (uygulama-spesifik, opsiyonel).
         """
         options: Dict[str, Any] = {"rebuild": rebuild}
-        return await self._client.parse_documents(dataset_id, document_ids=None, options=options, correlation_id=correlation_id)
+        return await self._client.parse_documents(
+            dataset_id,
+            document_ids=None,
+            options=options,
+            correlation_id=correlation_id,
+        )
 
     async def hybrid_search(
         self,
@@ -140,5 +160,3 @@ class RAGService:
             top_k=max_results,
             extra=extra,
         )
-
-

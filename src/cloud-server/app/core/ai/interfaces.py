@@ -22,20 +22,25 @@ class PromptRenderResult:
 class PromptTemplateLoader(Protocol):
     """Loads prompt templates by name and version."""
 
-    def load(self, template_name: str, version: Optional[str] = None) -> str:  # noqa: D401
+    def load(
+        self, template_name: str, version: Optional[str] = None
+    ) -> str:  # noqa: D401
         ...
 
 
 class PromptRenderer(Protocol):
     """Renders a template string using a context mapping."""
 
-    def render(self, template_text: str, context: Mapping[str, Any]) -> PromptRenderResult:  # noqa: D401
+    def render(
+        self, template_text: str, context: Mapping[str, Any]
+    ) -> PromptRenderResult:  # noqa: D401
         ...
 
 
 class AIClient(Protocol):
     """Minimal AI client interface."""
 
-    async def generate(self, prompt: str, **kwargs: Any) -> Dict[str, Any]:  # noqa: D401
+    async def generate(
+        self, prompt: str, **kwargs: Any
+    ) -> Dict[str, Any]:  # noqa: D401
         ...
-

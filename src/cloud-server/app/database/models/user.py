@@ -18,5 +18,6 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
+
 # User Model
 # Bu dosya kullanıcı veritabanı modelini içerir

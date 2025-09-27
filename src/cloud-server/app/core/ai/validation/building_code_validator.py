@@ -8,7 +8,9 @@ Bina yönetmeliği kontrolleri (temel):
 from typing import Any, Dict, List
 
 
-def validate_building_code(payload: Dict[str, Any], building_type: str = "residential") -> List[str]:
+def validate_building_code(
+    payload: Dict[str, Any], building_type: str = "residential"
+) -> List[str]:
     errors: List[str] = []
     if building_type == "residential":
         corridors = payload.get("corridors", [])
@@ -17,4 +19,3 @@ def validate_building_code(payload: Dict[str, Any], building_type: str = "reside
             if width < 1200:
                 errors.append(f"corridor_{idx}_below_min_width")
     return errors
-

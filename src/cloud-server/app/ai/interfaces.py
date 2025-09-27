@@ -21,5 +21,3 @@ class VertexClient:
 
     async def generate(self, prompt: str, **kwargs: Any) -> Dict[str, Any]:
         return {"model": "vertex-stub", "output": prompt[:50], "meta": kwargs}
-
-

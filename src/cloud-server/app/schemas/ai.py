@@ -27,5 +27,3 @@ class AICommandResponse(BaseModel):
     success: bool
     data: Dict[str, Any]
     error: Optional[Dict[str, Any]] = None
-
-

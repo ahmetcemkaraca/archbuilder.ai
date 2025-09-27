@@ -33,9 +33,7 @@ class TestRAGFlowClient:
     @pytest.fixture
     def ragflow_client(self, mock_ragflow_base_url):
         return RAGFlowClient(
-            base_url=mock_ragflow_base_url,
-            api_key="test-api-key",
-            timeout_seconds=30
+            base_url=mock_ragflow_base_url, api_key="test-api-key", timeout_seconds=30
         )
 
     @respx.mock
@@ -47,17 +45,19 @@ class TestRAGFlowClient:
             "data": {
                 "id": "dataset_123",
                 "name": "test-dataset",
-                "created_at": "2025-01-10T10:00:00Z"
-            }
+                "created_at": "2025-01-10T10:00:00Z",
+            },
         }
-        
+
         respx.post("http://mock-ragflow:8000/api/v1/datasets").mock(
             return_value=httpx.Response(200, json=mock_response)
         )
-        
+
         async with ragflow_client as client:
-            result = await client.create_dataset("test-dataset", correlation_id="test_corr_123")
-            
+            result = await client.create_dataset(
+                "test-dataset", correlation_id="test_corr_123"
+            )
+
             assert result["success"] is True
             assert result["data"]["id"] == "dataset_123"
             assert result["data"]["name"] == "test-dataset"
@@ -68,38 +68,37 @@ class TestRAGFlowClient:
         respx.post("http://mock-ragflow:8000/api/v1/datasets").mock(
             return_value=httpx.Response(400, json={"error": "Invalid dataset name"})
         )
-        
+
         async with ragflow_client as client:
             with pytest.raises(httpx.HTTPStatusError):
-                await client.create_dataset("invalid-name", correlation_id="test_corr_123")
+                await client.create_dataset(
+                    "invalid-name", correlation_id="test_corr_123"
+                )
 
     @respx.mock
     async def test_upload_documents_success(self, ragflow_client):
         """Doküman yükleme başarılı test"""
         mock_response = {
             "success": True,
-            "data": {
-                "document_ids": ["doc_1", "doc_2"],
-                "uploaded_count": 2
-            }
+            "data": {"document_ids": ["doc_1", "doc_2"], "uploaded_count": 2},
         }
-        
-        respx.post("http://mock-ragflow:8000/api/v1/datasets/dataset_123/documents").mock(
-            return_value=httpx.Response(200, json=mock_response)
-        )
-        
+
+        respx.post(
+            "http://mock-ragflow:8000/api/v1/datasets/dataset_123/documents"
+        ).mock(return_value=httpx.Response(200, json=mock_response))
+
         # Test dosyaları
         files = [b"test content 1", b"test content 2"]
         filenames = ["test1.pdf", "test2.pdf"]
-        
+
         async with ragflow_client as client:
             result = await client.upload_documents(
                 dataset_id="dataset_123",
                 files=files,
                 filenames=filenames,
-                correlation_id="test_corr_123"
+                correlation_id="test_corr_123",
             )
-            
+
             assert result["success"] is True
             assert len(result["data"]["document_ids"]) == 2
             assert result["data"]["uploaded_count"] == 2
@@ -112,22 +111,22 @@ class TestRAGFlowClient:
             "data": {
                 "job_id": "parse_job_123",
                 "status": "processing",
-                "document_count": 2
-            }
+                "document_count": 2,
+            },
         }
-        
+
         respx.post("http://mock-ragflow:8000/api/v1/datasets/dataset_123/chunks").mock(
             return_value=httpx.Response(200, json=mock_response)
         )
-        
+
         async with ragflow_client as client:
             result = await client.parse_documents(
                 dataset_id="dataset_123",
                 document_ids=["doc_1", "doc_2"],
                 options={"chunk_size": 1000, "overlap": 200},
-                correlation_id="test_corr_123"
+                correlation_id="test_corr_123",
             )
-            
+
             assert result["success"] is True
             assert result["data"]["job_id"] == "parse_job_123"
             assert result["data"]["status"] == "processing"
@@ -143,32 +142,32 @@ class TestRAGFlowClient:
                         "content": "Test content 1",
                         "score": 0.95,
                         "document_id": "doc_1",
-                        "chunk_id": "chunk_1"
+                        "chunk_id": "chunk_1",
                     },
                     {
-                        "content": "Test content 2", 
+                        "content": "Test content 2",
                         "score": 0.87,
                         "document_id": "doc_2",
-                        "chunk_id": "chunk_2"
-                    }
+                        "chunk_id": "chunk_2",
+                    },
                 ],
-                "total_results": 2
-            }
+                "total_results": 2,
+            },
         }
-        
+
         respx.post("http://mock-ragflow:8000/api/v1/retrieval").mock(
             return_value=httpx.Response(200, json=mock_response)
         )
-        
+
         async with ragflow_client as client:
             result = await client.retrieval(
                 question="Test question",
                 dataset_ids=["dataset_123"],
                 top_k=5,
                 vector_similarity_weight=0.7,
-                correlation_id="test_corr_123"
+                correlation_id="test_corr_123",
             )
-            
+
             assert result["success"] is True
             assert len(result["data"]["results"]) == 2
             assert result["data"]["total_results"] == 2
@@ -181,21 +180,22 @@ class TestRAGFlowClient:
         responses = [
             httpx.Response(429, json={"error": "Rate limited"}),
             httpx.Response(503, json={"error": "Service unavailable"}),
-            httpx.Response(200, json={
-                "success": True,
-                "data": {"results": [], "total_results": 0}
-            })
+            httpx.Response(
+                200, json={"success": True, "data": {"results": [], "total_results": 0}}
+            ),
         ]
-        
-        respx.post("http://mock-ragflow:8000/api/v1/retrieval").mock(side_effect=responses)
-        
+
+        respx.post("http://mock-ragflow:8000/api/v1/retrieval").mock(
+            side_effect=responses
+        )
+
         async with ragflow_client as client:
             result = await client.retrieval(
                 question="Test question",
                 dataset_ids=["dataset_123"],
-                correlation_id="test_corr_123"
+                correlation_id="test_corr_123",
             )
-            
+
             assert result["success"] is True
 
     @respx.mock
@@ -203,33 +203,34 @@ class TestRAGFlowClient:
         """ensure_dataset yeni dataset oluşturma testi"""
         mock_response = {
             "success": True,
-            "data": {
-                "id": "new_dataset_123",
-                "name": "preferred-name"
-            }
+            "data": {"id": "new_dataset_123", "name": "preferred-name"},
         }
-        
+
         respx.post("http://mock-ragflow:8000/api/v1/datasets").mock(
             return_value=httpx.Response(200, json=mock_response)
         )
-        
+
         async with ragflow_client as client:
-            dataset_id = await client.ensure_dataset("preferred-name", correlation_id="test_corr_123")
-            
+            dataset_id = await client.ensure_dataset(
+                "preferred-name", correlation_id="test_corr_123"
+            )
+
             assert dataset_id == "new_dataset_123"
 
     async def test_correlation_id_headers(self, ragflow_client):
         """Correlation ID header'larının doğru gönderilmesi testi"""
         correlation_id = "test_correlation_123"
-        
+
         with respx.mock as mock:
             mock.post("http://mock-ragflow:8000/api/v1/datasets").mock(
-                return_value=httpx.Response(200, json={"success": True, "data": {"id": "test"}})
+                return_value=httpx.Response(
+                    200, json={"success": True, "data": {"id": "test"}}
+                )
             )
-            
+
             async with ragflow_client as client:
                 await client.create_dataset("test", correlation_id=correlation_id)
-                
+
                 # Request'in correlation ID header'ı içerdiğini kontrol et
                 request = mock.calls[0].request
                 assert request.headers["X-Correlation-ID"] == correlation_id
@@ -238,13 +239,15 @@ class TestRAGFlowClient:
         """Client context manager testi"""
         with respx.mock as mock:
             mock.post("http://mock-ragflow:8000/api/v1/datasets").mock(
-                return_value=httpx.Response(200, json={"success": True, "data": {"id": "test"}})
+                return_value=httpx.Response(
+                    200, json={"success": True, "data": {"id": "test"}}
+                )
             )
-            
+
             async with ragflow_client as client:
                 assert client._client is not None
                 await client.create_dataset("test")
-            
+
             # Context manager'dan çıktıktan sonra client kapatılmalı
             assert ragflow_client._client is None
 
@@ -265,15 +268,13 @@ class TestRAGServiceIntegration:
         """RAGService ensure_dataset testi"""
         mock_rag_service.ensure_dataset.return_value = {
             "success": True,
-            "data": {"dataset_id": "test_dataset_123"}
+            "data": {"dataset_id": "test_dataset_123"},
         }
-        
+
         result = await mock_rag_service.ensure_dataset(
-            owner_id="user_123",
-            project_id="project_123", 
-            preferred_name="test-dataset"
+            owner_id="user_123", project_id="project_123", preferred_name="test-dataset"
         )
-        
+
         assert result["success"] is True
         assert result["data"]["dataset_id"] == "test_dataset_123"
         mock_rag_service.ensure_dataset.assert_called_once()
@@ -287,19 +288,19 @@ class TestRAGServiceIntegration:
                     {
                         "content": "Test architectural content",
                         "score": 0.92,
-                        "source": "building_codes.pdf"
+                        "source": "building_codes.pdf",
                     }
                 ],
-                "total_results": 1
-            }
+                "total_results": 1,
+            },
         }
-        
+
         result = await mock_rag_service.hybrid_search(
             query="building codes requirements",
             dataset_ids=["dataset_123"],
-            max_results=10
+            max_results=10,
         )
-        
+
         assert result["success"] is True
         assert len(result["data"]["results"]) == 1
         assert result["data"]["results"][0]["score"] == 0.92
@@ -314,32 +315,35 @@ class TestRAGEndpointsIntegration:
         with respx.mock as mock:
             # RAGFlow API mock
             mock.post("http://localhost:8000/api/v1/retrieval").mock(
-                return_value=httpx.Response(200, json={
-                    "success": True,
-                    "data": {
-                        "results": [
-                            {
-                                "content": "Test architectural content",
-                                "score": 0.95,
-                                "document_id": "doc_123"
-                            }
-                        ],
-                        "total_results": 1
-                    }
-                })
+                return_value=httpx.Response(
+                    200,
+                    json={
+                        "success": True,
+                        "data": {
+                            "results": [
+                                {
+                                    "content": "Test architectural content",
+                                    "score": 0.95,
+                                    "document_id": "doc_123",
+                                }
+                            ],
+                            "total_results": 1,
+                        },
+                    },
+                )
             )
-            
+
             async with AsyncClient(app=app, base_url="http://test") as ac:
                 response = await ac.post(
                     "/v1/rag/query",
                     json={
                         "query": "building codes",
                         "dataset_ids": ["dataset_123"],
-                        "max_results": 5
+                        "max_results": 5,
                     },
-                    headers={"X-API-Key": "test-api-key"}
+                    headers={"X-API-Key": "test-api-key"},
                 )
-                
+
                 assert response.status_code == 200
                 data = response.json()
                 assert data["success"] is True
@@ -350,19 +354,18 @@ class TestRAGEndpointsIntegration:
         with respx.mock as mock:
             # RAGFlow API hata mock
             mock.post("http://localhost:8000/api/v1/retrieval").mock(
-                return_value=httpx.Response(500, json={"error": "Internal server error"})
+                return_value=httpx.Response(
+                    500, json={"error": "Internal server error"}
+                )
             )
-            
+
             async with AsyncClient(app=app, base_url="http://test") as ac:
                 response = await ac.post(
                     "/v1/rag/query",
-                    json={
-                        "query": "building codes",
-                        "dataset_ids": ["dataset_123"]
-                    },
-                    headers={"X-API-Key": "test-api-key"}
+                    json={"query": "building codes", "dataset_ids": ["dataset_123"]},
+                    headers={"X-API-Key": "test-api-key"},
                 )
-                
+
                 # Hata durumunda 502 Bad Gateway dönmeli
                 assert response.status_code == 502
 
@@ -370,21 +373,24 @@ class TestRAGEndpointsIntegration:
         """Hybrid search endpoint testi"""
         with respx.mock as mock:
             mock.post("http://localhost:8000/api/v1/retrieval").mock(
-                return_value=httpx.Response(200, json={
-                    "success": True,
-                    "data": {
-                        "results": [
-                            {
-                                "content": "Hybrid search result",
-                                "score": 0.88,
-                                "document_id": "doc_456"
-                            }
-                        ],
-                        "total_results": 1
-                    }
-                })
+                return_value=httpx.Response(
+                    200,
+                    json={
+                        "success": True,
+                        "data": {
+                            "results": [
+                                {
+                                    "content": "Hybrid search result",
+                                    "score": 0.88,
+                                    "document_id": "doc_456",
+                                }
+                            ],
+                            "total_results": 1,
+                        },
+                    },
+                )
             )
-            
+
             async with AsyncClient(app=app, base_url="http://test") as ac:
                 response = await ac.post(
                     "/v1/rag/hybrid-search",
@@ -393,11 +399,11 @@ class TestRAGEndpointsIntegration:
                         "dataset_ids": ["dataset_123"],
                         "max_results": 10,
                         "keyword_boost": 0.4,
-                        "dense_boost": 0.6
+                        "dense_boost": 0.6,
                     },
-                    headers={"X-API-Key": "test-api-key"}
+                    headers={"X-API-Key": "test-api-key"},
                 )
-                
+
                 assert response.status_code == 200
                 data = response.json()
                 assert data["success"] is True
@@ -407,26 +413,26 @@ class TestRAGEndpointsIntegration:
         """Ensure dataset endpoint testi"""
         with respx.mock as mock:
             mock.post("http://localhost:8000/api/v1/datasets").mock(
-                return_value=httpx.Response(200, json={
-                    "success": True,
-                    "data": {
-                        "id": "new_dataset_456",
-                        "name": "project-dataset"
-                    }
-                })
+                return_value=httpx.Response(
+                    200,
+                    json={
+                        "success": True,
+                        "data": {"id": "new_dataset_456", "name": "project-dataset"},
+                    },
+                )
             )
-            
+
             async with AsyncClient(app=app, base_url="http://test") as ac:
                 response = await ac.post(
                     "/v1/documents/rag/ensure-dataset",
                     json={
                         "owner_id": "user_123",
                         "project_id": "project_123",
-                        "preferred_name": "project-dataset"
+                        "preferred_name": "project-dataset",
                     },
-                    headers={"X-API-Key": "test-api-key"}
+                    headers={"X-API-Key": "test-api-key"},
                 )
-                
+
                 assert response.status_code == 200
                 data = response.json()
                 assert data["success"] is True
@@ -436,21 +442,21 @@ class TestRAGEndpointsIntegration:
         """Upload parse async endpoint testi"""
         with respx.mock as mock:
             mock.post("http://localhost:8000/api/v1/datasets/dataset_123/chunks").mock(
-                return_value=httpx.Response(200, json={
-                    "success": True,
-                    "data": {
-                        "job_id": "parse_job_789",
-                        "status": "processing"
-                    }
-                })
+                return_value=httpx.Response(
+                    200,
+                    json={
+                        "success": True,
+                        "data": {"job_id": "parse_job_789", "status": "processing"},
+                    },
+                )
             )
-            
+
             async with AsyncClient(app=app, base_url="http://test") as ac:
                 response = await ac.post(
                     "/v1/documents/rag/dataset_123/upload-parse/async",
-                    headers={"X-API-Key": "test-api-key"}
+                    headers={"X-API-Key": "test-api-key"},
                 )
-                
+
                 assert response.status_code == 200
                 data = response.json()
                 assert data["success"] is True
@@ -460,26 +466,26 @@ class TestRAGEndpointsIntegration:
         """Job status endpoint testi"""
         with respx.mock as mock:
             mock.get("http://localhost:8000/api/v1/jobs/parse_job_789").mock(
-                return_value=httpx.Response(200, json={
-                    "success": True,
-                    "data": {
-                        "job_id": "parse_job_789",
-                        "status": "completed",
-                        "progress": 100,
-                        "result": {
-                            "processed_documents": 5,
-                            "created_chunks": 25
-                        }
-                    }
-                })
+                return_value=httpx.Response(
+                    200,
+                    json={
+                        "success": True,
+                        "data": {
+                            "job_id": "parse_job_789",
+                            "status": "completed",
+                            "progress": 100,
+                            "result": {"processed_documents": 5, "created_chunks": 25},
+                        },
+                    },
+                )
             )
-            
+
             async with AsyncClient(app=app, base_url="http://test") as ac:
                 response = await ac.get(
                     "/v1/documents/rag/jobs/parse_job_789",
-                    headers={"X-API-Key": "test-api-key"}
+                    headers={"X-API-Key": "test-api-key"},
                 )
-                
+
                 assert response.status_code == 200
                 data = response.json()
                 assert data["success"] is True
@@ -496,14 +502,14 @@ class TestRAGErrorHandling:
             mock.post("http://localhost:8000/api/v1/retrieval").mock(
                 side_effect=httpx.TimeoutException("Connection timeout")
             )
-            
+
             async with AsyncClient(app=app, base_url="http://test") as ac:
                 response = await ac.post(
                     "/v1/rag/query",
                     json={"query": "test query"},
-                    headers={"X-API-Key": "test-api-key"}
+                    headers={"X-API-Key": "test-api-key"},
                 )
-                
+
                 assert response.status_code == 502
                 data = response.json()
                 assert "timeout" in data["errors"][0]["message"].lower()
@@ -514,14 +520,14 @@ class TestRAGErrorHandling:
             mock.post("http://localhost:8000/api/v1/retrieval").mock(
                 return_value=httpx.Response(200, json={"invalid": "format"})
             )
-            
+
             async with AsyncClient(app=app, base_url="http://test") as ac:
                 response = await ac.post(
                     "/v1/rag/query",
                     json={"query": "test query"},
-                    headers={"X-API-Key": "test-api-key"}
+                    headers={"X-API-Key": "test-api-key"},
                 )
-                
+
                 # Geçersiz format durumunda 502 dönmeli
                 assert response.status_code == 502
 
@@ -531,14 +537,14 @@ class TestRAGErrorHandling:
             mock.post("http://localhost:8000/api/v1/retrieval").mock(
                 return_value=httpx.Response(429, json={"error": "Rate limit exceeded"})
             )
-            
+
             async with AsyncClient(app=app, base_url="http://test") as ac:
                 response = await ac.post(
                     "/v1/rag/query",
                     json={"query": "test query"},
-                    headers={"X-API-Key": "test-api-key"}
+                    headers={"X-API-Key": "test-api-key"},
                 )
-                
+
                 assert response.status_code == 502
                 data = response.json()
                 assert "rate limit" in data["errors"][0]["message"].lower()
@@ -551,24 +557,24 @@ class TestRAGPerformance:
         """RAG query performans testi"""
         with respx.mock as mock:
             mock.post("http://localhost:8000/api/v1/retrieval").mock(
-                return_value=httpx.Response(200, json={
-                    "success": True,
-                    "data": {"results": [], "total_results": 0}
-                })
+                return_value=httpx.Response(
+                    200,
+                    json={"success": True, "data": {"results": [], "total_results": 0}},
+                )
             )
-            
+
             async with AsyncClient(app=app, base_url="http://test") as ac:
                 start_time = asyncio.get_event_loop().time()
-                
+
                 response = await ac.post(
                     "/v1/rag/query",
                     json={"query": "performance test"},
-                    headers={"X-API-Key": "test-api-key"}
+                    headers={"X-API-Key": "test-api-key"},
                 )
-                
+
                 end_time = asyncio.get_event_loop().time()
                 response_time = end_time - start_time
-                
+
                 assert response.status_code == 200
                 # Response time 5 saniyeden az olmalı
                 assert response_time < 5.0
@@ -577,12 +583,12 @@ class TestRAGPerformance:
         """Eşzamanlı RAG query testi"""
         with respx.mock as mock:
             mock.post("http://localhost:8000/api/v1/retrieval").mock(
-                return_value=httpx.Response(200, json={
-                    "success": True,
-                    "data": {"results": [], "total_results": 0}
-                })
+                return_value=httpx.Response(
+                    200,
+                    json={"success": True, "data": {"results": [], "total_results": 0}},
+                )
             )
-            
+
             async with AsyncClient(app=app, base_url="http://test") as ac:
                 # 5 eşzamanlı query gönder
                 tasks = []
@@ -590,12 +596,12 @@ class TestRAGPerformance:
                     task = ac.post(
                         "/v1/rag/query",
                         json={"query": f"concurrent test {i}"},
-                        headers={"X-API-Key": "test-api-key"}
+                        headers={"X-API-Key": "test-api-key"},
                     )
                     tasks.append(task)
-                
+
                 responses = await asyncio.gather(*tasks)
-                
+
                 # Tüm response'lar başarılı olmalı
                 for response in responses:
                     assert response.status_code == 200

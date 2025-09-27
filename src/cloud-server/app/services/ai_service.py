@@ -25,8 +25,16 @@ class AIService:
         project_id: Optional[str],
     ) -> Dict[str, Any]:
         # TR: Basit model seçimi (dil/karmaşıklık ipuçlarına göre)
-        language = (input_data.get("language") or "en") if isinstance(input_data, dict) else "en"
-        complexity = (input_data.get("complexity") or "simple") if isinstance(input_data, dict) else "simple"
+        language = (
+            (input_data.get("language") or "en")
+            if isinstance(input_data, dict)
+            else "en"
+        )
+        complexity = (
+            (input_data.get("complexity") or "simple")
+            if isinstance(input_data, dict)
+            else "simple"
+        )
         model = self._selector.select(language=language, complexity=complexity)
 
         # TR: Prompt versiyonlama ile giriş verisini normalize et
@@ -35,7 +43,11 @@ class AIService:
             prompt = tmpl.format(
                 building_type=input_data.get("building_type", "residential"),
                 total_area_m2=input_data.get("total_area_m2", 50),
-                rooms=",".join(input_data.get("rooms", [])) if isinstance(input_data.get("rooms"), list) else str(input_data.get("rooms", "")),
+                rooms=(
+                    ",".join(input_data.get("rooms", []))
+                    if isinstance(input_data.get("rooms"), list)
+                    else str(input_data.get("rooms", ""))
+                ),
             )
         except Exception:
             prompt = None

@@ -19,7 +19,9 @@ class ModelChoice:
     model: str
 
 
-def select_model(task: str, latency_sensitive: bool = False, prefer_local: bool = False) -> ModelChoice:
+def select_model(
+    task: str, latency_sensitive: bool = False, prefer_local: bool = False
+) -> ModelChoice:
     """Select model by task category.
 
     Kurallar (örnek):
@@ -41,4 +43,3 @@ def select_model(task: str, latency_sensitive: bool = False, prefer_local: bool 
         return ModelChoice(provider="Local", model="llama3.1-8b-instruct-q4")
 
     return ModelChoice(provider="Anthropic", model="claude-3-haiku-20240307")
-

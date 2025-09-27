@@ -50,7 +50,12 @@ async def query_knowledge_base(
         # TR: Basit PII maskeleme (e-posta ve 32+ char tokenları gizle)
         def _mask_pii(text: str) -> str:
             import re
-            text = re.sub(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", "[EMAIL_REDACTED]", text)
+
+            text = re.sub(
+                r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b",
+                "[EMAIL_REDACTED]",
+                text,
+            )
             text = re.sub(r"\b[A-Za-z0-9]{32,}\b", "[TOKEN_REDACTED]", text)
             return text
 
@@ -70,7 +75,9 @@ async def query_knowledge_base(
             correlation_id=cid,
         )
     except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=502, detail=f"RAGFlow upstream error: {exc}") from exc
+        raise HTTPException(
+            status_code=502, detail=f"RAGFlow upstream error: {exc}"
+        ) from exc
 
     return RAGQueryResponse(success=True, data=res, error=None)
 
@@ -79,7 +86,11 @@ class StrictQueryError(BaseModel):
     detail: str
 
 
-@router.post("/query/strict", response_model=RAGQueryResponse, responses={400: {"model": StrictQueryError}, 404: {"model": StrictQueryError}})
+@router.post(
+    "/query/strict",
+    response_model=RAGQueryResponse,
+    responses={400: {"model": StrictQueryError}, 404: {"model": StrictQueryError}},
+)
 async def query_knowledge_base_strict(
     request: RAGQueryRequest,
     req: Request,
@@ -87,12 +98,20 @@ async def query_knowledge_base_strict(
 ):
     """Eksik veri ve boş sonuç durumlarını anlamlı hatalarla döndürür."""
     if not request.dataset_ids:
-        raise HTTPException(status_code=400, detail="dataset_ids is required for strict query")
+        raise HTTPException(
+            status_code=400, detail="dataset_ids is required for strict query"
+        )
 
     try:
+
         def _mask_pii(text: str) -> str:
             import re
-            text = re.sub(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", "[EMAIL_REDACTED]", text)
+
+            text = re.sub(
+                r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b",
+                "[EMAIL_REDACTED]",
+                text,
+            )
             text = re.sub(r"\b[A-Za-z0-9]{32,}\b", "[TOKEN_REDACTED]", text)
             return text
 
@@ -111,12 +130,18 @@ async def query_knowledge_base_strict(
             correlation_id=cid,
         )
     except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=502, detail=f"RAGFlow upstream error: {exc}") from exc
+        raise HTTPException(
+            status_code=502, detail=f"RAGFlow upstream error: {exc}"
+        ) from exc
 
     if not res or not res.get("data"):
-        raise HTTPException(status_code=404, detail="No results found for the given datasets and filters")
+        raise HTTPException(
+            status_code=404,
+            detail="No results found for the given datasets and filters",
+        )
 
     return RAGQueryResponse(success=True, data=res)
+
 
 class IndexBuildRequest(BaseModel):
     dataset_id: str = Field(..., min_length=1)
@@ -142,7 +167,9 @@ async def build_index(
         res = await svc.build_index(body.dataset_id, body.rebuild, correlation_id=cid)
         return StandardResponse(success=True, data=res)
     except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=502, detail=f"Index build failed: {exc}") from exc
+        raise HTTPException(
+            status_code=502, detail=f"Index build failed: {exc}"
+        ) from exc
 
 
 class HybridSearchRequest(BaseModel):
@@ -176,5 +203,6 @@ async def hybrid_search(
         )
         return RAGQueryResponse(success=True, data=res)
     except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=502, detail=f"Hybrid search failed: {exc}") from exc
-
+        raise HTTPException(
+            status_code=502, detail=f"Hybrid search failed: {exc}"
+        ) from exc

@@ -12,6 +12,7 @@ from app.core.exceptions import envelope
 
 router = APIRouter(prefix="/api/v1/regional", tags=["regional"])
 
+
 # TR: Pydantic models
 class RegionInfo(BaseModel):
     region: str = Field(..., description="Bölge kodu")
@@ -52,10 +53,14 @@ async def get_available_regions():
 
 
 @router.get("/regions/{region}/compliance", summary="Bölge compliance bilgisi")
-async def get_region_compliance(region: str, user_citizenship: Optional[str] = Query(None)):
+async def get_region_compliance(
+    region: str, user_citizenship: Optional[str] = Query(None)
+):
     """TR: Belirtilen bölge için compliance bilgisini getir"""
     try:
-        compliance_info = multi_region_service.get_data_residency_compliance(region, user_citizenship)
+        compliance_info = multi_region_service.get_data_residency_compliance(
+            region, user_citizenship
+        )
         return envelope(True, compliance_info)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -94,22 +99,26 @@ async def get_optimal_region(region_info: RegionInfo):
                 "FR": ["GDPR"],
                 "US": ["CCPA"],
                 "CA": ["PIPEDA"],
-                "BR": ["LGPD"]
+                "BR": ["LGPD"],
             }
-            compliance_requirements = citizenship_compliance.get(region_info.user_citizenship, [])
-        
+            compliance_requirements = citizenship_compliance.get(
+                region_info.user_citizenship, []
+            )
+
         optimal_region = multi_region_service.get_optimal_region_for_user(
-            region_info.region, 
-            compliance_requirements
+            region_info.region, compliance_requirements
         )
-        
+
         region_details = multi_region_service.get_region_compliance_info(optimal_region)
-        
-        return envelope(True, {
-            "optimal_region": optimal_region,
-            "details": region_details,
-            "compliance_requirements": compliance_requirements
-        })
+
+        return envelope(
+            True,
+            {
+                "optimal_region": optimal_region,
+                "details": region_details,
+                "compliance_requirements": compliance_requirements,
+            },
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -141,28 +150,29 @@ async def convert_currency(conversion_request: CurrencyConversionRequest):
         converted_amount = currency_service.convert_currency(
             conversion_request.amount,
             conversion_request.from_currency,
-            conversion_request.to_currency
+            conversion_request.to_currency,
         )
-        
+
         if converted_amount is None:
             raise HTTPException(
-                status_code=400, 
-                detail=f"Conversion not available: {conversion_request.from_currency} -> {conversion_request.to_currency}"
+                status_code=400,
+                detail=f"Conversion not available: {conversion_request.from_currency} -> {conversion_request.to_currency}",
             )
-        
+
         formatted_price = currency_service.format_currency(
-            converted_amount, 
-            conversion_request.to_currency,
-            conversion_request.region
+            converted_amount, conversion_request.to_currency, conversion_request.region
         )
-        
-        return envelope(True, {
-            "original_amount": conversion_request.amount,
-            "original_currency": conversion_request.from_currency,
-            "converted_amount": float(converted_amount),
-            "target_currency": conversion_request.to_currency,
-            "formatted_price": formatted_price
-        })
+
+        return envelope(
+            True,
+            {
+                "original_amount": conversion_request.amount,
+                "original_currency": conversion_request.from_currency,
+                "converted_amount": float(converted_amount),
+                "target_currency": conversion_request.to_currency,
+                "formatted_price": formatted_price,
+            },
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -171,7 +181,9 @@ async def convert_currency(conversion_request: CurrencyConversionRequest):
 async def validate_currency_for_region(currency_code: str, region: str):
     """TR: Para biriminin bölge için uygunluğunu kontrol et"""
     try:
-        validation_result = currency_service.validate_currency_for_region(currency_code, region)
+        validation_result = currency_service.validate_currency_for_region(
+            currency_code, region
+        )
         return envelope(True, validation_result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -184,7 +196,7 @@ async def calculate_subscription_pricing(pricing_request: SubscriptionPricingReq
         pricing_info = currency_service.calculate_subscription_price(
             pricing_request.base_usd_price,
             pricing_request.target_currency,
-            pricing_request.region
+            pricing_request.region,
         )
         return envelope(True, pricing_info)
     except Exception as e:
@@ -205,17 +217,24 @@ async def get_building_code_regions():
 async def get_building_types(region: str):
     """TR: Belirtilen bölge için desteklenen bina tiplerini listele"""
     try:
-        building_types = regional_building_codes_service.get_available_building_types(region)
+        building_types = regional_building_codes_service.get_available_building_types(
+            region
+        )
         return envelope(True, building_types)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/building-codes/{region}/{building_type}/requirements", summary="Yapı gereksinimleri")
+@router.get(
+    "/building-codes/{region}/{building_type}/requirements",
+    summary="Yapı gereksinimleri",
+)
 async def get_building_requirements(region: str, building_type: str):
     """TR: Belirtilen bölge ve bina tipi için yapı gereksinimlerini getir"""
     try:
-        requirements = regional_building_codes_service.get_building_requirements(region, building_type)
+        requirements = regional_building_codes_service.get_building_requirements(
+            region, building_type
+        )
         return envelope(True, requirements)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -225,10 +244,12 @@ async def get_building_requirements(region: str, building_type: str):
 async def validate_design_against_codes(validation_request: DesignValidationRequest):
     """TR: Tasarımı yapı yönetmeliklerine göre doğrula"""
     try:
-        validation_result = regional_building_codes_service.validate_design_against_codes(
-            validation_request.design_params,
-            validation_request.region,
-            validation_request.building_type
+        validation_result = (
+            regional_building_codes_service.validate_design_against_codes(
+                validation_request.design_params,
+                validation_request.region,
+                validation_request.building_type,
+            )
         )
         return envelope(True, validation_result)
     except Exception as e:
@@ -238,21 +259,27 @@ async def validate_design_against_codes(validation_request: DesignValidationRequ
 @router.get("/building-codes/search", summary="Yapı gereksinimi arama")
 async def search_building_requirements(
     search_term: str = Query(..., description="Arama terimi"),
-    region: Optional[str] = Query(None, description="Bölge filtresi")
+    region: Optional[str] = Query(None, description="Bölge filtresi"),
 ):
     """TR: Yapı gereksinimlerinde arama yap"""
     try:
-        search_results = regional_building_codes_service.search_requirements(search_term, region)
+        search_results = regional_building_codes_service.search_requirements(
+            search_term, region
+        )
         return envelope(True, search_results)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/building-codes/compare/{requirement_name}", summary="Gereksinim karşılaştırması")
+@router.get(
+    "/building-codes/compare/{requirement_name}", summary="Gereksinim karşılaştırması"
+)
 async def compare_requirement_across_regions(requirement_name: str):
     """TR: Aynı gereksinimi farklı bölgelerde karşılaştır"""
     try:
-        comparison = regional_building_codes_service.get_requirement_comparison(requirement_name)
+        comparison = regional_building_codes_service.get_requirement_comparison(
+            requirement_name
+        )
         return envelope(True, comparison)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -273,7 +300,9 @@ async def get_translation(language: str, key: str):
     """TR: Belirtilen dil ve key için çeviri getir"""
     try:
         translation = regional_config.get_translation(key, language)
-        return envelope(True, {"key": key, "language": language, "translation": translation})
+        return envelope(
+            True, {"key": key, "language": language, "translation": translation}
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -291,16 +320,19 @@ async def get_regional_config(region: str):
 @router.get("/format/number", summary="Sayı formatları")
 async def format_number(
     value: float = Query(..., description="Formatlanacak sayı"),
-    region: str = Query(..., description="Bölge kodu")
+    region: str = Query(..., description="Bölge kodu"),
 ):
     """TR: Sayıyı bölgesel formata göre formatla"""
     try:
         formatted_number = regional_config.format_number(value, region)
-        return envelope(True, {
-            "original_value": value,
-            "region": region,
-            "formatted_number": formatted_number
-        })
+        return envelope(
+            True,
+            {
+                "original_value": value,
+                "region": region,
+                "formatted_number": formatted_number,
+            },
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

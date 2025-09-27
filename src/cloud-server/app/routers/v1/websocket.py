@@ -39,5 +39,3 @@ async def ws_endpoint(websocket: WebSocket, correlation_id: str) -> None:
             )
     except WebSocketDisconnect:
         return
-
-

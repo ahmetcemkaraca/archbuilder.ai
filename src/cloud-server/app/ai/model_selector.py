@@ -13,5 +13,3 @@ class ModelSelector:
         if complexity == "high":
             return {"provider": "openai", "model": "gpt-4.1"}
         return {"provider": "openai", "model": "gpt-4.1"}
-
-

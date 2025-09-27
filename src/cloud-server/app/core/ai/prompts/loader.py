@@ -27,6 +27,6 @@ class FileSystemPromptTemplateLoader(PromptTemplateLoader):
             if path.exists():
                 return path.read_text(encoding="utf-8")
 
-        raise FileNotFoundError(f"Prompt template not found for '{template_name}' (version={version})")
-
-
+        raise FileNotFoundError(
+            f"Prompt template not found for '{template_name}' (version={version})"
+        )

@@ -17,9 +17,15 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             (b"x-content-type-options", b"nosniff"),
             (b"x-frame-options", b"DENY"),
             (b"referrer-policy", b"no-referrer"),
-            (b"strict-transport-security", b"max-age=63072000; includeSubDomains; preload"),
+            (
+                b"strict-transport-security",
+                b"max-age=63072000; includeSubDomains; preload",
+            ),
             (b"x-permitted-cross-domain-policies", b"none"),
-            (b"content-security-policy", b"default-src 'self'; frame-ancestors 'none'; object-src 'none'")
+            (
+                b"content-security-policy",
+                b"default-src 'self'; frame-ancestors 'none'; object-src 'none'",
+            ),
         ]
 
     async def dispatch(self, request, call_next):  # type: ignore[no-untyped-def]
@@ -27,5 +33,3 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         for k, v in self._headers:
             response.headers.append(k.decode("utf-8"), v.decode("utf-8"))
         return response
-
-

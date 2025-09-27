@@ -1,82 +1,62 @@
-httpx==0.27.2
-jinja2==3.1.4
+﻿# ArchBuilder.AI Cloud Server Dependencies
+# Production Requirements
+
+# Core Web Framework
 fastapi==0.115.0
 uvicorn==0.30.6
-structlog==24.4.0
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
-pydantic==2.9.2
-pydantic-settings==2.5.2
-slowapi==0.1.9
 python-multipart==0.0.9
-pytest==8.3.3
-pytest-asyncio==0.23.8
-jsonschema==4.23.0
+
+# HTTP Client
+httpx==0.27.2
+
+# Database
 sqlalchemy==2.0.35
 asyncpg==0.29.0
+psycopg2-binary==2.9.9
 
-# Performance and Caching
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+cryptography==42.0.8
+
+# Data Validation
+pydantic==2.9.2
+pydantic-settings==2.5.2
+email-validator==2.1.1
+
+# Rate Limiting & API Security
+slowapi==0.1.9
+secure==0.3.0
+
+# Caching & Background Tasks
 redis==5.0.1
 aioredis==2.0.1
 celery==5.3.4
-redis-py==5.0.1
 
-# Monitoring and Observability
+# Logging & Monitoring
+structlog==24.4.0
 prometheus-client==0.20.0
-opentelemetry-api==1.24.0
-opentelemetry-sdk==1.24.0
-opentelemetry-instrumentation-fastapi==0.45b0
-opentelemetry-instrumentation-sqlalchemy==0.45b0
-opentelemetry-instrumentation-redis==0.45b0
-opentelemetry-exporter-prometheus==1.12.0rc1
 
-# Database Performance
-alembic==1.13.1
-psycopg2-binary==2.9.9
-psycopg==3.2.3
-psycopg-pool==3.2.4
+# Template Engine
+jinja2==3.1.4
 
-# Load Testing
-locust==2.24.1
-
-# AI and ML Processing
-openai==1.51.2
-google-cloud-aiplatform==1.68.0
-google-auth==2.35.0
-tiktoken==0.8.0
-transformers==4.46.2
-
-# CAD File Processing  
-ezdxf==1.3.3
-pythoncad==0.1.39
-ifcopenshell==0.8.0
-
-# 3D Geometry Processing
-open3d==0.18.0
+# Data Processing
 numpy==1.26.4
 scipy==1.14.1
-matplotlib==3.9.2
 
-# Document Processing and OCR
-python-docx==1.1.2
-PyPDF2==3.0.1
+# File Processing
 Pillow==10.4.0
-pytesseract==0.3.13
-pdf2image==1.17.0
 
-# Background Task Processing
-dramatiq==1.17.0
-dramatiq-pg==0.11.0
-watchdog==5.0.3
+# Validation & Schema
+jsonschema==4.23.0
 
-# File Format Support
-openpyxl==3.1.5
-xlsxwriter==3.2.0
-python-magic==0.4.27
-xmltodict==0.13.0
+# AI Integration (Core)
+openai==1.51.2
+tiktoken==0.8.0
 
-# Validation and Schema
-cerberus==1.3.5
-marshmallow==3.22.0
-voluptuous==0.15.2
+# Configuration Management
+python-dotenv==1.0.1
 
+# Testing (minimal for production health checks)
+pytest==8.3.3
+pytest-asyncio==0.23.8

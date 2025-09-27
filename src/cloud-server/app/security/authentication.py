@@ -46,7 +46,9 @@ def create_api_key() -> str:
     return secrets.token_urlsafe(32)
 
 
-async def get_api_key(x_api_key: Optional[str] = Security(api_key_header)) -> Optional[str]:
+async def get_api_key(
+    x_api_key: Optional[str] = Security(api_key_header),
+) -> Optional[str]:
     return x_api_key
 
 
@@ -55,5 +57,3 @@ async def require_api_key(api_key: Optional[str] = Depends(get_api_key)) -> str:
         raise HTTPException(status_code=401, detail="API key required")
     # TODO: DB doğrulaması ekle
     return api_key
-
-

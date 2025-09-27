@@ -31,4 +31,3 @@ def validate_geometry(payload: Dict[str, Any]) -> List[str]:
         if width < 600 or width > 2000:
             errors.append(f"door_{idx}_width_out_of_range")
     return errors
-

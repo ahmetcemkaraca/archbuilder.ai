@@ -48,4 +48,3 @@ async def test_ai_validate_rejected_path(app: FastAPI):
         assert resp.status_code == 200
         data = resp.json()["data"]
         assert data["status"] in ("requires_review", "rejected")
-

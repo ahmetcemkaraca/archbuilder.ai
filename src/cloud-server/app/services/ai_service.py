@@ -68,27 +68,36 @@ class EnhancedAIService:
         user_id: Optional[str],
         project_id: Optional[str],
     ) -> Dict[str, Any]:
-        """
-        Gelişmiş AI command oluşturma
-        Gerçek AI model entegrasyonu ile
-        """
-        
-        correlation_id = f"ai_cmd_{int(time.time())}_{uuid4().hex[:8]}"
-        
-        # Input verilerini parse et
-        language = input_data.get("language", "en")
-        complexity_str = input_data.get("complexity", "simple")
-        analysis_type_str = input_data.get("analysis_type", "creation")
-        file_format = input_data.get("file_format")
-        estimated_tokens = input_data.get("estimated_tokens", 2000)
-        region = input_data.get("region", "eu")
-        
-        # Enum'lara çevir
+        # TR: Basit model seçimi (dil/karmaşıklık ipuçlarına göre)
+        language = (
+            (input_data.get("language") or "en")
+            if isinstance(input_data, dict)
+            else "en"
+        )
+        complexity = (
+            (input_data.get("complexity") or "simple")
+            if isinstance(input_data, dict)
+            else "simple"
+        )
+        model = self._selector.select(language=language, complexity=complexity)
+
+        # TR: Prompt versiyonlama ile giriş verisini normalize et
         try:
-            complexity = TaskComplexity(complexity_str)
-        except ValueError:
-            complexity = TaskComplexity.SIMPLE
-            
+            tmpl = prompt_registry.get("layout_generation")
+            prompt = tmpl.format(
+                building_type=input_data.get("building_type", "residential"),
+                total_area_m2=input_data.get("total_area_m2", 50),
+                rooms=(
+                    ",".join(input_data.get("rooms", []))
+                    if isinstance(input_data.get("rooms"), list)
+                    else str(input_data.get("rooms", ""))
+                ),
+            )
+        except Exception:
+            prompt = None
+
+        # TR: (Opsiyonel) AI çağrısı — stub clientlerle prompt önizlemesi
+        ai_preview: Dict[str, Any] | None = None
         try:
             analysis_type = AnalysisType(analysis_type_str)
         except ValueError:

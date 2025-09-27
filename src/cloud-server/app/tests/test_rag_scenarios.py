@@ -33,7 +33,9 @@ async def test_strict_query_missing_dataset(app: FastAPI):
 async def test_rag_query_propagates_correlation_id(app: FastAPI):
     cid = str(uuid.uuid4())
     async with AsyncClient(app=app, base_url="http://test") as ac:
-        resp = await ac.post("/v1/rag/query", json={"query": "hello"}, headers={"X-Correlation-ID": cid})
+        resp = await ac.post(
+            "/v1/rag/query", json={"query": "hello"}, headers={"X-Correlation-ID": cid}
+        )
         assert resp.status_code in (200, 502)
         # TR: Middleware yanıt başlıklarını kontrol edelim
         assert resp.headers.get("x-request-id")
@@ -46,5 +48,3 @@ def test_chunk_text_basic():
     assert len(chunks) >= 3
     for c in chunks:
         assert len(c) <= 20
-
-

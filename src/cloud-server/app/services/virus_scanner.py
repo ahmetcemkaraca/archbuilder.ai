@@ -16,7 +16,9 @@ class VirusScanResult:
 
 
 class VirusScanner:
-    def __init__(self, api_url: Optional[str] = None, api_key: Optional[str] = None) -> None:
+    def __init__(
+        self, api_url: Optional[str] = None, api_key: Optional[str] = None
+    ) -> None:
         self.api_url = api_url
         self.api_key = api_key
 
@@ -25,11 +27,11 @@ class VirusScanner:
             return VirusScanResult(infected=False)
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
         async with httpx.AsyncClient(timeout=30) as client:
-            resp = await client.post(self.api_url, headers=headers, files={"file": ("upload.bin", content)})
+            resp = await client.post(
+                self.api_url, headers=headers, files={"file": ("upload.bin", content)}
+            )
             resp.raise_for_status()
             data = resp.json()
             infected = bool(data.get("infected", False))
             reason = data.get("reason")
             return VirusScanResult(infected=infected, reason=reason)
-
-

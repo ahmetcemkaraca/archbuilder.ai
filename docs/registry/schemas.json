@@ -118,6 +118,51 @@
       }
     },
     {
+      "name": "WebSocketMessage",
+      "type": "object",
+      "properties": {
+        "type": {"type": "string"},
+        "correlationId": {"type": "string"},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "payload": {"type": "object"}
+      },
+      "required": ["type", "correlationId", "timestamp", "payload"]
+    },
+    {
+      "name": "JobAcceptedResponse",
+      "type": "object", 
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {
+          "type": "object",
+          "properties": {
+            "job_id": {"type": "string"},
+            "status": {"type": "string", "enum": ["accepted", "queued"]},
+            "estimated_duration": {"type": "string"}
+          }
+        }
+      },
+      "required": ["success", "data"]
+    },
+    {
+      "name": "JobStatusResponse", 
+      "type": "object",
+      "properties": {
+        "success": {"type": "boolean"},
+        "data": {
+          "type": "object",
+          "properties": {
+            "job_id": {"type": "string"},
+            "status": {"type": "string", "enum": ["queued", "running", "completed", "failed"]},
+            "progress": {"type": "number", "minimum": 0, "maximum": 1},
+            "result": {"type": "object", "nullable": true},
+            "error": {"type": "string", "nullable": true}
+          }
+        }
+      },
+      "required": ["success", "data"]
+    },
+    {
       "name": "ValidationRequest",
       "type": "object",
       "properties": {
@@ -640,173 +685,175 @@
       "required": ["id", "content", "document_id", "chunk_index"]
     },
     {
-      "name": "SecurityViolationResponse",
+      "name": "DatabaseHealthResponse",
       "type": "object",
       "properties": {
-        "success": {"type": "boolean", "default": false},
-        "error": {
-          "type": "object",
-          "properties": {
-            "message": {"type": "string"},
-            "correlation_id": {"type": "string"},
-            "timestamp": {"type": "integer"},
-            "violation_type": {"type": "string", "enum": ["sql_injection", "xss", "path_traversal", "threat_detected", "file_security"]}
-          },
-          "required": ["message", "correlation_id", "timestamp"]
-        }
+        "status": {"type": "string"},
+        "is_healthy": {"type": "boolean"},
+        "response_time_ms": {"type": "number"},
+        "connection_stats": {"type": "object"},
+        "timestamp": {"type": "string", "format": "date-time"}
       },
-      "required": ["success", "error"]
+      "required": ["status", "is_healthy", "response_time_ms", "timestamp"]
     },
     {
-      "name": "ValidationResult",
+      "name": "MigrationStatusResponse",
       "type": "object",
       "properties": {
-        "valid": {"type": "boolean"},
-        "sanitized_data": {"type": "any"},
-        "errors": {"type": "array", "items": {"type": "string"}},
-        "warnings": {"type": "array", "items": {"type": "string"}},
-        "metadata": {"type": "object"}
+        "current_revision": {"type": "string", "nullable": true},
+        "head_revision": {"type": "string", "nullable": true},
+        "is_up_to_date": {"type": "boolean"},
+        "pending_upgrades": {"type": "array", "items": {"type": "object"}},
+        "pending_count": {"type": "integer"}
       },
-      "required": ["valid", "errors", "warnings", "metadata"]
+      "required": ["is_up_to_date", "pending_upgrades", "pending_count"]
     },
     {
-      "name": "SecurityConfig",
+      "name": "BackupResponse",
       "type": "object",
       "properties": {
-        "allow_html": {"type": "boolean", "default": false},
-        "allowed_html_tags": {"type": "array", "items": {"type": "string"}},
-        "allowed_html_attributes": {"type": "object"},
-        "max_file_size": {"type": "integer", "minimum": 1024},
-        "allowed_file_extensions": {"type": "array", "items": {"type": "string"}},
-        "blocked_file_extensions": {"type": "array", "items": {"type": "string"}},
-        "max_string_length": {"type": "integer", "minimum": 1},
-        "max_list_length": {"type": "integer", "minimum": 1},
-        "max_dict_depth": {"type": "integer", "minimum": 1},
-        "enable_sql_injection_detection": {"type": "boolean", "default": true},
-        "enable_xss_detection": {"type": "boolean", "default": true},
-        "enable_path_traversal_detection": {"type": "boolean", "default": true}
-      }
-    },
-    {
-      "name": "CADFileValidationResult",
-      "type": "object",
-      "properties": {
-        "valid": {"type": "boolean"},
-        "file_format": {"type": "string"},
-        "file_size": {"type": "integer"},
-        "estimated_cad_version": {"type": "string", "nullable": true},
-        "errors": {"type": "array", "items": {"type": "string"}},
-        "warnings": {"type": "array", "items": {"type": "string"}},
-        "metadata": {
-          "type": "object",
-          "properties": {
-            "dwg_version": {"type": "string", "nullable": true},
-            "dxf_version": {"type": "string", "nullable": true},
-            "ifc_schema": {"type": "string", "nullable": true},
-            "estimated_revit_version": {"type": "string", "nullable": true},
-            "step_description": {"type": "string", "nullable": true}
-          }
-        }
+        "status": {"type": "string"},
+        "backup_name": {"type": "string", "nullable": true},
+        "file_size_bytes": {"type": "integer", "nullable": true},
+        "error": {"type": "string", "nullable": true},
+        "timestamp": {"type": "string", "format": "date-time"}
       },
-      "required": ["valid", "file_format", "file_size", "errors", "warnings", "metadata"]
+      "required": ["status", "timestamp"]
     },
     {
-      "name": "VaultSecretMetadata",
+      "name": "ConnectionHealth",
       "type": "object",
       "properties": {
-        "path": {"type": "string"},
-        "version": {"type": "integer"},
-        "created_time": {"type": "string", "format": "date-time"},
-        "deletion_time": {"type": "string", "format": "date-time", "nullable": true},
-        "destroyed": {"type": "boolean", "default": false},
-        "custom_metadata": {"type": "object"}
+        "is_healthy": {"type": "boolean"},
+        "response_time_ms": {"type": "number"},
+        "active_connections": {"type": "integer"},
+        "pool_size": {"type": "integer"},
+        "checked_out_connections": {"type": "integer"},
+        "timestamp": {"type": "string", "format": "date-time"}
       },
-      "required": ["path", "version", "created_time", "destroyed", "custom_metadata"]
+      "required": ["is_healthy", "response_time_ms", "timestamp"]
     },
     {
-      "name": "VaultSecretValue",
+      "name": "SlowQuery",
       "type": "object",
       "properties": {
+        "query": {"type": "string"},
+        "duration_ms": {"type": "number"},
+        "correlation_id": {"type": "string", "nullable": true},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "parameters": {"type": "object", "nullable": true}
+      },
+      "required": ["query", "duration_ms", "timestamp"]
+    },
+    {
+      "name": "PaginatedResult",
+      "type": "object",
+      "properties": {
+        "items": {"type": "array"},
+        "total": {"type": "integer"},
+        "page": {"type": "integer"},
+        "page_size": {"type": "integer"},
+        "total_pages": {"type": "integer"},
+        "has_next": {"type": "boolean"},
+        "has_previous": {"type": "boolean"}
+      },
+      "required": ["items", "total", "page", "page_size", "total_pages", "has_next", "has_previous"]
+    },
+    {
+      "name": "LayoutGenerationRequest",
+      "type": "object",
+      "properties": {
+        "project_requirements": {"type": "object"},
+        "building_type": {"type": "string"},
+        "area_sqm": {"type": "number"},
+        "floors": {"type": "integer"},
+        "constraints": {"type": "object"},
+        "regional_code": {"type": "string"},
+        "ai_model_preference": {"type": "string", "enum": ["gpt-4", "gemini-pro", "auto"]}
+      },
+      "required": ["project_requirements", "building_type", "area_sqm"]
+    },
+    {
+      "name": "LayoutGenerationResult",
+      "type": "object",
+      "properties": {
+        "layout_data": {"type": "object"},
+        "ai_model_used": {"type": "string"},
+        "generation_time_ms": {"type": "integer"},
+        "confidence_score": {"type": "number", "minimum": 0, "maximum": 1},
+        "validation_results": {"type": "array", "items": {"type": "object"}},
+        "recommendations": {"type": "array", "items": {"type": "string"}},
+        "cost_estimate": {"type": "object"}
+      },
+      "required": ["layout_data", "ai_model_used", "generation_time_ms", "confidence_score"]
+    },
+    {
+      "name": "CADProcessingRequest",
+      "type": "object", 
+      "properties": {
+        "file_path": {"type": "string"},
+        "file_format": {"type": "string", "enum": ["dwg", "dxf", "ifc", "rvt", "3dm", "ply"]},
+        "processing_options": {"type": "object"},
+        "extract_elements": {"type": "boolean"},
+        "analyze_geometry": {"type": "boolean"}
+      },
+      "required": ["file_path", "file_format"]
+    },
+    {
+      "name": "CADAnalysisResult",
+      "type": "object",
+      "properties": {
+        "file_info": {"type": "object"},
+        "elements": {"type": "array", "items": {"type": "object"}},
+        "geometry_analysis": {"type": "object"},
+        "coordinate_system": {"type": "object"},
+        "units": {"type": "string"},
+        "bounding_box": {"type": "object"},
+        "processing_time_ms": {"type": "integer"},
+        "warnings": {"type": "array", "items": {"type": "string"}}
+      },
+      "required": ["file_info", "processing_time_ms"]
+    },
+    {
+      "name": "ReviewRequest",
+      "type": "object",
+      "properties": {
+        "item_type": {"type": "string"},
+        "item_data": {"type": "object"},
+        "priority": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+        "project_id": {"type": "string"},
+        "created_by": {"type": "string"},
+        "deadline": {"type": "string", "format": "date-time"},
+        "review_instructions": {"type": "string"}
+      },
+      "required": ["item_type", "item_data", "priority"]
+    },
+    {
+      "name": "ReviewResult", 
+      "type": "object",
+      "properties": {
+        "review_id": {"type": "string"},
+        "status": {"type": "string", "enum": ["approved", "rejected", "needs_changes"]},
+        "reviewer_id": {"type": "string"},
+        "reviewed_at": {"type": "string", "format": "date-time"},
+        "comments": {"type": "string"},
+        "feedback_data": {"type": "object"},
+        "performance_metrics": {"type": "object"}
+      },
+      "required": ["review_id", "status", "reviewer_id", "reviewed_at"]
+    },
+    {
+      "name": "NotificationRequest",
+      "type": "object",
+      "properties": {
+        "recipient": {"type": "string"},
+        "channel": {"type": "string", "enum": ["email", "sms", "push", "webhook"]},
+        "template": {"type": "string"},
         "data": {"type": "object"},
-        "metadata": {"$ref": "#/definitions/VaultSecretMetadata"}
+        "priority": {"type": "string", "enum": ["low", "medium", "high"]},
+        "send_at": {"type": "string", "format": "date-time"}
       },
-      "required": ["data", "metadata"]
-    },
-    {
-      "name": "DB.security_events",
-      "type": "table",
-      "columns": {
-        "id": {"type": "string", "length": 36, "primary_key": true},
-        "event_type": {"type": "string", "length": 100},
-        "severity": {"type": "string", "length": 20},
-        "user_id": {"type": "string", "length": 36, "nullable": true, "fk": "users.id"},
-        "ip_address": {"type": "string", "length": 45},
-        "user_agent": {"type": "string", "length": 512, "nullable": true},
-        "request_path": {"type": "string", "length": 255, "nullable": true},
-        "payload": {"type": "text", "nullable": true},
-        "blocked": {"type": "boolean", "default": false},
-        "correlation_id": {"type": "string", "length": 100, "nullable": true},
-        "metadata": {"type": "json", "nullable": true},
-        "created_at": {"type": "datetime"}
-      },
-      "indexes": [
-        {"name": "ix_security_events_event_type", "columns": ["event_type"]},
-        {"name": "ix_security_events_severity", "columns": ["severity"]},
-        {"name": "ix_security_events_user_id", "columns": ["user_id"]},
-        {"name": "ix_security_events_ip_address", "columns": ["ip_address"]},
-        {"name": "ix_security_events_blocked", "columns": ["blocked"]},
-        {"name": "ix_security_events_created_at", "columns": ["created_at"]}
-      ]
-    },
-    {
-      "name": "DB.rate_limits",
-      "type": "table",
-      "columns": {
-        "id": {"type": "string", "length": 36, "primary_key": true},
-        "key": {"type": "string", "length": 255, "unique": true},
-        "limit_type": {"type": "string", "length": 50},
-        "count": {"type": "integer", "default": 0},
-        "window_start": {"type": "datetime"},
-        "window_size": {"type": "integer"},
-        "limit_value": {"type": "integer"},
-        "created_at": {"type": "datetime"},
-        "updated_at": {"type": "datetime"}
-      },
-      "indexes": [
-        {"name": "ix_rate_limits_key", "columns": ["key"]},
-        {"name": "ix_rate_limits_limit_type", "columns": ["limit_type"]},
-        {"name": "ix_rate_limits_window_start", "columns": ["window_start"]}
-      ]
-    },
-    {
-      "name": "DB.file_uploads",
-      "type": "table",
-      "columns": {
-        "id": {"type": "string", "length": 36, "primary_key": true},
-        "user_id": {"type": "string", "length": 36, "fk": "users.id"},
-        "filename": {"type": "string", "length": 255},
-        "original_filename": {"type": "string", "length": 255},
-        "file_size": {"type": "integer"},
-        "content_type": {"type": "string", "length": 100},
-        "file_hash": {"type": "string", "length": 64},
-        "storage_path": {"type": "string", "length": 500},
-        "validation_status": {"type": "string", "length": 20},
-        "validation_errors": {"type": "json", "nullable": true},
-        "scan_status": {"type": "string", "length": 20, "default": "pending"},
-        "scan_results": {"type": "json", "nullable": true},
-        "is_quarantined": {"type": "boolean", "default": false},
-        "metadata": {"type": "json", "nullable": true},
-        "created_at": {"type": "datetime"},
-        "updated_at": {"type": "datetime"}
-      },
-      "indexes": [
-        {"name": "ix_file_uploads_user_id", "columns": ["user_id"]},
-        {"name": "ix_file_uploads_file_hash", "columns": ["file_hash"]},
-        {"name": "ix_file_uploads_validation_status", "columns": ["validation_status"]},
-        {"name": "ix_file_uploads_scan_status", "columns": ["scan_status"]},
-        {"name": "ix_file_uploads_is_quarantined", "columns": ["is_quarantined"]},
-        {"name": "ix_file_uploads_created_at", "columns": ["created_at"]}
-      ]
+      "required": ["recipient", "channel", "template"]
     }
   ]
 }

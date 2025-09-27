@@ -1,17 +1,19 @@
 """
-AI Client interfaces ve abstract classes
-ArchBuilder.AI AI entegrasyonu için standart protokoller
+AI Client Interfaces for ArchBuilder.AI
+
+This module defines the core protocols and abstract base classes
+for AI client implementations across different providers.
 """
 
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Protocol, AsyncGenerator, Optional
+from typing import Any, Dict, Protocol, Optional
 
 
 class AIClient(Protocol):
-    """AI Client protokolü - tüm AI client'lar bu interface'i implement etmeli"""
-    
+    """Protocol defining the interface for AI client implementations."""
+
     async def generate(self, prompt: str, **kwargs: Any) -> Dict[str, Any]:
         """
         AI response üretimi
@@ -46,92 +48,32 @@ class AIClient(Protocol):
         """Model bilgileri ve capabilities"""
         raise NotImplementedError("Subclasses must implement get_model_info method")
 
+    async def analyze_project(self, project_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze project data and provide insights."""
+        ...
+
 
 class BaseAIClient(ABC):
-    """Abstract base class for AI clients with common functionality"""
-    
-    def __init__(self):
-        self.provider_name = "unknown"
-        self.default_model = "unknown"
-    
+    """Abstract base class for AI client implementations."""
+
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        """Initialize the AI client with configuration."""
+        self.config = config or {}
+
     @abstractmethod
     async def generate(self, prompt: str, **kwargs: Any) -> Dict[str, Any]:
-        """Generate AI response - must be implemented by subclasses"""
-        raise NotImplementedError("Subclasses must implement generate method")
-    
+        """Generate AI response from a textual prompt."""
+        pass
+
     @abstractmethod
-    async def generate_streaming(self, prompt: str, **kwargs: Any) -> AsyncGenerator[Dict[str, Any], None]:
-        """Generate streaming response - must be implemented by subclasses"""
-        raise NotImplementedError("Subclasses must implement generate_streaming method")
-    
-    @abstractmethod
-    async def validate_credentials(self) -> bool:
-        """Validate API credentials - must be implemented by subclasses"""
-        raise NotImplementedError("Subclasses must implement validate_credentials method")
-    
-    @abstractmethod
-    async def get_model_info(self) -> Dict[str, Any]:
-        """Get model information - must be implemented by subclasses"""
-        raise NotImplementedError("Subclasses must implement get_model_info method")
-    
-    def _create_standard_response(
-        self, 
-        output: Any, 
-        metadata: Dict[str, Any],
-        error: Optional[str] = None
-    ) -> Dict[str, Any]:
-        """Standard response formatı oluştur"""
-        
+    async def analyze_project(self, project_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze project data and provide insights."""
+        pass
+
+    def get_model_info(self) -> Dict[str, str]:
+        """Get information about the AI model."""
         return {
-            "provider": self.provider_name,
-            "model": metadata.get("model", self.default_model),
-            "output": output,
-            "metadata": {
-                **metadata,
-                "error": bool(error),
-                "error_message": error
-            }
+            "provider": self.__class__.__name__.replace("Client", "").lower(),
+            "version": self.config.get("version", "unknown"),
+            "model": self.config.get("model", "default")
         }
-
-
-# Legacy stub classes for backward compatibility
-class OpenAIClient:
-    """Legacy OpenAI stub class - gerçek implementasyon openai/client.py'da"""
-    
-    def __init__(self):
-        import warnings
-        warnings.warn(
-            "Using legacy OpenAIClient stub. Use app.ai.openai.client.OpenAIClient instead.",
-            DeprecationWarning,
-            stacklevel=2
-        )
-    
-    async def generate(self, prompt: str, **kwargs: Any) -> Dict[str, Any]:
-        return {
-            "provider": "openai-stub", 
-            "model": "legacy-stub",
-            "output": {"message": "Legacy stub - use real OpenAI client", "input_preview": prompt[:50]}, 
-            "metadata": {"is_stub": True, **kwargs}
-        }
-
-
-class VertexClient:
-    """Legacy Vertex stub class - gerçek implementasyon vertex/client.py'da"""
-    
-    def __init__(self):
-        import warnings
-        warnings.warn(
-            "Using legacy VertexClient stub. Use app.ai.vertex.client.VertexAIClient instead.",
-            DeprecationWarning,
-            stacklevel=2
-        )
-    
-    async def generate(self, prompt: str, **kwargs: Any) -> Dict[str, Any]:
-        return {
-            "provider": "vertex-stub", 
-            "model": "legacy-stub",
-            "output": {"message": "Legacy stub - use real Vertex AI client", "input_preview": prompt[:50]}, 
-            "metadata": {"is_stub": True, **kwargs}
-        }
-
-

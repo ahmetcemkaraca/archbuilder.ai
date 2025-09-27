@@ -21,4 +21,3 @@ def validate_schema(payload: Dict[str, Any]) -> List[str]:
     if "rooms" in payload and not isinstance(payload["rooms"], list):
         errors.append("rooms_must_be_array")
     return errors
-

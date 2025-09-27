@@ -2,199 +2,369 @@
   "modules": [
     {
       "name": "app.ai.ragflow.client",
-      "exports": ["RAGFlowClient"]
+      "exports": [
+        "RAGFlowClient"
+      ]
     },
     {
       "name": "app.services.rag_service",
-      "exports": ["RAGService"]
+      "exports": [
+        "RAGService"
+      ]
     },
     {
       "name": "app.routers.v1.rag",
-      "exports": ["router", "RAGQueryRequest", "RAGQueryResponse"]
+      "exports": [
+        "router",
+        "RAGQueryRequest",
+        "RAGQueryResponse"
+      ]
     },
     {
       "name": "app.routers.v1.documents",
-      "exports": ["router", "EnsureDatasetRequest", "EnsureDatasetResponse", "UploadParseResponse"]
+      "exports": [
+        "router",
+        "EnsureDatasetRequest",
+        "EnsureDatasetResponse",
+        "UploadParseResponse"
+      ]
     },
     {
       "name": "app.routers.v1.storage",
-      "exports": ["router", "UploadInitResponse"]
+      "exports": [
+        "router",
+        "UploadInitResponse"
+      ]
     },
     {
       "name": "app.ai.chunking",
-      "exports": ["chunk_text", "chunk_documents"]
+      "exports": [
+        "chunk_text",
+        "chunk_documents"
+      ]
     },
     {
       "name": "app.routers.v1.ai",
-      "exports": ["router"]
+      "exports": [
+        "router"
+      ]
     },
     {
       "name": "app.routers.v1.websocket",
-      "exports": ["router"]
+      "exports": [
+        "router"
+      ]
     },
     {
       "name": "app.services.ai_service",
-      "exports": ["EnhancedAIService", "AIService"],
-      "version": "2.0.0", 
-      "lastUpdated": "2025-09-26T10:30:00Z",
-      "dependencies": ["app.ai.openai.client", "app.ai.vertex.client", "app.ai.model_selector"],
-      "description": "Gelişmiş AI service gerçek model entegrasyonu ile"
+      "exports": [
+        "AIService"
+      ]
     },
     {
       "name": "app.ai.model_selector",
-      "exports": ["AdvancedModelSelector", "ModelSelector", "ModelProvider", "TaskComplexity", "AnalysisType", "ModelConfig", "model_selector"],
-      "version": "2.0.0",
-      "lastUpdated": "2025-09-26T10:30:00Z",
-      "description": "Gelişmiş AI model seçimi sistemi - dil, karmaşıklık, maliyet optimizasyonu"
+      "exports": [
+        "ModelSelector"
+      ]
     },
     {
       "name": "app.ai.prompts.templates.prompt_versioning",
-      "exports": ["PromptTemplate", "PromptRegistry", "registry"]
+      "exports": [
+        "PromptTemplate",
+        "PromptRegistry",
+        "registry"
+      ]
     },
     {
       "name": "app.ai.interfaces",
-      "exports": ["AIClient", "BaseAIClient", "OpenAIClient", "VertexClient"]
-    },
-    {
-      "name": "app.ai.openai.client", 
-      "exports": ["OpenAIClient", "create_openai_client"],
-      "variables": ["OPENAI_API_KEY", "OPENAI_ORGANIZATION"],
-      "configKeys": ["openai_api_key", "openai_organization"],
-      "version": "1.0.0",
-      "lastUpdated": "2025-09-26T10:30:00Z",
-      "dependencies": ["openai", "tiktoken", "httpx"],
-      "description": "Gerçek OpenAI GPT-4.1 API entegrasyonu"
-    },
-    {
-      "name": "app.ai.vertex.client",
-      "exports": ["VertexAIClient", "create_vertex_client"], 
-      "variables": ["GOOGLE_CLOUD_PROJECT", "GOOGLE_CLOUD_REGION"],
-      "configKeys": ["google_cloud_project", "google_cloud_region", "google_application_credentials"],
-      "version": "1.0.0",
-      "lastUpdated": "2025-09-26T10:30:00Z",
-      "dependencies": ["vertexai", "google-cloud-aiplatform"],
-      "description": "Gerçek Vertex AI Gemini model entegrasyonu"
+      "exports": [
+        "AIClient",
+        "BaseAIClient"
+      ]
     },
     {
       "name": "revit.addin.services.phase_manager",
-      "exports": ["PhaseManager"]
+      "exports": [
+        "PhaseManager"
+      ]
     },
     {
       "name": "revit.addin.commands.initialize_phase_nine",
-      "exports": ["InitializePhaseNineCommand"]
+      "exports": [
+        "InitializePhaseNineCommand"
+      ]
     },
     {
       "name": "app.services.validation_service",
-      "exports": ["ValidationService"]
+      "exports": [
+        "ValidationService"
+      ]
     },
     {
       "name": "app.services.geometric_validator",
-      "exports": ["GeometricValidator"]
+      "exports": [
+        "GeometricValidator"
+      ]
     },
     {
       "name": "app.services.code_validator",
-      "exports": ["CodeValidator"]
+      "exports": [
+        "CodeValidator"
+      ]
     },
     {
       "name": "app.services.review_queue_service",
-      "exports": ["ReviewQueueService", "ReviewStatus", "ReviewPriority"]
+      "exports": [
+        "ReviewQueueService",
+        "ReviewStatus",
+        "ReviewPriority"
+      ]
     },
     {
       "name": "app.services.rag_metrics_service",
-      "exports": ["RAGMetricsService", "RAGMetrics", "RAGTestScenario"]
+      "exports": [
+        "RAGMetricsService",
+        "RAGMetrics",
+        "RAGTestScenario"
+      ]
     },
     {
       "name": "app.services.regional_config_service",
-      "exports": ["RegionalConfigService"]
+      "exports": [
+        "RegionalConfigService"
+      ]
     },
     {
       "name": "app.routers.v1.validation",
-      "exports": ["router"]
+      "exports": [
+        "router"
+      ]
     },
     {
       "name": "app.database.models.validation_result",
-      "exports": ["ValidationResult"]
+      "exports": [
+        "ValidationResult"
+      ]
     },
     {
       "name": "app.database.models.review_item",
-      "exports": ["ReviewItem"]
+      "exports": [
+        "ReviewItem"
+      ]
     },
     {
-      "name": ".github.instructions.registry-and-context",
-      "exports": ["registry_validation", "context_rehydration", "versioning_cadence"]
+      "name": "app.routers.v1.websocket",
+      "exports": [
+        "router"
+      ]
     },
     {
-      "name": ".github.instructions.role-instructions",
-      "exports": ["role_attachment_rules", "instruction_compliance", "context_aware_development"]
+      "name": "app.database.models.project",
+      "exports": [
+        "Project",
+        "RAGDatasetLink"
+      ]
     },
     {
-      "name": ".github.CODEOWNERS",
-      "exports": ["code_ownership_rules", "critical_file_protection"]
+      "name": "app.database.models.subscription",
+      "exports": [
+        "Subscription"
+      ]
     },
     {
-      "name": "CONTRIBUTING.md",
-      "exports": ["gitflow_workflow", "development_process", "review_requirements"]
+      "name": "app.database.models.user",
+      "exports": [
+        "User"
+      ]
     },
     {
-      "name": ".github.PULL_REQUEST_TEMPLATE",
-      "exports": ["pr_template", "validation_checklist", "review_guidance"]
+      "name": "app.services.layout_generation_service",
+      "exports": [
+        "LayoutGenerationService",
+        "LayoutGenerationRequest",
+        "LayoutGenerationResult"
+      ]
     },
     {
-      "name": ".github.workflows.lint",
-      "exports": ["code_formatting_checks", "quality_validation", "multi_language_linting"]
+      "name": "app.services.cad_processing_service",
+      "exports": [
+        "CADProcessingService",
+        "CADFormat",
+        "CADElement",
+        "CADAnalysisResult"
+      ]
     },
     {
-      "name": ".github.workflows.pr-governance",
-      "exports": ["gitflow_validation", "pr_compliance", "branch_protection_enforcement"]
+      "name": "app.services.human_review_service",
+      "exports": [
+        "HumanReviewService",
+        "ReviewRequest",
+        "ReviewResult",
+        "ReviewStatus",
+        "ReviewPriority"
+      ]
     },
     {
-      "name": "docs.git-workflow",
-      "exports": ["gitflow_documentation", "branch_strategies", "workflow_examples"]
+      "name": "app.services.layout_integration_service",
+      "exports": [
+        "LayoutIntegrationService",
+        "IntegrationRequest",
+        "IntegrationResult"
+      ]
     },
     {
-      "name": "README.md",
-      "exports": ["project_overview", "quick_start_guide", "architecture_summary"]
+      "name": "app.services.simple_layout_validator",
+      "exports": [
+        "SimpleLayoutValidator",
+        "ValidationRule",
+        "ValidationResult"
+      ]
     },
     {
-      "name": "app.core.enhanced_security",
-      "exports": ["EnhancedSecurityMiddleware", "SecurityViolation", "InputSanitizer", "FileSecurityValidator"],
-      "variables": ["THREAT_DETECTION_THRESHOLD", "MAX_FILE_SIZE", "BLOCKED_IPS_CACHE"],
-      "configKeys": ["enhanced_security_enabled", "max_file_upload_size", "threat_detection_threshold"],
-      "version": "1.0.0",
-      "lastUpdated": "2025-09-26T11:00:00Z",
-      "dependencies": ["bleach", "magic", "defusedxml", "pydantic"],
-      "description": "Comprehensive security middleware with threat detection, input validation, and file security"
+      "name": "app.services.notification_service",
+      "exports": [
+        "NotificationService",
+        "NotificationChannel",
+        "NotificationTemplate"
+      ]
     },
     {
-      "name": "app.core.vault_integration",
-      "exports": ["VaultSecretManager", "SecureSettings", "ArchBuilderSecureConfig", "get_secret_manager", "get_secret", "setup_secret_rotation"],
-      "variables": ["VAULT_URL", "VAULT_TOKEN", "VAULT_ROLE_ID", "VAULT_SECRET_ID"],
-      "configKeys": ["vault_url", "vault_token", "vault_role_id", "vault_secret_id", "vault_mount_path"],
-      "version": "1.0.0",
-      "lastUpdated": "2025-09-26T11:00:00Z",
-      "dependencies": ["hvac", "pydantic-settings", "asyncio"],
-      "description": "HashiCorp Vault integration for secure secret management and rotation"
+      "name": "src.desktop-app.services.local_data_manager",
+      "exports": [
+        "LocalDataManager",
+        "ILocalDataManager"
+      ]
     },
     {
-      "name": "app.core.input_validation",
-      "exports": ["EnhancedInputValidator", "CADFileValidator", "SecurityConfig", "ValidationResult", "validate_api_input"],
-      "variables": ["SQL_INJECTION_PATTERNS", "XSS_PATTERNS", "PATH_TRAVERSAL_PATTERNS"],
-      "configKeys": ["max_string_length", "max_file_size", "allowed_file_extensions"],
-      "version": "1.0.0",
-      "lastUpdated": "2025-09-26T11:00:00Z",
-      "dependencies": ["bleach", "defusedxml", "email-validator", "magic", "pydantic"],
-      "description": "Enhanced input validation with CAD file support, XSS/SQL injection detection"
+      "name": "src.desktop-app.services.cloud_storage_manager",
+      "exports": [
+        "CloudStorageManager",
+        "ICloudStorageManager"
+      ]
     },
     {
-      "name": "app.middleware.tenant_security",
-      "exports": ["TenantIsolationMiddleware", "RateLimitingMiddleware", "TenantDataFilter", "require_tenant_access", "add_tenant_context"],
-      "variables": ["ADMIN_PATHS", "EXCLUDED_PATHS", "DEFAULT_RATE_LIMITS"],
-      "configKeys": ["rate_limit_enabled", "tenant_isolation_enabled"],
-      "version": "1.1.0",
-      "lastUpdated": "2025-09-26T11:00:00Z",
-      "dependencies": ["redis", "fastapi", "starlette"],
-      "description": "Multi-tenant security with isolation, rate limiting, and audit logging"
+      "name": "src.desktop-app.services.user_permission_service",
+      "exports": [
+        "UserPermissionService",
+        "IUserPermissionService"
+      ]
+    },
+    {
+      "name": "src.desktop-app.services.cloud_providers.google_cloud_storage_provider",
+      "exports": [
+        "GoogleCloudStorageProvider"
+      ]
+    },
+    {
+      "name": "src.desktop-app.services.cloud_providers.oracle_cloud_storage_provider",
+      "exports": [
+        "OracleCloudStorageProvider"
+      ]
+    },
+    {
+      "name": "src.desktop-app.models.data_models",
+      "exports": [
+        "RevitModelData",
+        "LocalRevitData",
+        "WallData",
+        "DoorData",
+        "WindowData"
+      ]
+    },
+    {
+      "name": "src.revit-plugin.commands.extract_and_sync_data_command",
+      "exports": [
+        "ExtractAndSyncDataCommand"
+      ]
+    },
+    {
+      "name": "app.database.models.ai_command",
+      "exports": [
+        "AICommand"
+      ]
+    },
+    {
+      "name": "app.database.models.usage",
+      "exports": [
+        "Usage"
+      ]
+    },
+    {
+      "name": "app.database.models.rag",
+      "exports": [
+        "RAGJob",
+        "RAGDocumentLink"
+      ]
+    },
+    {
+      "name": "app.routers.v1.database",
+      "exports": [
+        "router",
+        "DatabaseHealthResponse",
+        "MigrationStatusResponse",
+        "BackupResponse"
+      ]
+    },
+    {
+      "name": "app.services.database_monitoring_service",
+      "exports": [
+        "DatabaseMonitoringService",
+        "get_database_monitoring_service",
+        "ConnectionHealth",
+        "SlowQuery"
+      ]
+    },
+    {
+      "name": "app.services.database_optimization_service",
+      "exports": [
+        "DatabaseOptimizationService",
+        "get_database_optimization_service",
+        "QueryPerformanceMetrics"
+      ]
+    },
+    {
+      "name": "app.services.database_migration_service",
+      "exports": [
+        "DatabaseMigrationService",
+        "BackupService"
+      ]
+    },
+    {
+      "name": "app.utils.pagination",
+      "exports": [
+        "PaginationHelper",
+        "PaginatedResult"
+      ]
+    },
+    {
+      "name": "app.core.security.enhanced_security",
+      "exports": [
+        "EnhancedSecurityValidator",
+        "get_enhanced_security"
+      ]
+    },
+    {
+      "name": "app.core.security.distributed_threat_tracker",
+      "exports": [
+        "DistributedThreatTracker",
+        "get_threat_tracker",
+        "initialize_threat_tracker"
+      ]
+    },
+    {
+      "name": "app.core.security.comprehensive_middleware",
+      "exports": [
+        "ComprehensiveSecurityMiddleware",
+        "SecurityViolation",
+        "create_comprehensive_security_middleware"
+      ]
+    },
+    {
+      "name": "app.ai.legacy_stubs",
+      "exports": [
+        "OpenAIClient",
+        "VertexClient"
+      ]
     }
   ]
 }
-

@@ -26,6 +26,7 @@ logger = structlog.get_logger(__name__)
 
 class CacheKeyType(str, Enum):
     """Cache key types for different data categories"""
+
     AI_RESPONSE = "ai_response"
     USER_SESSION = "user_session"
     DOCUMENT_PROCESSING = "doc_processing"
@@ -37,6 +38,7 @@ class CacheKeyType(str, Enum):
 
 class CacheConfig(BaseModel):
     """Redis cache configuration"""
+
     host: str = "localhost"
     port: int = 6379
     db: int = 0
@@ -46,7 +48,7 @@ class CacheConfig(BaseModel):
     socket_connect_timeout: int = 5
     retry_on_timeout: bool = True
     health_check_interval: int = 30
-    
+
     # Cache TTL settings (in seconds)
     ai_response_ttl: int = 3600  # 1 hour
     user_session_ttl: int = 1800  # 30 minutes
@@ -59,6 +61,7 @@ class CacheConfig(BaseModel):
 
 class CacheEntry(BaseModel):
     """Cache entry with metadata"""
+
     key: str
     value: Any
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -70,12 +73,12 @@ class CacheEntry(BaseModel):
 
 class RedisCacheManager:
     """High-performance Redis cache manager for ArchBuilder.AI"""
-    
+
     def __init__(self, config: CacheConfig):
         self.config = config
         self._redis_pool: Optional[redis.ConnectionPool] = None
         self._redis_client: Optional[redis.Redis] = None
-        
+
     async def initialize(self) -> None:
         """Initialize Redis connection pool"""
         try:
@@ -88,48 +91,48 @@ class RedisCacheManager:
                 socket_timeout=self.config.socket_timeout,
                 socket_connect_timeout=self.config.socket_connect_timeout,
                 retry_on_timeout=self.config.retry_on_timeout,
-                health_check_interval=self.config.health_check_interval
+                health_check_interval=self.config.health_check_interval,
             )
-            
+
             self._redis_client = redis.Redis(connection_pool=self._redis_pool)
-            
+
             # Test connection
             await self._redis_client.ping()
-            
+
             logger.info(
                 "Redis cache initialized successfully",
                 host=self.config.host,
                 port=self.config.port,
-                db=self.config.db
+                db=self.config.db,
             )
-            
+
         except Exception as e:
             logger.error(
                 "Failed to initialize Redis cache",
                 error=str(e),
                 host=self.config.host,
-                port=self.config.port
+                port=self.config.port,
             )
             raise
-    
+
     async def close(self) -> None:
         """Close Redis connections"""
         if self._redis_client:
             await self._redis_client.close()
         if self._redis_pool:
             await self._redis_pool.disconnect()
-    
+
     def _generate_key(self, key_type: CacheKeyType, identifier: str, **kwargs) -> str:
         """Generate standardized cache key"""
         key_parts = [f"archbuilder:{key_type.value}", identifier]
-        
+
         # Add additional context if provided
         for k, v in sorted(kwargs.items()):
             if v is not None:
                 key_parts.append(f"{k}:{v}")
-        
+
         return ":".join(key_parts)
-    
+
     def _get_ttl(self, key_type: CacheKeyType) -> int:
         """Get TTL for cache key type"""
         ttl_map = {
@@ -142,129 +145,120 @@ class RedisCacheManager:
             CacheKeyType.PROJECT_ANALYSIS: self.config.project_analysis_ttl,
         }
         return ttl_map.get(key_type, 3600)  # Default 1 hour
-    
+
     async def get(self, key: str) -> Optional[Any]:
         """Get value from cache"""
         try:
             if not self._redis_client:
                 return None
-                
+
             cached_data = await self._redis_client.get(key)
             if not cached_data:
                 return None
-            
+
             # Deserialize cache entry
             entry_data = json.loads(cached_data)
             entry = CacheEntry(**entry_data)
-            
+
             # Check expiration
             if entry.expires_at and datetime.utcnow() > entry.expires_at:
                 await self.delete(key)
                 return None
-            
+
             # Update access metadata
             entry.access_count += 1
             entry.last_accessed = datetime.utcnow()
             await self._redis_client.setex(
-                key, 
+                key,
                 self._get_ttl(entry.cache_type),
-                json.dumps(entry.dict(), default=str)
+                json.dumps(entry.dict(), default=str),
             )
-            
+
             logger.debug("Cache hit", key=key, access_count=entry.access_count)
             return entry.value
-            
+
         except Exception as e:
             logger.warning("Cache get failed", key=key, error=str(e))
             return None
-    
+
     async def set(
-        self, 
-        key: str, 
-        value: Any, 
-        key_type: CacheKeyType,
-        ttl: Optional[int] = None
+        self, key: str, value: Any, key_type: CacheKeyType, ttl: Optional[int] = None
     ) -> bool:
         """Set value in cache"""
         try:
             if not self._redis_client:
                 return False
-            
+
             ttl = ttl or self._get_ttl(key_type)
             expires_at = datetime.utcnow() + timedelta(seconds=ttl)
-            
+
             entry = CacheEntry(
-                key=key,
-                value=value,
-                expires_at=expires_at,
-                cache_type=key_type
+                key=key, value=value, expires_at=expires_at, cache_type=key_type
             )
-            
+
             await self._redis_client.setex(
-                key,
-                ttl,
-                json.dumps(entry.dict(), default=str)
+                key, ttl, json.dumps(entry.dict(), default=str)
             )
-            
+
             logger.debug("Cache set", key=key, ttl=ttl, cache_type=key_type.value)
             return True
-            
+
         except Exception as e:
             logger.warning("Cache set failed", key=key, error=str(e))
             return False
-    
+
     async def delete(self, key: str) -> bool:
         """Delete key from cache"""
         try:
             if not self._redis_client:
                 return False
-                
+
             result = await self._redis_client.delete(key)
             logger.debug("Cache delete", key=key, deleted=bool(result))
             return bool(result)
-            
+
         except Exception as e:
             logger.warning("Cache delete failed", key=key, error=str(e))
             return False
-    
+
     async def delete_pattern(self, pattern: str) -> int:
         """Delete all keys matching pattern"""
         try:
             if not self._redis_client:
                 return 0
-                
+
             keys = await self._redis_client.keys(pattern)
             if keys:
                 result = await self._redis_client.delete(*keys)
                 logger.info("Cache pattern delete", pattern=pattern, deleted=result)
                 return result
             return 0
-            
+
         except Exception as e:
             logger.warning("Cache pattern delete failed", pattern=pattern, error=str(e))
             return 0
-    
+
     async def exists(self, key: str) -> bool:
         """Check if key exists in cache"""
         try:
             if not self._redis_client:
                 return False
-                
+
             result = await self._redis_client.exists(key)
             return bool(result)
-            
+
         except Exception as e:
             logger.warning("Cache exists check failed", key=key, error=str(e))
             return False
-    
+
     async def get_stats(self) -> Dict[str, Any]:
         """Get cache statistics"""
         try:
             if not self._redis_client:
                 return {}
-                
+
             info = await self._redis_client.info()
-            
+
             return {
                 "connected_clients": info.get("connected_clients", 0),
                 "used_memory": info.get("used_memory", 0),
@@ -273,9 +267,9 @@ class RedisCacheManager:
                 "keyspace_misses": info.get("keyspace_misses", 0),
                 "total_commands_processed": info.get("total_commands_processed", 0),
                 "instantaneous_ops_per_sec": info.get("instantaneous_ops_per_sec", 0),
-                "keyspace": info.get("db0", {}).get("keys", 0)
+                "keyspace": info.get("db0", {}).get("keys", 0),
             }
-            
+
         except Exception as e:
             logger.warning("Failed to get cache stats", error=str(e))
             return {}
@@ -283,140 +277,111 @@ class RedisCacheManager:
 
 class CacheService:
     """High-level cache service for ArchBuilder.AI operations"""
-    
+
     def __init__(self, cache_manager: RedisCacheManager):
         self.cache_manager = cache_manager
-    
+
     async def cache_ai_response(
-        self, 
-        correlation_id: str, 
-        model: str, 
-        response: Any,
-        ttl: Optional[int] = None
+        self, correlation_id: str, model: str, response: Any, ttl: Optional[int] = None
     ) -> bool:
         """Cache AI model response"""
         key = self.cache_manager._generate_key(
-            CacheKeyType.AI_RESPONSE,
-            correlation_id,
-            model=model
+            CacheKeyType.AI_RESPONSE, correlation_id, model=model
         )
-        return await self.cache_manager.set(key, response, CacheKeyType.AI_RESPONSE, ttl)
-    
-    async def get_ai_response(
-        self, 
-        correlation_id: str, 
-        model: str
-    ) -> Optional[Any]:
+        return await self.cache_manager.set(
+            key, response, CacheKeyType.AI_RESPONSE, ttl
+        )
+
+    async def get_ai_response(self, correlation_id: str, model: str) -> Optional[Any]:
         """Get cached AI model response"""
         key = self.cache_manager._generate_key(
-            CacheKeyType.AI_RESPONSE,
-            correlation_id,
-            model=model
+            CacheKeyType.AI_RESPONSE, correlation_id, model=model
         )
         return await self.cache_manager.get(key)
-    
+
     async def cache_user_session(
-        self, 
-        user_id: str, 
-        session_data: Dict[str, Any],
-        ttl: Optional[int] = None
+        self, user_id: str, session_data: Dict[str, Any], ttl: Optional[int] = None
     ) -> bool:
         """Cache user session data"""
-        key = self.cache_manager._generate_key(
-            CacheKeyType.USER_SESSION,
-            user_id
+        key = self.cache_manager._generate_key(CacheKeyType.USER_SESSION, user_id)
+        return await self.cache_manager.set(
+            key, session_data, CacheKeyType.USER_SESSION, ttl
         )
-        return await self.cache_manager.set(key, session_data, CacheKeyType.USER_SESSION, ttl)
-    
+
     async def get_user_session(self, user_id: str) -> Optional[Dict[str, Any]]:
         """Get cached user session data"""
-        key = self.cache_manager._generate_key(
-            CacheKeyType.USER_SESSION,
-            user_id
-        )
+        key = self.cache_manager._generate_key(CacheKeyType.USER_SESSION, user_id)
         return await self.cache_manager.get(key)
-    
+
     async def cache_document_processing(
-        self, 
-        document_id: str, 
-        processing_result: Any,
-        ttl: Optional[int] = None
+        self, document_id: str, processing_result: Any, ttl: Optional[int] = None
     ) -> bool:
         """Cache document processing result"""
         key = self.cache_manager._generate_key(
-            CacheKeyType.DOCUMENT_PROCESSING,
-            document_id
+            CacheKeyType.DOCUMENT_PROCESSING, document_id
         )
-        return await self.cache_manager.set(key, processing_result, CacheKeyType.DOCUMENT_PROCESSING, ttl)
-    
+        return await self.cache_manager.set(
+            key, processing_result, CacheKeyType.DOCUMENT_PROCESSING, ttl
+        )
+
     async def get_document_processing(self, document_id: str) -> Optional[Any]:
         """Get cached document processing result"""
         key = self.cache_manager._generate_key(
-            CacheKeyType.DOCUMENT_PROCESSING,
-            document_id
+            CacheKeyType.DOCUMENT_PROCESSING, document_id
         )
         return await self.cache_manager.get(key)
-    
+
     async def cache_regional_config(
-        self, 
-        region: str, 
-        config_data: Dict[str, Any],
-        ttl: Optional[int] = None
+        self, region: str, config_data: Dict[str, Any], ttl: Optional[int] = None
     ) -> bool:
         """Cache regional configuration"""
-        key = self.cache_manager._generate_key(
-            CacheKeyType.REGIONAL_CONFIG,
-            region
+        key = self.cache_manager._generate_key(CacheKeyType.REGIONAL_CONFIG, region)
+        return await self.cache_manager.set(
+            key, config_data, CacheKeyType.REGIONAL_CONFIG, ttl
         )
-        return await self.cache_manager.set(key, config_data, CacheKeyType.REGIONAL_CONFIG, ttl)
-    
+
     async def get_regional_config(self, region: str) -> Optional[Dict[str, Any]]:
         """Get cached regional configuration"""
-        key = self.cache_manager._generate_key(
-            CacheKeyType.REGIONAL_CONFIG,
-            region
-        )
+        key = self.cache_manager._generate_key(CacheKeyType.REGIONAL_CONFIG, region)
         return await self.cache_manager.get(key)
-    
+
     async def cache_building_code_validation(
-        self, 
-        region: str, 
-        building_type: str, 
+        self,
+        region: str,
+        building_type: str,
         validation_result: Any,
-        ttl: Optional[int] = None
+        ttl: Optional[int] = None,
     ) -> bool:
         """Cache building code validation result"""
         key = self.cache_manager._generate_key(
-            CacheKeyType.BUILDING_CODE,
-            f"{region}:{building_type}"
+            CacheKeyType.BUILDING_CODE, f"{region}:{building_type}"
         )
-        return await self.cache_manager.set(key, validation_result, CacheKeyType.BUILDING_CODE, ttl)
-    
+        return await self.cache_manager.set(
+            key, validation_result, CacheKeyType.BUILDING_CODE, ttl
+        )
+
     async def get_building_code_validation(
-        self, 
-        region: str, 
-        building_type: str
+        self, region: str, building_type: str
     ) -> Optional[Any]:
         """Get cached building code validation result"""
         key = self.cache_manager._generate_key(
-            CacheKeyType.BUILDING_CODE,
-            f"{region}:{building_type}"
+            CacheKeyType.BUILDING_CODE, f"{region}:{building_type}"
         )
         return await self.cache_manager.get(key)
-    
+
     async def clear_user_cache(self, user_id: str) -> int:
         """Clear all cache entries for a user"""
         patterns = [
             f"archbuilder:{CacheKeyType.USER_SESSION.value}:{user_id}",
             f"archbuilder:{CacheKeyType.AI_RESPONSE.value}:*",
-            f"archbuilder:{CacheKeyType.DOCUMENT_PROCESSING.value}:*"
+            f"archbuilder:{CacheKeyType.DOCUMENT_PROCESSING.value}:*",
         ]
-        
+
         total_deleted = 0
         for pattern in patterns:
             deleted = await self.cache_manager.delete_pattern(pattern)
             total_deleted += deleted
-        
+
         logger.info("User cache cleared", user_id=user_id, deleted=total_deleted)
         return total_deleted
 
@@ -429,11 +394,11 @@ _cache_service: Optional[CacheService] = None
 async def initialize_cache(config: CacheConfig) -> CacheService:
     """Initialize global cache service"""
     global _cache_manager, _cache_service
-    
+
     _cache_manager = RedisCacheManager(config)
     await _cache_manager.initialize()
     _cache_service = CacheService(_cache_manager)
-    
+
     return _cache_service
 
 

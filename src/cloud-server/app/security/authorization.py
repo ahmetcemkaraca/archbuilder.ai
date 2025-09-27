@@ -48,5 +48,3 @@ def require_roles(*roles: str) -> Callable[[CurrentUser], CurrentUser]:
 
 async def is_admin(user: CurrentUser = Depends(require_roles("admin"))) -> CurrentUser:
     return user
-
-

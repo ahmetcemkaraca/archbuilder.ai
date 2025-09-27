@@ -53,7 +53,9 @@ def chunk_text(text: str, max_chars: int = 500, overlap: int = 50) -> List[str]:
     return chunks
 
 
-def chunk_documents(documents: List[str], max_chars: int = 500, overlap: int = 50) -> List[str]:
+def chunk_documents(
+    documents: List[str], max_chars: int = 500, overlap: int = 50
+) -> List[str]:
     """Birden fazla dokümanı arka arkaya chunk'la.
 
     TR: Dokümanlar arasında satır sonu ile ayrım yapılır; her doküman kendi içinde
@@ -63,5 +65,3 @@ def chunk_documents(documents: List[str], max_chars: int = 500, overlap: int = 5
     for doc in documents:
         all_chunks.extend(chunk_text(doc, max_chars=max_chars, overlap=overlap))
     return all_chunks
-
-

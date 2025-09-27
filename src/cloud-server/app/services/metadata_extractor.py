@@ -15,5 +15,3 @@ def extract_basic_metadata(path: Path) -> Dict[str, Any]:
         "size": stat.st_size,
         "extension": path.suffix.lower(),
     }
-
-

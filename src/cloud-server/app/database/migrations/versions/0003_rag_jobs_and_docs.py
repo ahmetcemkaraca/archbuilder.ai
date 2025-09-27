@@ -36,5 +36,3 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_table("rag_document_links")
     op.drop_table("rag_jobs")
-
-

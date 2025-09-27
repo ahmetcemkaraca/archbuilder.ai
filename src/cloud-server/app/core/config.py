@@ -24,28 +24,24 @@ class Settings(BaseSettings):
     max_file_upload_size: int = Field(default=100 * 1024 * 1024)  # 100MB
     rate_limit_enabled: bool = Field(default=True)
 
-    # AI Integration
-    openai_api_key: str | None = Field(default=None)
-    openai_organization: str | None = Field(default=None)
-    azure_openai_endpoint: str | None = Field(default=None)
-    azure_openai_api_key: str | None = Field(default=None)
-    azure_openai_api_version: str = Field(default="2024-02-15-preview")
-    
-    # Vertex AI (Google Cloud)
-    google_cloud_project: str | None = Field(default=None)
-    google_cloud_region: str = Field(default="us-central1")
-    google_application_credentials: str | None = Field(default=None)
-    vertex_ai_endpoint: str | None = Field(default=None)
-    
+    # Database Configuration
+    database_url: str | None = Field(default=None)
+    database_replica_url: str | None = Field(default=None)
+    db_pool_size: int = Field(default=20)
+    db_max_overflow: int = Field(default=30)
+    db_pool_timeout: int = Field(default=30)
+    db_pool_recycle: int = Field(default=3600)
+    db_echo: bool = Field(default=False)
+
     # RAGFlow integration
     ragflow_base_url: HttpUrl | str = Field(default="http://localhost")
     ragflow_api_key: str | None = Field(default=None)
     ragflow_api_version: str = Field(default="v1")
     ragflow_timeout_seconds: int = Field(default=30)
 
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="", case_sensitive=False)
+    model_config = SettingsConfigDict(
+        env_file=".env", env_prefix="", case_sensitive=False
+    )
 
 
 settings = Settings()
-
-

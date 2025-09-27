@@ -6,7 +6,9 @@ from pathlib import Path
 
 def test_endpoints_document_headers():
     root = Path(__file__).resolve().parents[4]
-    endpoints = json.loads((root / "docs/registry/endpoints.json").read_text(encoding="utf-8"))
+    endpoints = json.loads(
+        (root / "docs/registry/endpoints.json").read_text(encoding="utf-8")
+    )
     # Ensure RAG endpoints have correlation headers documented
     paths = {e["path"]: e for e in endpoints["endpoints"]}
     for p in [
@@ -27,7 +29,9 @@ def test_endpoints_document_headers():
 
 def test_db_tables_documented_in_schemas():
     root = Path(__file__).resolve().parents[4]
-    schemas = json.loads((root / "docs/registry/schemas.json").read_text(encoding="utf-8"))
+    schemas = json.loads(
+        (root / "docs/registry/schemas.json").read_text(encoding="utf-8")
+    )
     names = {s["name"] for s in schemas["schemas"]}
     expected = {
         "DB.users",
@@ -41,5 +45,3 @@ def test_db_tables_documented_in_schemas():
     }
     missing = expected - names
     assert not missing, f"Missing schemas: {missing}"
-
-

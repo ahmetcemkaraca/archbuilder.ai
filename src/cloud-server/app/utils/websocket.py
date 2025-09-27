@@ -43,7 +43,11 @@ class WebSocketManager:
             await self.disconnect(correlation_id)
 
     async def broadcast_progress(
-        self, correlation_id: str, stage: str, progress: float, message: str | None = None
+        self,
+        correlation_id: str,
+        stage: str,
+        progress: float,
+        message: str | None = None,
     ) -> None:
         await self.send(
             correlation_id,
@@ -62,5 +66,3 @@ class WebSocketManager:
 
 # TR: İsteğe bağlı tekil örnek
 ws_manager = WebSocketManager()
-
-

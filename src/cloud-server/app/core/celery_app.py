@@ -27,6 +27,7 @@ logger = structlog.get_logger(__name__)
 
 class TaskPriority(str, Enum):
     """Task priority levels"""
+
     LOW = "low"
     NORMAL = "normal"
     HIGH = "high"
@@ -35,6 +36,7 @@ class TaskPriority(str, Enum):
 
 class TaskStatus(str, Enum):
     """Task status states"""
+
     PENDING = "pending"
     STARTED = "started"
     SUCCESS = "success"
@@ -45,6 +47,7 @@ class TaskStatus(str, Enum):
 
 class TaskType(str, Enum):
     """Task type categories"""
+
     AI_INFERENCE = "ai_inference"
     DOCUMENT_PROCESSING = "document_processing"
     EMAIL_NOTIFICATION = "email_notification"
@@ -55,6 +58,7 @@ class TaskType(str, Enum):
 
 class TaskRequest(BaseModel):
     """Task request model"""
+
     task_id: str
     task_type: TaskType
     priority: TaskPriority = TaskPriority.NORMAL
@@ -69,6 +73,7 @@ class TaskRequest(BaseModel):
 
 class TaskResult(BaseModel):
     """Task result model"""
+
     task_id: str
     status: TaskStatus
     result: Optional[Any] = None
@@ -80,16 +85,16 @@ class TaskResult(BaseModel):
 
 class ArchBuilderTask(Task):
     """Base task class for ArchBuilder.AI with enhanced monitoring"""
-    
+
     def on_success(self, retval, task_id, args, kwargs):
         """Task success callback"""
         logger.info(
             "Task completed successfully",
             task_id=task_id,
             task_name=self.name,
-            result_type=type(retval).__name__
+            result_type=type(retval).__name__,
         )
-    
+
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         """Task failure callback"""
         logger.error(
@@ -97,9 +102,9 @@ class ArchBuilderTask(Task):
             task_id=task_id,
             task_name=self.name,
             error=str(exc),
-            error_info=str(einfo)
+            error_info=str(einfo),
         )
-    
+
     def on_retry(self, exc, task_id, args, kwargs, einfo):
         """Task retry callback"""
         logger.warning(
@@ -108,111 +113,92 @@ class ArchBuilderTask(Task):
             task_name=self.name,
             retry_count=self.request.retries,
             max_retries=self.max_retries,
-            error=str(exc)
+            error=str(exc),
         )
 
 
 # Celery app configuration
 celery_app = Celery(
-    'archbuilder',
-    broker='redis://localhost:6379/1',
-    backend='redis://localhost:6379/1',
+    "archbuilder",
+    broker="redis://localhost:6379/1",
+    backend="redis://localhost:6379/1",
     include=[
-        'app.core.tasks.ai_tasks',
-        'app.core.tasks.document_tasks',
-        'app.core.tasks.notification_tasks',
-        'app.core.tasks.cleanup_tasks'
-    ]
+        "app.core.tasks.ai_tasks",
+        "app.core.tasks.document_tasks",
+        "app.core.tasks.notification_tasks",
+        "app.core.tasks.cleanup_tasks",
+    ],
 )
 
 # Celery configuration
 celery_app.conf.update(
     # Task execution
-    task_serializer='json',
-    accept_content=['json'],
-    result_serializer='json',
-    timezone='UTC',
+    task_serializer="json",
+    accept_content=["json"],
+    result_serializer="json",
+    timezone="UTC",
     enable_utc=True,
-    
     # Task routing
     task_routes={
-        'app.core.tasks.ai_tasks.*': {'queue': 'ai_inference'},
-        'app.core.tasks.document_tasks.*': {'queue': 'document_processing'},
-        'app.core.tasks.notification_tasks.*': {'queue': 'notifications'},
-        'app.core.tasks.cleanup_tasks.*': {'queue': 'cleanup'}
+        "app.core.tasks.ai_tasks.*": {"queue": "ai_inference"},
+        "app.core.tasks.document_tasks.*": {"queue": "document_processing"},
+        "app.core.tasks.notification_tasks.*": {"queue": "notifications"},
+        "app.core.tasks.cleanup_tasks.*": {"queue": "cleanup"},
     },
-    
     # Queue configuration
-    task_default_queue='default',
+    task_default_queue="default",
     task_queues={
-        'default': {
-            'exchange': 'default',
-            'routing_key': 'default'
+        "default": {"exchange": "default", "routing_key": "default"},
+        "ai_inference": {"exchange": "ai_inference", "routing_key": "ai_inference"},
+        "document_processing": {
+            "exchange": "document_processing",
+            "routing_key": "document_processing",
         },
-        'ai_inference': {
-            'exchange': 'ai_inference',
-            'routing_key': 'ai_inference'
-        },
-        'document_processing': {
-            'exchange': 'document_processing',
-            'routing_key': 'document_processing'
-        },
-        'notifications': {
-            'exchange': 'notifications',
-            'routing_key': 'notifications'
-        },
-        'cleanup': {
-            'exchange': 'cleanup',
-            'routing_key': 'cleanup'
-        }
+        "notifications": {"exchange": "notifications", "routing_key": "notifications"},
+        "cleanup": {"exchange": "cleanup", "routing_key": "cleanup"},
     },
-    
     # Worker configuration
     worker_prefetch_multiplier=1,
     task_acks_late=True,
     worker_disable_rate_limits=False,
-    
     # Retry configuration
     task_default_retry_delay=60,  # 1 minute
     task_max_retries=3,
     task_retry_jitter=True,
-    
     # Result backend configuration
     result_expires=3600,  # 1 hour
     result_persistent=True,
-    
     # Monitoring
     worker_send_task_events=True,
     task_send_sent_event=True,
-    
     # Beat schedule for periodic tasks
     beat_schedule={
-        'cleanup-old-tasks': {
-            'task': 'app.core.tasks.cleanup_tasks.cleanup_old_tasks',
-            'schedule': crontab(hour=2, minute=0),  # Daily at 2 AM
+        "cleanup-old-tasks": {
+            "task": "app.core.tasks.cleanup_tasks.cleanup_old_tasks",
+            "schedule": crontab(hour=2, minute=0),  # Daily at 2 AM
         },
-        'health-check': {
-            'task': 'app.core.tasks.health_tasks.system_health_check',
-            'schedule': 300.0,  # Every 5 minutes
+        "health-check": {
+            "task": "app.core.tasks.health_tasks.system_health_check",
+            "schedule": 300.0,  # Every 5 minutes
         },
-        'cleanup-temp-files': {
-            'task': 'app.core.tasks.cleanup_tasks.cleanup_temp_files',
-            'schedule': crontab(hour=3, minute=0),  # Daily at 3 AM
+        "cleanup-temp-files": {
+            "task": "app.core.tasks.cleanup_tasks.cleanup_temp_files",
+            "schedule": crontab(hour=3, minute=0),  # Daily at 3 AM
         },
-        'generate-usage-reports': {
-            'task': 'app.core.tasks.analytics_tasks.generate_usage_reports',
-            'schedule': crontab(hour=1, minute=0),  # Daily at 1 AM
-        }
-    }
+        "generate-usage-reports": {
+            "task": "app.core.tasks.analytics_tasks.generate_usage_reports",
+            "schedule": crontab(hour=1, minute=0),  # Daily at 1 AM
+        },
+    },
 )
 
 
 class TaskQueueManager:
     """High-level task queue manager for ArchBuilder.AI"""
-    
+
     def __init__(self):
         self.celery_app = celery_app
-    
+
     async def submit_ai_inference_task(
         self,
         correlation_id: str,
@@ -220,7 +206,7 @@ class TaskQueueManager:
         model: str,
         prompt: str,
         context: Dict[str, Any],
-        priority: TaskPriority = TaskPriority.NORMAL
+        priority: TaskPriority = TaskPriority.NORMAL,
     ) -> str:
         """Submit AI inference task to queue"""
         task_request = TaskRequest(
@@ -229,31 +215,27 @@ class TaskQueueManager:
             priority=priority,
             correlation_id=correlation_id,
             user_id=user_id,
-            payload={
-                "model": model,
-                "prompt": prompt,
-                "context": context
-            }
+            payload={"model": model, "prompt": prompt, "context": context},
         )
-        
+
         # Submit to AI inference queue
         task = self.celery_app.send_task(
-            'app.core.tasks.ai_tasks.process_ai_inference',
+            "app.core.tasks.ai_tasks.process_ai_inference",
             args=[task_request.dict()],
-            queue='ai_inference',
-            priority=self._get_priority_value(priority)
+            queue="ai_inference",
+            priority=self._get_priority_value(priority),
         )
-        
+
         logger.info(
             "AI inference task submitted",
             task_id=task.id,
             correlation_id=correlation_id,
             model=model,
-            priority=priority.value
+            priority=priority.value,
         )
-        
+
         return task.id
-    
+
     async def submit_document_processing_task(
         self,
         correlation_id: str,
@@ -261,7 +243,7 @@ class TaskQueueManager:
         document_id: str,
         processing_type: str,
         options: Dict[str, Any],
-        priority: TaskPriority = TaskPriority.NORMAL
+        priority: TaskPriority = TaskPriority.NORMAL,
     ) -> str:
         """Submit document processing task to queue"""
         task_request = TaskRequest(
@@ -273,28 +255,28 @@ class TaskQueueManager:
             payload={
                 "document_id": document_id,
                 "processing_type": processing_type,
-                "options": options
-            }
+                "options": options,
+            },
         )
-        
+
         # Submit to document processing queue
         task = self.celery_app.send_task(
-            'app.core.tasks.document_tasks.process_document',
+            "app.core.tasks.document_tasks.process_document",
             args=[task_request.dict()],
-            queue='document_processing',
-            priority=self._get_priority_value(priority)
+            queue="document_processing",
+            priority=self._get_priority_value(priority),
         )
-        
+
         logger.info(
             "Document processing task submitted",
             task_id=task.id,
             correlation_id=correlation_id,
             document_id=document_id,
-            processing_type=processing_type
+            processing_type=processing_type,
         )
-        
+
         return task.id
-    
+
     async def submit_notification_task(
         self,
         correlation_id: str,
@@ -302,7 +284,7 @@ class TaskQueueManager:
         notification_type: str,
         recipient: str,
         content: Dict[str, Any],
-        priority: TaskPriority = TaskPriority.NORMAL
+        priority: TaskPriority = TaskPriority.NORMAL,
     ) -> str:
         """Submit notification task to queue"""
         task_request = TaskRequest(
@@ -314,60 +296,60 @@ class TaskQueueManager:
             payload={
                 "notification_type": notification_type,
                 "recipient": recipient,
-                "content": content
-            }
+                "content": content,
+            },
         )
-        
+
         # Submit to notifications queue
         task = self.celery_app.send_task(
-            'app.core.tasks.notification_tasks.send_notification',
+            "app.core.tasks.notification_tasks.send_notification",
             args=[task_request.dict()],
-            queue='notifications',
-            priority=self._get_priority_value(priority)
+            queue="notifications",
+            priority=self._get_priority_value(priority),
         )
-        
+
         logger.info(
             "Notification task submitted",
             task_id=task.id,
             correlation_id=correlation_id,
             notification_type=notification_type,
-            recipient=recipient
+            recipient=recipient,
         )
-        
+
         return task.id
-    
+
     async def get_task_status(self, task_id: str) -> Optional[TaskResult]:
         """Get task status and result"""
         try:
             result = self.celery_app.AsyncResult(task_id)
-            
-            if result.state == 'PENDING':
+
+            if result.state == "PENDING":
                 status = TaskStatus.PENDING
-            elif result.state == 'STARTED':
+            elif result.state == "STARTED":
                 status = TaskStatus.STARTED
-            elif result.state == 'SUCCESS':
+            elif result.state == "SUCCESS":
                 status = TaskStatus.SUCCESS
-            elif result.state == 'FAILURE':
+            elif result.state == "FAILURE":
                 status = TaskStatus.FAILURE
-            elif result.state == 'RETRY':
+            elif result.state == "RETRY":
                 status = TaskStatus.RETRY
-            elif result.state == 'REVOKED':
+            elif result.state == "REVOKED":
                 status = TaskStatus.REVOKED
             else:
                 status = TaskStatus.PENDING
-            
+
             return TaskResult(
                 task_id=task_id,
                 status=status,
                 result=result.result if result.successful() else None,
                 error=str(result.result) if result.failed() else None,
-                completed_at=datetime.utcnow() if result.ready() else None
+                completed_at=datetime.utcnow() if result.ready() else None,
             )
-            
+
         except Exception as e:
             logger.error("Failed to get task status", task_id=task_id, error=str(e))
             return None
-    
+
     async def cancel_task(self, task_id: str) -> bool:
         """Cancel a running task"""
         try:
@@ -377,48 +359,56 @@ class TaskQueueManager:
         except Exception as e:
             logger.error("Failed to cancel task", task_id=task_id, error=str(e))
             return False
-    
+
     async def get_queue_stats(self) -> Dict[str, Any]:
         """Get queue statistics"""
         try:
             inspect = self.celery_app.control.inspect()
-            
+
             # Get active tasks
             active_tasks = inspect.active()
-            
+
             # Get scheduled tasks
             scheduled_tasks = inspect.scheduled()
-            
+
             # Get reserved tasks
             reserved_tasks = inspect.reserved()
-            
+
             # Get queue lengths
             queue_stats = {}
-            for queue_name in ['default', 'ai_inference', 'document_processing', 'notifications', 'cleanup']:
+            for queue_name in [
+                "default",
+                "ai_inference",
+                "document_processing",
+                "notifications",
+                "cleanup",
+            ]:
                 queue_stats[queue_name] = {
-                    'active': len(active_tasks.get(queue_name, [])),
-                    'scheduled': len(scheduled_tasks.get(queue_name, [])),
-                    'reserved': len(reserved_tasks.get(queue_name, []))
+                    "active": len(active_tasks.get(queue_name, [])),
+                    "scheduled": len(scheduled_tasks.get(queue_name, [])),
+                    "reserved": len(reserved_tasks.get(queue_name, [])),
                 }
-            
+
             return {
-                'queues': queue_stats,
-                'total_active': sum(len(tasks) for tasks in active_tasks.values()),
-                'total_scheduled': sum(len(tasks) for tasks in scheduled_tasks.values()),
-                'total_reserved': sum(len(tasks) for tasks in reserved_tasks.values())
+                "queues": queue_stats,
+                "total_active": sum(len(tasks) for tasks in active_tasks.values()),
+                "total_scheduled": sum(
+                    len(tasks) for tasks in scheduled_tasks.values()
+                ),
+                "total_reserved": sum(len(tasks) for tasks in reserved_tasks.values()),
             }
-            
+
         except Exception as e:
             logger.error("Failed to get queue stats", error=str(e))
             return {}
-    
+
     def _get_priority_value(self, priority: TaskPriority) -> int:
         """Convert priority enum to numeric value"""
         priority_map = {
             TaskPriority.LOW: 0,
             TaskPriority.NORMAL: 1,
             TaskPriority.HIGH: 2,
-            TaskPriority.CRITICAL: 3
+            TaskPriority.CRITICAL: 3,
         }
         return priority_map.get(priority, 1)
 
@@ -430,7 +420,7 @@ _task_queue_manager: Optional[TaskQueueManager] = None
 def initialize_task_queue() -> TaskQueueManager:
     """Initialize global task queue manager"""
     global _task_queue_manager
-    
+
     _task_queue_manager = TaskQueueManager()
     return _task_queue_manager
 
@@ -447,7 +437,7 @@ def get_task_queue_manager() -> TaskQueueManager:
 def health_check_task(self):
     """Health check task for monitoring worker status"""
     return {
-        'status': 'healthy',
-        'worker_id': self.request.hostname,
-        'timestamp': datetime.utcnow().isoformat()
+        "status": "healthy",
+        "worker_id": self.request.hostname,
+        "timestamp": datetime.utcnow().isoformat(),
     }

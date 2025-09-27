@@ -67,16 +67,24 @@ class RAGFlowClient:
         return self._client
 
     # ----------------------------- Core endpoints ----------------------------
-    async def create_dataset(self, name: str, correlation_id: Optional[str] = None) -> Dict[str, Any]:
+    async def create_dataset(
+        self, name: str, correlation_id: Optional[str] = None
+    ) -> Dict[str, Any]:
         """POST /api/{version}/datasets"""
         url = f"/api/{self._version}/datasets"
-        resp = await self._api.post(url, json={"name": name}, headers=self.with_correlation(correlation_id))
+        resp = await self._api.post(
+            url, json={"name": name}, headers=self.with_correlation(correlation_id)
+        )
         resp.raise_for_status()
         return resp.json()
 
     async def upload_documents(
-        self, dataset_id: str, files: List[bytes], filenames: List[str]
-    , correlation_id: Optional[str] = None) -> Dict[str, Any]:
+        self,
+        dataset_id: str,
+        files: List[bytes],
+        filenames: List[str],
+        correlation_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """POST /api/{version}/datasets/{dataset_id}/documents multipart upload.
 
         Notlar (TR): Çoklu dosya desteği sağlanır; RAGFlow `file` alan adını
@@ -86,7 +94,9 @@ class RAGFlowClient:
         url = f"/api/{self._version}/datasets/{dataset_id}/documents"
         files_payload = [("file", (filenames[i], files[i])) for i in range(len(files))]
         # httpx `files` kullandığımız için Content-Type otomatik ayarlanır
-        resp = await self._api.post(url, files=files_payload, headers=self.with_correlation(correlation_id))
+        resp = await self._api.post(
+            url, files=files_payload, headers=self.with_correlation(correlation_id)
+        )
         resp.raise_for_status()
         return resp.json()
 
@@ -105,7 +115,9 @@ class RAGFlowClient:
         # Basit retry/backoff: 429/503 durumlarında iki kez daha dene
         attempts = 0
         while True:
-            resp = await self._api.post(url, json=payload, headers=self.with_correlation(correlation_id))
+            resp = await self._api.post(
+                url, json=payload, headers=self.with_correlation(correlation_id)
+            )
             if resp.status_code not in (429, 503) or attempts >= 2:
                 break
             await asyncio.sleep(0.5 * (attempts + 1))
@@ -141,12 +153,16 @@ class RAGFlowClient:
         if extra:
             payload.update(extra)
 
-        resp = await self._api.post(url, json=payload, headers=self.with_correlation(correlation_id))
+        resp = await self._api.post(
+            url, json=payload, headers=self.with_correlation(correlation_id)
+        )
         resp.raise_for_status()
         return resp.json()
 
     # ------------------------------ Utilities --------------------------------
-    async def ensure_dataset(self, preferred_name: str, correlation_id: Optional[str] = None) -> str:
+    async def ensure_dataset(
+        self, preferred_name: str, correlation_id: Optional[str] = None
+    ) -> str:
         """Create dataset if not exists (best-effort).
 
         Notlar (TR): RAGFlow doğrudan "get by name" sağlamadığından, oluşturulan
@@ -176,5 +192,3 @@ async def _quick_selfcheck() -> None:
 
 if __name__ == "__main__":
     asyncio.run(_quick_selfcheck())
-
-

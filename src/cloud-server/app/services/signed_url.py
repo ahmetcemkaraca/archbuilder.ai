@@ -26,5 +26,3 @@ def validate_signed_url(path: str, secret: str, exp: int, sig: str) -> bool:
     expected = hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).digest()
     expected_token = base64.urlsafe_b64encode(expected).decode("utf-8").rstrip("=")
     return hmac.compare_digest(expected_token, sig)
-
-

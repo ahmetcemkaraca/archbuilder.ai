@@ -1,120 +1,97 @@
-## 📋 Pull Request Description
+<!--
+ArchBuilder.AI Pull Request Template
+Please fill out this template to help reviewers understand your changes.
+-->
 
-### 🎯 What does this PR do?
-<!-- Briefly describe the changes in this PR -->
+## 📋 Pull Request Checklist
 
-### 🔗 Related Issue
-<!-- Link to the GitHub issue this PR addresses -->
-Closes #<!-- issue number -->
-
-### 🏷️ Type of Change
-<!-- Mark the relevant option with [x] -->
+### Type of Change
 - [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
 - [ ] ✨ New feature (non-breaking change which adds functionality)
 - [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
 - [ ] 📚 Documentation update
-- [ ] 🔧 Configuration/tooling change
-- [ ] ♻️ Code refactoring
+- [ ] 🔧 Refactoring (no functional changes)
+- [ ] ⚡ Performance improvement
 - [ ] 🧪 Test improvements
+- [ ] 🔒 Security enhancement
 
-## 🧪 Testing
+### Description
+**What does this PR do?**
+<!-- Provide a clear and concise description of what this PR accomplishes -->
 
-### 🔍 How Has This Been Tested?
+**Why is this change needed?**
+<!-- Explain the problem this PR solves or the feature it adds -->
+
+**How has this been tested?**
 <!-- Describe the tests you ran to verify your changes -->
-- [ ] Unit tests
-- [ ] Integration tests
-- [ ] Manual testing
-- [ ] Registry validation tests
 
-### 🧪 Test Results
-```bash
-# Paste test results here
-```
+### 🔗 Related Issues
+- Closes #<!-- issue number -->
+- Related to #<!-- issue number -->
 
-## 📊 Registry & Context Impact
-
-### 📋 Registry Changes
-<!-- Check all that apply -->
-- [ ] Updated `docs/registry/identifiers.json`
-- [ ] Updated `docs/registry/endpoints.json`
-- [ ] Updated `docs/registry/schemas.json`
-- [ ] No registry changes needed
-
-### 🔄 Context Management
-- [ ] Updated `.mds/context/current-context.md`
-- [ ] Context rehydration ran successfully
-- [ ] Registry validation passed
-
-### 🗃️ Database Changes
-- [ ] Database migrations included
-- [ ] Schema changes documented
-- [ ] Backward compatibility maintained
-- [ ] No database changes
-
-## ✅ Checklist
-
-### 🔧 Code Quality
-- [ ] My code follows the project's coding standards
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas (in Turkish)
-- [ ] Variable names and function names are in English
-- [ ] UI text uses i18n (no hardcoded strings)
-
-### 📚 Documentation
-- [ ] I have made corresponding changes to the documentation
-- [ ] Turkish documentation added for user-facing features
-- [ ] API documentation updated if applicable
-
-### 🧪 Testing & Validation
+### 🧪 Testing
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] New and existing unit tests pass locally with my changes
-- [ ] Registry validation script passes (`scripts/validate-registry.ps1`)
-- [ ] Context rehydration script passes (`scripts/rehydrate-context.ps1`)
-- [ ] Import checks pass (`pip check` and compilation tests)
+- [ ] I have tested this change manually
 
-### 🔒 Security & Performance
-- [ ] I have considered security implications of my changes
-- [ ] No sensitive information (passwords, API keys) is hardcoded
-- [ ] Performance impact has been considered and documented if significant
-- [ ] No SQL injection, XSS, or other security vulnerabilities introduced
+### 📚 Documentation
+- [ ] I have updated the documentation accordingly
+- [ ] I have commented my code, particularly in hard-to-understand areas (in English)
+- [ ] I have updated the CHANGELOG.md if applicable
 
-### 🌿 GitFlow Compliance
-- [ ] Branch follows naming convention (`feature/`, `hotfix/`, `release/`)
-- [ ] Targeting correct branch (`develop` for features, `main` for hotfixes)
-- [ ] Commits follow conventional commit format
-- [ ] No direct commits to protected branches
+### 🔒 Security
+- [ ] I have considered security implications of this change
+- [ ] I have run security scans if applicable
+- [ ] I have not introduced any hardcoded secrets or credentials
+
+### 📈 Performance
+- [ ] I have considered the performance impact of this change
+- [ ] I have optimized queries/algorithms where applicable
+- [ ] I have not introduced memory leaks or performance regressions
+
+### 🌍 Internationalization
+- [ ] I have used i18n for all user-facing text (no hardcoded strings)
+- [ ] I have added translation keys to all supported languages
+- [ ] UI text follows the English-first, Turkish-supported pattern
+
+### 🎯 Code Quality
+- [ ] My code follows the established code style
+- [ ] I have performed a self-review of my own code
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have followed GitFlow branching strategy
+
+### 📊 Registry Updates
+- [ ] I have updated `docs/registry/identifiers.json` for new modules/exports
+- [ ] I have updated `docs/registry/endpoints.json` for API changes
+- [ ] I have updated `docs/registry/schemas.json` for data model changes
+- [ ] I have updated `.mds/context/current-context.md` if needed
+
+### 🚀 Deployment
+- [ ] This change is backward compatible OR I have a migration plan
+- [ ] I have considered the rollback strategy
+- [ ] I have updated deployment documentation if needed
+- [ ] Environment variables are documented in `.env.example`
 
 ## 📸 Screenshots (if applicable)
-<!-- Add screenshots for UI changes -->
-
-## 🚨 Breaking Changes
-<!-- If this is a breaking change, describe what breaks and how to migrate -->
+<!-- Add screenshots to help explain your changes -->
 
 ## 📝 Additional Notes
-<!-- Any additional information that reviewers should know -->
+<!-- Add any additional notes, concerns, or explanations here -->
+
+## 🎯 Review Focus Areas
+<!-- Highlight specific areas where you'd like reviewer attention -->
+- [ ] Security implications
+- [ ] Performance considerations
+- [ ] Error handling
+- [ ] Test coverage
+- [ ] Documentation completeness
 
 ---
 
-## 👀 For Reviewers
-
-### 🔍 Review Focus Areas
-Please pay special attention to:
-- [ ] Instruction compliance (`.github/instructions/*.instructions.md`)
-- [ ] Registry contract consistency
-- [ ] Turkish documentation quality
-- [ ] Security implications
-- [ ] Performance impact
-- [ ] Test coverage
-
-### 🧪 Validation Commands
-```bash
-# Registry validation
-powershell -File scripts/validate-registry.ps1
-
-# Context rehydration
-powershell -File scripts/rehydrate-context.ps1
-
-# Import/dependency checks
-pip check
-python -m py_compile src/cloud-server/app/*.py
-```
+**Reviewer Guidelines:**
+- Check for security vulnerabilities
+- Verify test coverage is adequate
+- Ensure documentation is updated
+- Confirm registry files are updated for contract changes
+- Validate i18n implementation for UI changes

@@ -11,7 +11,9 @@ async def test_storage_upload_flow(app: FastAPI):
         init = await ac.post("/v1/storage/upload/init", headers={"X-API-Key": "test"})
         assert init.status_code == 200
         # chunk
-        files = {"file": ("a.bin", io.BytesIO(b"hello world"), "application/octet-stream")}
+        files = {
+            "file": ("a.bin", io.BytesIO(b"hello world"), "application/octet-stream")
+        }
         chunk = await ac.post(
             "/v1/storage/upload/chunk",
             headers={"X-API-Key": "test"},
@@ -26,4 +28,3 @@ async def test_storage_upload_flow(app: FastAPI):
             data={"upload_id": "u1", "filename": "a.bin"},
         )
         assert complete.status_code in (200, 413)
-

@@ -10,7 +10,16 @@ from typing import BinaryIO
 
 
 class StorageService:
-    def __init__(self, temp_dir: str = "./.tmp", data_dir: str = "./data", max_size_mb: int = 200, allowed_types: tuple[str, ...] = ("application/pdf", "application/octet-stream")) -> None:
+    def __init__(
+        self,
+        temp_dir: str = "./.tmp",
+        data_dir: str = "./data",
+        max_size_mb: int = 200,
+        allowed_types: tuple[str, ...] = (
+            "application/pdf",
+            "application/octet-stream",
+        ),
+    ) -> None:
         self.temp_dir = Path(temp_dir)
         self.data_dir = Path(data_dir)
         self.temp_dir.mkdir(parents=True, exist_ok=True)
@@ -48,5 +57,3 @@ class StorageService:
         except OSError:
             pass
         return target
-
-

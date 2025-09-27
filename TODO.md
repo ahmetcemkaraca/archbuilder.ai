@@ -1,70 +1,16 @@
-# ArchBuilder.AI Bulut Sunucu - Tam Fonksiyonel Geliştirme TODO
+# ArchBuilder.AI Cloud Server - Full-Featured Development TODO
 
-**Son Güncelleme:** 26 Eylül 2025  
-**Proje Durumu:** %70-75 Tamamlandı  
-**Hedef:** Prodüksiyon hazır, tam fonksiyonel bulut sunucu
+**Last Updated:** September 26, 2025  
+**Project Status:** 70-75% Complete  
+**Goal:** Production-ready, fully functional cloud server
 
-## 🚀 KRİTİK PRİORİTE (Prodüksiyon için zorunlu)
+## 🚀 CRITICAL PRIORITY (Required for Production)
 
 
-
-### 5. Database Optimizasyonu
-- [ ] **Connection Pool Optimization**
-  - [ ] PostgreSQL connection tuning
-  - [ ] Read replica support
-  - [ ] Connection leak prevention
-  - [ ] Database monitoring
-
-- [ ] **Query Performance**
-  - [ ] Database indexing optimization
-  - [ ] Query analysis ve slow query detection
-  - [ ] Pagination implementation
-  - [ ] N+1 query problem prevention
-
-- [ ] **Data Migration & Backup**
-  - [ ] Alembic migration best practices
-  - [ ] Backup strategy implementation
-  - [ ] Point-in-time recovery
-  - [ ] Data retention policies
-
-## 🔄 İŞ MANTĞI VE ÖZELLİKLER
-
-### 6. AI İşlem Akışı Tamamlama
-- [ ] **Layout Generation Pipeline**
-  - [ ] Multi-format CAD processing (DWG, DXF, IFC)
-  - [ ] Building code validation (Turkish regulations)
-  - [ ] Human review workflow
-  - [ ] Version control for AI outputs
-
-- [ ] **Document Processing Enhancement**
-  - [ ] RAGFlow entegrasyonu optimizasyonu
-  - [ ] OCR processing for scanned documents
-  - [ ] Multi-language document support
-  - [ ] Content indexing ve search
-
-- [ ] **Existing Project Analysis**
-  - [ ] .rvt file analysis capabilities
-  - [ ] BIM intelligence ve recommendations
-  - [ ] Performance issue detection
-  - [ ] Compliance checking automation
-
-### 7. Regional ve Lokalizasyon
-- [ ] **Multi-Region Support**
-  - [ ] Regional API endpoints (EU, US, Asia)
-  - [ ] Data residency compliance
-  - [ ] Regional building codes database
-  - [ ] Latency optimization per region
-
-- [ ] **Internationalization (i18n)**
-  - [ ] Multi-language error messages
-  - [ ] Regional format support (measurements)
-  - [ ] Currency support for billing
-  - [ ] Cultural adaptation for AI prompts
-
-## 💰 MONETIZATION VE BILLING
+## 💰 MONETIZATION AND BILLING
 
 ### 8. Subscription Management
-- [ ] **Stripe Integration**
+- [ ] **Stripe Integration(Website, API, Apps etc.)**
   - [ ] Subscription lifecycle management
   - [ ] Usage-based billing
   - [ ] Invoice generation
@@ -73,16 +19,15 @@
 - [ ] **Usage Tracking**
   - [ ] AI operation cost calculation
   - [ ] API call metering
-  - [ ] Tier-based feature gating
+  - [ ] Tier-based feature gating (kolayca değiştirilebilir)
   - [ ] Usage analytics dashboard
 
 - [ ] **Billing Analytics**
   - [ ] Revenue tracking
   - [ ] Customer lifetime value
-  - [ ] Usage patterns analysis
   - [ ] Churn prediction
 
-## 🧪 TEST VE KALİTE GÜVENCESİ
+## 🧪 TESTING AND QUALITY ASSURANCE
 
 ### 9. Test Coverage Artırma
 - [ ] **Unit Tests**
@@ -116,7 +61,7 @@
   - [ ] WebSocket real-time updates
   - [ ] Progress tracking for AI operations
 
-## 🚢 DEPLOYMENT VE DEVOPS
+## 🚢 DEPLOYMENT AND DEVOPS
 
 ### 11. Production Deployment
 - [ ] **Container Orchestration**
@@ -150,7 +95,7 @@
   - [ ] Service mesh implementation
   - [ ] Circuit breaker patterns
 
-## 📚 DOKÜMANTASYON VE UYUMLULUK
+## 📚 DOCUMENTATION AND COMPLIANCE
 
 ### 13. API Dokümantasyonu
 - [ ] **OpenAPI/Swagger Enhancement**
@@ -178,7 +123,7 @@
   - [ ] Penetration testing
   - [ ] Security incident response plan
 
-## 🎯 KULLANICI DENEYİMİ
+## 🎯 USER EXPERIENCE
 
 ### 15. API Client Libraries
 - [ ] **Python SDK**
@@ -200,7 +145,7 @@
   - [ ] Live validation feedback
   - [ ] Connection management
 
-## 📋 OPERASYONEL MÜKEMMELLIK
+## 📋 OPERATIONAL EXCELLENCE
 
 ### 17. Monitoring Dashboard
 - [ ] **Business Metrics**
@@ -230,27 +175,27 @@
 
 ---
 
-## 🎯 MILESTONE PLANLAMA
+## 🎯 MILESTONE PLANNING
 
-### Phase 1: Temel Fonksiyonalite (4-6 hafta)
-- AI entegrasyonu tamamlama
-- Kimlik doğrulama sistemi
-- Temel güvenlik katmanı
+### Phase 1: Core Functionality (4-6 weeks)
+- Complete AI integration
+- Authentication system
+- Basic security layer
 - Monitoring setup
 
-### Phase 2: Production Readiness (3-4 hafta)
+### Phase 2: Production Readiness (3-4 weeks)
 - Performance optimization
 - Comprehensive testing
 - Deployment automation
 - Documentation
 
-### Phase 3: Advanced Features (6-8 hafta)
+### Phase 3: Advanced Features (6-8 weeks)
 - Advanced AI features
 - Multi-region support
-- Analytics ve monitoring
+- Analytics and monitoring
 - Customer-facing features
 
-### Phase 4: Scale ve Optimize (Ongoing)
+### Phase 4: Scale and Optimize (Ongoing)
 - Performance tuning
 - Feature enhancements
 - User feedback integration
@@ -258,14 +203,14 @@
 
 ---
 
-**Notlar:**
-- Her milestone için registry güncellemeleri (`docs/registry/*.json`) yapılmalı
-- Version tracking (`version.md`) her major değişiklik için güncellenmeli
-- Security audit her phase sonunda yapılmalı
-- Performance benchmarking sürekli izlenmeli
+**Notes:**
+- Registry updates (`docs/registry/*.json`) must be made for each milestone.
+- Version tracking (`version.md`) must be updated for every major change.
+- A security audit should be conducted at the end of each phase.
+- Performance benchmarking should be continuously monitored.
 
-**İletişim:**
-- Daily standups for critical items
+**Communication:**
+- Daily stand-ups for critical items
 - Weekly progress reviews
 - Monthly architecture reviews
 - Quarterly security audits

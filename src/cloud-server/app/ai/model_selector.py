@@ -452,6 +452,11 @@ model_selector = AdvancedModelSelector()
 # Backward compatibility
 class ModelSelector(AdvancedModelSelector):
     """Legacy ModelSelector class for compatibility"""
-    pass
-
-
+    def __init__(self):
+        import warnings
+        warnings.warn(
+            "Using legacy ModelSelector. Use AdvancedModelSelector or the global model_selector instance instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        super().__init__()

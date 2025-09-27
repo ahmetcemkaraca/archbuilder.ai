@@ -17,8 +17,8 @@ from app.routers.v1.auth import router as auth_router
 from app.routers.v1.enhanced_auth import router as enhanced_auth_router
 from app.routers.v1.storage import router as storage_router
 from app.routers.v1.ai import router as ai_router
-from app.middleware.tenant_security import TenantIsolationMiddleware, RateLimitingMiddleware
-from app.core.vault_integration import setup_secret_rotation
+from app.routers.v1.websocket import router as websocket_router
+from app.routers.v1.regional import router as regional_router
 
 
 def create_app() -> FastAPI:
@@ -69,13 +69,11 @@ def create_app() -> FastAPI:
     app.include_router(enhanced_auth_router)
     app.include_router(storage_router)
     app.include_router(ai_router)
-    
-    # Install exception handlers
+    app.include_router(websocket_router)
+    app.include_router(regional_router)
     install_exception_handlers(app)
     
     return app
 
 
 app = create_app()
-
-

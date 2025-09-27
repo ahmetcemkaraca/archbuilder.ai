@@ -1,5 +1,5 @@
-# Global code owners for all changes
-* @ahmetcemkaraca
+# ArchBuilder.AI Code Ownership Rules
+# More specific rules override general ones
 
 # Critical infrastructure and configuration files
 /.github/ @ahmetcemkaraca
@@ -26,7 +26,7 @@
 /src/cloud-server/app/core/ @ahmetcemkaraca
 /src/cloud-server/app/services/ @ahmetcemkaraca
 
-# Desktop app critical components  
+# Desktop app critical components
 /src/desktop-app/App.xaml @ahmetcemkaraca
 /src/desktop-app/App.xaml.cs @ahmetcemkaraca
 /src/desktop-app/Services/ @ahmetcemkaraca
@@ -39,3 +39,10 @@
 # Instruction and rule files
 /.github/instructions/ @ahmetcemkaraca
 /.cursor/rules/ @ahmetcemkaraca
+
+# Security-related files require extra review
+/src/cloud-server/app/core/security/ @ahmetcemkaraca
+/src/cloud-server/app/middleware/ @ahmetcemkaraca
+
+# Default fallback - all other files
+* @ahmetcemkaraca

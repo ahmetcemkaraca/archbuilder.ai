@@ -14,7 +14,9 @@ class RAGJob(Base):
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
     job_type: Mapped[str] = mapped_column(String(50), index=True)
-    status: Mapped[str] = mapped_column(String(20), index=True)  # queued|running|succeeded|failed
+    status: Mapped[str] = mapped_column(
+        String(20), index=True
+    )  # queued|running|succeeded|failed
     dataset_id: Mapped[str] = mapped_column(String(64), index=True)
     result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -30,5 +32,3 @@ class RAGDocumentLink(Base):
     document_id: Mapped[str] = mapped_column(String(64), index=True)
     filename: Mapped[str] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-

@@ -15,5 +15,3 @@ def preprocess_pdf(path: Path) -> Dict[str, Any]:
         "pages": None,
         "notes": "Install pdfminer.six or pypdf2 later for content extraction",
     }
-
-

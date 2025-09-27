@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, Request
 from pydantic import BaseModel, Field
@@ -9,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.session import get_db
 from app.services.rag_service import RAGService
+from app.core.security.enhanced_security import get_enhanced_security
 from sqlalchemy import select
 from app.database.models.rag import RAGJob, RAGDocumentLink
 
@@ -76,8 +78,27 @@ async def upload_and_parse(
     """Belge(leri) yükle ve RAGFlow üzerinde parse/index işlemini tetikle."""
 
     try:
-        file_bytes: List[bytes] = [await f.read() for f in files]
-        filenames: List[str] = [f.filename or "document" for f in files]
+        # Enhanced security validation for uploaded files
+        security_validator = get_enhanced_security()
+
+        file_bytes: List[bytes] = []
+        filenames: List[str] = []
+
+        # Validate each file before processing
+        for file in files:
+            content = await file.read()
+            filename = file.filename or "document"
+            file_path = Path(filename)
+
+            # Validate file using enhanced security
+            validation_result = security_validator.validate_upload_file(file_path, content)
+
+            if not validation_result['is_valid']:
+                error_msg = f"File validation failed for {filename}: {', '.join(validation_result['errors'])}"
+                raise HTTPException(status_code=400, detail=error_msg)
+
+            file_bytes.append(content)
+            filenames.append(filename)
         parse_options: Dict[str, Any] = (
             {"strategy": parse_strategy} if parse_strategy else {}
         )
@@ -126,8 +147,31 @@ async def upload_and_parse_async(
 
     # Not: Demo amaçlı arka planı taklit ediyoruz; gerçek kurulumda Redis/RQ/Celery kullanılmalı.
     try:
-        file_bytes: List[bytes] = [await f.read() for f in files]
-        filenames: List[str] = [f.filename or "document" for f in files]
+        # Enhanced security validation for uploaded files
+        security_validator = get_enhanced_security()
+
+        file_bytes: List[bytes] = []
+        filenames: List[str] = []
+
+        # Validate each file before processing
+        for file in files:
+            content = await file.read()
+            filename = file.filename or "document"
+            file_path = Path(filename)
+
+            # Validate file using enhanced security
+            validation_result = security_validator.validate_upload_file(file_path, content)
+
+            if not validation_result['is_valid']:
+                error_msg = f"File validation failed for {filename}: {', '.join(validation_result['errors'])}"
+                # Update job status to failed
+                job.status = "failed"
+                job.error_details = error_msg
+                await db.commit()
+                raise HTTPException(status_code=400, detail=error_msg)
+
+            file_bytes.append(content)
+            filenames.append(filename)
         parse_options: Dict[str, Any] = (
             {"strategy": parse_strategy} if parse_strategy else {}
         )

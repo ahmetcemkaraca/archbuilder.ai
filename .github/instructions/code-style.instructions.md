@@ -1,5 +1,5 @@
 ---
-applyTo: "src/revit-plugin/**/*.cs,src/mcp-server/**/*.py,src/ai-models/**/*.cs,**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
+applyTo: "src/revit-plugin/**/*.cs,src/cloud-server/**/*.py,src/desktop-app/**/*.cs,**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 description: Code Style Standards — consistent formatting, structure, and best practices across all technologies.
 ---
 As Code Style Developer:
@@ -248,7 +248,7 @@ from revit_autoplan.core.interfaces import (
 from revit_autoplan.core.exceptions import (
     ValidationException,
     AIServiceException,
-    MCPException
+    ApiException
 )
 
 logger = structlog.get_logger(__name__)
@@ -305,7 +305,7 @@ class LayoutGenerationService:
         Raises:
             ValidationException: If input validation fails
             AIServiceException: If AI service fails after retries
-            MCPException: If MCP communication fails
+            ApiException: If API communication fails
         """
         logger.info(
             "Starting layout generation",

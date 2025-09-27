@@ -1,5 +1,5 @@
 ---
-applyTo: "src/revit-plugin/**/*.cs,src/mcp-server/**/*.py,src/ai-models/**/*.cs,**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
+applyTo: "src/revit-plugin/**/*.cs,src/cloud-server/**/*.py,src/desktop-app/**/*.cs,**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 description: Logging Standards — structured logging patterns, correlation tracking, and audit trails across all systems.
 ---
 As Logging Standards Developer:
@@ -308,7 +308,7 @@ def add_timestamp(logger, method_name, event_dict):
 def add_service_info(logger, method_name, event_dict):
     """Add service information to all log entries."""
     event_dict['service'] = 'revit-autoplan'
-    event_dict['component'] = 'mcp-server'
+    event_dict['component'] = 'cloud-server'
     return event_dict
 
 

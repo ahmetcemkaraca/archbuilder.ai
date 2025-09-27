@@ -1,0 +1,27 @@
+---
+applyTo: "**/*"
+description: Developer role — implement vertical slices with tests and docs.
+---
+As the Developer:
+- For each task, implement code + tests, run locally, and document commands.
+- Keep edits small and verifiable; maintain green tests.
+- Respect interfaces and contracts from `docs/registry/*.json` and `project.md`.
+- Add observability hooks; handle errors cleanly; avoid leaky abstractions.
+- Update `.mds/Todo.md` progress and `CHANGELOG.md` entries when applicable.
+
+Before coding (checklist)
+- Read `.mds/context/current-context.md` and `docs/registry/*.json` to rehydrate context.
+- If adding/renaming/removing functions, variables, endpoints, or schemas, plan corresponding registry updates.
+- For UI text, add/modify i18n resources (TR default). Do not hardcode strings.
+
+After coding (checklist)
+- Update `docs/registry/identifiers.json`, `endpoints.json`, `schemas.json` as applicable.
+- Refresh `.mds/context/current-context.md`; append a short session summary under `.mds/context/history/NNNN.md`.
+- Add at least one test covering the new/changed contract.
+- Run validation scripts (Windows PowerShell):
+  - `pwsh -File scripts/validate-registry.ps1`
+  - `pwsh -File scripts/rehydrate-context.ps1`
+
+Environment targets
+- Cloud server: Python 3.12 (pin in CI and docs)
+- Desktop: WPF on .NET (target Revit-supported runtime)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
+from pathlib import Path
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
@@ -12,6 +13,7 @@ from app.services.virus_scanner import VirusScanner
 from app.services.metadata_extractor import extract_basic_metadata
 from app.services.preprocess.pdf_preprocess import preprocess_pdf
 from app.services.preprocess.cad_preprocess import preprocess_cad
+from app.core.security.enhanced_security import get_enhanced_security
 
 
 from fastapi import Depends
@@ -41,6 +43,18 @@ async def upload_chunk(
     upload_id: str = Form(...), index: int = Form(...), file: UploadFile = File(...)
 ) -> Dict[str, Any]:
     content = await file.read()
+
+    # Enhanced security validation for file chunks
+    if file.filename:  # Only validate if filename is available
+        security_validator = get_enhanced_security()
+        file_path = Path(file.filename)
+
+        validation_result = security_validator.validate_upload_file(file_path, content)
+
+        if not validation_result['is_valid']:
+            error_msg = f"File validation failed for {file.filename}: {', '.join(validation_result['errors'])}"
+            raise HTTPException(status_code=400, detail=error_msg)
+
     storage.write_chunk(upload_id, index, content)
     return envelope(True, {"received": index})
 

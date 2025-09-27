@@ -1,0 +1,127 @@
+name: Lint
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  lint:
+    name: lint
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        shell: powershell
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/cloud-server/requirements.txt
+          pip install flake8 black isort mypy
+
+      - name: Python code formatting check (Black)
+        shell: powershell
+        run: |
+          cd src/cloud-server
+          black --check --diff .
+        continue-on-error: false
+
+      - name: Python import sorting check (isort)
+        shell: powershell
+        run: |
+          cd src/cloud-server
+          isort --check --diff .
+        continue-on-error: false
+
+      - name: Python linting (flake8)
+        shell: powershell
+        run: |
+          cd src/cloud-server
+          flake8 --max-line-length=88 --extend-ignore=E203,W503 .
+        continue-on-error: false
+
+      - name: Python type checking (mypy) - optional
+        shell: powershell
+        run: |
+          cd src/cloud-server
+          mypy --ignore-missing-imports app/
+        continue-on-error: true  # Optional for now
+
+      - name: Python import/compilation checks
+        shell: powershell
+        run: |
+          pip check
+          Get-ChildItem -Path src/cloud-server -Recurse -Filter *.py | ForEach-Object { 
+            try { 
+              python -m py_compile $_.FullName 
+              Write-Host "✅ $($_.FullName)" -ForegroundColor Green
+            } catch { 
+              Write-Host "❌ $($_.FullName): $($_.Exception.Message)" -ForegroundColor Red
+              throw
+            }
+          }
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0'
+
+      - name: .NET formatting check (dotnet format)
+        shell: powershell
+        run: |
+          if (Test-Path "src/desktop-app/*.csproj") {
+            cd src/desktop-app
+            dotnet format --verify-no-changes --verbosity diagnostic
+          }
+          if (Test-Path "src/revit-plugin/*.csproj") {
+            cd src/revit-plugin  
+            dotnet format --verify-no-changes --verbosity diagnostic
+          }
+        continue-on-error: false
+
+      - name: PowerShell script analysis (PSScriptAnalyzer)
+        shell: powershell
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          $scriptFiles = Get-ChildItem -Path scripts -Filter *.ps1 -Recurse
+          $issues = @()
+          foreach ($file in $scriptFiles) {
+            $analysis = Invoke-ScriptAnalyzer -Path $file.FullName -Severity Warning,Error
+            if ($analysis) {
+              $issues += $analysis
+              Write-Host "❌ Issues in $($file.FullName):" -ForegroundColor Red
+              $analysis | ForEach-Object { Write-Host "  - $($_.Message)" -ForegroundColor Yellow }
+            } else {
+              Write-Host "✅ $($file.FullName)" -ForegroundColor Green
+            }
+          }
+          if ($issues.Count -gt 0) {
+            Write-Host "Total issues found: $($issues.Count)" -ForegroundColor Red
+            exit 1
+          }
+
+      - name: Markdown linting (markdownlint)
+        shell: powershell
+        run: |
+          npm install -g markdownlint-cli
+          # Lint important markdown files
+          $mdFiles = @(
+            "README.md",
+            "CONTRIBUTING.md", 
+            "CHANGELOG.md",
+            "docs/*.md"
+          )
+          foreach ($pattern in $mdFiles) {
+            if (Test-Path $pattern) {
+              markdownlint $pattern
+            }
+          }
+        continue-on-error: true  # Optional for now

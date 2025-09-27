@@ -55,13 +55,42 @@ class ComprehensiveLayoutValidator:
     """
 
     def __init__(self):
+        # TR: Initialize geometry utilities and building code validator
         # self.geometry_utils = GeometryUtils()  # Will be available when imported
         # self.building_code_validator = TurkishBuildingCodeValidator()  # Will be available when imported
+        
+        # TR: Temporary mock implementations until dependencies are available
+        self.geometry_utils = self._create_geometry_utils_mock()
+        self.building_code_validator = self._create_building_code_validator_mock()
+        
         self.min_room_area = 5.0  # m²
         self.min_corridor_width = 1200  # mm
         self.min_door_width = 800  # mm
         self.max_door_width = 1200  # mm
         self.min_window_area_ratio = 0.125  # 1/8 of floor area
+
+    def _create_geometry_utils_mock(self):
+        """TR: Temporary mock for geometry utilities"""
+        class GeometryUtilsMock:
+            def lines_overlap(self, line1, line2):
+                # TR: Basic overlap detection - placeholder implementation
+                return False
+            
+            def distance(self, point1, point2):
+                # TR: Basic distance calculation - placeholder implementation
+                import math
+                return math.sqrt((point2.x - point1.x)**2 + (point2.y - point1.y)**2)
+        
+        return GeometryUtilsMock()
+    
+    def _create_building_code_validator_mock(self):
+        """TR: Temporary mock for building code validator"""
+        class BuildingCodeValidatorMock:
+            async def validate_layout(self, layout):
+                # TR: Placeholder implementation - returns empty results
+                return {"errors": [], "warnings": []}
+        
+        return BuildingCodeValidatorMock()
 
     async def validate_layout(
         self, layout_data: Dict[str, Any]

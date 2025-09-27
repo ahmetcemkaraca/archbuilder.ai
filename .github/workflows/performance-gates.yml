@@ -238,6 +238,3 @@ jobs:
         name: monitoring-data
         path: monitoring_data.json
         retention-days: 90
-
-
-
